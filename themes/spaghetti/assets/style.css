@@ -146,7 +146,7 @@ table td, table th {
 }
 
 main {
-    padding: 0.6rem 0 0 0;
+    padding: 0.6rem 0 .3rem 0;
 }
 
 .post-header {
