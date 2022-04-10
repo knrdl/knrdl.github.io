@@ -18,15 +18,20 @@
 
             {{ .Content }}
 
-            {{if .Params.hackerNewsId}}
-                <div class="comments">
+            <div class="comments">
+                {{if .Params.hackerNewsId}}
                     discuss on <a href="https://news.ycombinator.com/item?id={{.Params.hackerNewsId}}"
-                       target="_blank" rel="noopener noreferrer">
+                                  target="_blank" rel="noopener noreferrer">
                         <img src="{{ .Site.BaseURL }}hnlogo.gif" alt="Hacker news logo">
                         <span>HackerNews</span>
-                    </a>
-                </div>
-            {{end}}
+                    </a>&nbsp;|
+                {{end}}
+                <a href="https://github.com/knrdl/knrdl.github.io/issues/new?title={{ urlquery .Title }}"
+                   target="_blank" rel="noopener noreferrer">
+                    <img src="{{ .Site.BaseURL }}github.png" alt="Github logo" style="filter: invert(.7);">
+                    <span>Feedback</span>
+                </a>
+            </div>
         </article>
     </main>
 {{end}}
