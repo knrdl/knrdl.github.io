@@ -1,0 +1,10 @@
+name = "Spaghetti"
+license = "The Unlicense"
+licenselink = "https://github.com/vamc19/spaghetti/blob/master/LICENSE.md"
+description = "NIH minimalist blog theme for hugo"
+homepage = "https://github.com/vamc19/spaghetti"
+min_version = 0.18
+
+[author]
+name = "Vamsi Atluri"
+homepage = "https://blog.mostlypointless.dev/"

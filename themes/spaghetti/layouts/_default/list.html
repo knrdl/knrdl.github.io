@@ -1,0 +1,29 @@
+{{ define "main" }}
+    <main>
+        {{if not .IsHome }}
+            {{ if eq .Data.Plural "tags" }}
+                <h1 class="tag-header">#{{ .Title | markdownify }}</h1>
+            {{ else }}
+                <h1>{{ .Title | markdownify }}</h1>
+            {{ end }}
+        {{ end }}
+
+        <div class="post-list">
+            <ul>
+                {{ $pages := .Pages }}
+                {{ if .IsHome }}{{ $pages = .Site.RegularPages }}{{ end }}
+                {{ range (where $pages "Section" "!=" "") }}
+                    <li>
+                        <div class="post">
+                            {{ if ne .Data.Singular "lang" }}
+                                <span class="pubdate"> {{ .Date.Format "2006-01-02" }}</span> -
+                            {{ end }}
+                            <span class="post-title"><a href="{{ .Permalink }}">{{ .Title }}</a></span>
+                        </div>
+                    </li>
+                {{ end }}
+            </ul>
+        </div>
+    </main>
+{{ end }}
+
