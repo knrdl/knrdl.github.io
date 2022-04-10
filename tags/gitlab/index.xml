@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>gitlab on knrdlog</title><link>https://knrdl.github.io/tags/gitlab/</link><description>Recent content in gitlab on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 28 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/gitlab/index.xml" rel="self" type="application/rss+xml"/><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p>The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
+image layer blobs will be kept as orphans. To clean those up run:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="automation">Automation&lt;/h4>
+&lt;ul>
+&lt;li>run the command via Cron (the gitlab image contains &lt;code>go-crond&lt;/code>)&lt;/li>
+&lt;li>set command in env var &lt;code>GITLAB_POST_RECONFIGURE_SCRIPT&lt;/code> (executed at least on each container start)&lt;/li>
+&lt;/ul>
+&lt;h4 id="conclusion">Conclusion&lt;/h4>
+&lt;p>170GiB server disk storage saved&lt;/p></description></item></channel></rss>
