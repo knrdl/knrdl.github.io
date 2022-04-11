@@ -8,6 +8,8 @@ lang: "en"
 GlusterFs is a distributed storage layer based on
 the [rsync algorithm](https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf)
 
+For best performance the traffic between nodes stays unencrypted. Such a glusterfs should only be operated in a dedicated, trustworthy network.
+
 # Setup
 
 The following setup will create a storage cluster on 3 nodes (node1, node2, node3) as NAS RAID1 (mirroring)
