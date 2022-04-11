@@ -23,6 +23,7 @@ sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080
 Open [localhost:8080](http://localhost:8080)
 
 > Port 35729 is live reload websocket (optional)
+> {.info }
 
 # Custom `.bashrc` shortcut
 

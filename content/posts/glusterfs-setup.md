@@ -57,6 +57,7 @@ rm /media/gluster0/testfile
 ```
 
 > Never write a file/dir directly to `/media/storage0/gluster`. GlusterFS won't be able to detect the changes, and they will not be synchronised.
+> {.warning }
 
 ## 5. On each node:
 

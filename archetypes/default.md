@@ -5,3 +5,9 @@ tags: []
 lang: "en"
 hackerNewsId: ""
 ---
+
+> Info Box
+> {.info }
+
+> Warning Box
+> {.warning }

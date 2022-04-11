@@ -23,6 +23,8 @@ lang = 'lang'
 [markup]
 [markup.highlight]
 style = 'dracula'
+[markup.goldmark.parser.attribute]
+block = true
 
 [[menu.main]]
 name = "github"
