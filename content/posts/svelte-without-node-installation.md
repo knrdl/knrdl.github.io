@@ -8,13 +8,13 @@ hackerNewsId: ''
 
 Docker to the rescue!
 
-## Setup project
+# Setup project
 
 ```bash
 sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" node:alpine npm init
 ```
 
-## Development
+# Development
 
 ```bash
 sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p35729:35729 --env HOST=0.0.0.0 node:alpine npm run dev
@@ -24,7 +24,7 @@ Open [localhost:8080](http://localhost:8080)
 
 > Port 35729 is live reload websocket (optional)
 
-## Custom `.bashrc` shortcut
+# Custom `.bashrc` shortcut
 
 ```bash
 alias svelte-npm='sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p35729:35729 --env HOST=0.0.0.0 node:alpine npm'
@@ -32,7 +32,7 @@ alias svelte-npm='sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w 
 
 Usage: `$ svelte-npm run dev`
 
-### More general approach
+## More general approach
 
 ```bash
 alias docker-dir='sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" --env HOST=0.0.0.0'

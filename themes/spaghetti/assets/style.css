@@ -224,3 +224,11 @@ footer {
     margin-top: .75rem;
     margin-bottom: 3rem;
 }
+
+.paragraph-header a {
+    visibility: hidden;
+}
+
+.paragraph-header:hover a {
+    visibility: visible;
+}

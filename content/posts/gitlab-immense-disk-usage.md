@@ -12,11 +12,11 @@ image layer blobs will be kept as orphans. To clean those up run:
 gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
 ```
 
-#### Automation
+# Automation
 
 * run the command via Cron (the gitlab image contains `go-crond`)
 * set command in env var `GITLAB_POST_RECONFIGURE_SCRIPT` (executed at least on each container start)
 
-#### Conclusion
+# Conclusion
 
 170GiB server disk storage saved
