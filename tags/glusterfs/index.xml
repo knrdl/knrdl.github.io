@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>glusterfs on knrdlog</title><link>https://knrdl.github.io/tags/glusterfs/</link><description>Recent content in glusterfs on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 11 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/glusterfs/index.xml" rel="self" type="application/rss+xml"/><item><title>GlusterFs Setup</title><link>https://knrdl.github.io/posts/glusterfs-setup/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/glusterfs-setup/</guid><description>&lt;p>GlusterFs is a distributed storage layer based on
+the
+&lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>
+&lt;/p>
+&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
+href="#setup">¶&lt;/a>&lt;/h2>
+&lt;p>The following setup will create a storage cluster on 3 nodes (node1, node2, node3) as NAS RAID1 (mirroring)&lt;/p>
+&lt;h3 id="1-on-each-node" class="paragraph-header">1. On each node: &lt;a
+href="#1-on-each-node">¶&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo apt install --no-install-recommends glusterfs-server rpcbind
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl start glusterd.service
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> glusterd.service
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/storage0/gluster &lt;span style="color:#6272a4"># where cluster data should be stored&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-on-primary-node" class="paragraph-header">2. On primary node: &lt;a
+href="#2-on-primary-node">¶&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo gluster peer probe node1 &lt;span style="color:#6272a4"># replace node1 with real hostname&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster peer probe node2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster peer probe node3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster pool list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster volume create vol0 replica &lt;span style="color:#bd93f9">3&lt;/span> node1:/media/storage0/gluster node2:/media/storage0/gluster node3:/media/storage0/gluster force
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># force is only necessary if /media/storage0/gluster is on at least one node mounted on the root partition (and not an additional partition / drive)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster volume info
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster volume start vol0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster volume &lt;span style="color:#8be9fd;font-style:italic">set&lt;/span> vol0 auth.allow 127.0.0.1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># allow connections only from localhost (each gluster-node will mount their local storage, access from other hosts in network is prevented)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster volume info
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-on-each-node" class="paragraph-header">3. On each node: &lt;a
+href="#3-on-each-node">¶&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/gluster0 &lt;span style="color:#6272a4"># where gluster gets mounted&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown -R 1000:1000 /media/gluster0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo bash -c &lt;span style="color:#f1fa8c">&amp;#39;echo &amp;#34;127.0.0.1:/vol0 /media/gluster0 glusterfs defaults,_netdev 0 0&amp;#34; &amp;gt;&amp;gt; /etc/fstab&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount -a
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-test" class="paragraph-header">4. Test: &lt;a
+href="#4-test">¶&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># one one node: &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;hello world&amp;#34;&lt;/span> &amp;gt; /media/gluster0/testfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># on another node:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cat /media/gluster0/testfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rm /media/gluster0/testfile
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p class="warning">Never write a file/dir directly to &lt;code>/media/storage0/gluster&lt;/code>. GlusterFS won&amp;rsquo;t be able to detect the changes, and they will not be synchronised.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="5-on-each-node" class="paragraph-header">5. On each node: &lt;a
+href="#5-on-each-node">¶&lt;/a>&lt;/h3>
+&lt;p>Add the ip addresses of all nodes to the &lt;code>/etc/hosts&lt;/code> files to prevent cluster split on DNS outages:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>192.168.123.2 node1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>192.168.123.3 node2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>192.168.123.4 node3
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>

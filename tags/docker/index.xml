@@ -8,28 +8,34 @@ Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener no
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ip -d link show | grep vx | grep DOWN
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ip link delete vx-001095-owhr8 &lt;span style="color:#6272a4"># for each entry&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now redeploying should work!&lt;/p></description></item><item><title>Svelte without node.js installation</title><link>https://knrdl.github.io/posts/svelte-without-node-installation/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-without-node-installation/</guid><description>&lt;p>Docker to the rescue!&lt;/p>
-&lt;h2 id="setup-project">Setup project&lt;/h2>
+&lt;h2 id="setup-project" class="paragraph-header">Setup project &lt;a
+href="#setup-project">¶&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> node:alpine npm init
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="development">Development&lt;/h2>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="development" class="paragraph-header">Development &lt;a
+href="#development">¶&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic">HOST&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>0.0.0.0 node:alpine npm run dev
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open
 &lt;a href="http://localhost:8080" target="_blank" rel="noopener noreferrer">localhost:8080&lt;/a>
 &lt;/p>
 &lt;blockquote>
-&lt;p>Port 35729 is live reload websocket (optional)&lt;/p>
+&lt;p class="info">Port 35729 is live reload websocket (optional)&lt;/p>
 &lt;/blockquote>
-&lt;h2 id="custom-bashrc-shortcut">Custom &lt;code>.bashrc&lt;/code> shortcut&lt;/h2>
+&lt;h2 id="custom-bashrc-shortcut" class="paragraph-header">Custom &lt;code>.bashrc&lt;/code> shortcut &lt;a
+href="#custom-bashrc-shortcut">¶&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> svelte-npm&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; -p8080:8080 -p35729:35729 --env HOST=0.0.0.0 node:alpine npm&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Usage: &lt;code>$ svelte-npm run dev&lt;/code>&lt;/p>
-&lt;h3 id="more-general-approach">More general approach&lt;/h3>
+&lt;h3 id="more-general-approach" class="paragraph-header">More general approach &lt;a
+href="#more-general-approach">¶&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> docker-dir&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p>The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
 image layer blobs will be kept as orphans. To clean those up run:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="automation">Automation&lt;/h4>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="automation" class="paragraph-header">Automation &lt;a
+href="#automation">¶&lt;/a>&lt;/h2>
 &lt;ul>
 &lt;li>run the command via Cron (the gitlab image contains &lt;code>go-crond&lt;/code>)&lt;/li>
 &lt;li>set command in env var &lt;code>GITLAB_POST_RECONFIGURE_SCRIPT&lt;/code> (executed at least on each container start)&lt;/li>
 &lt;/ul>
-&lt;h4 id="conclusion">Conclusion&lt;/h4>
+&lt;h2 id="conclusion" class="paragraph-header">Conclusion &lt;a
+href="#conclusion">¶&lt;/a>&lt;/h2>
 &lt;p>170GiB server disk storage saved&lt;/p></description></item></channel></rss>
