@@ -19,4 +19,4 @@ gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
 
 # Conclusion
 
-170GiB server disk storage saved
+170GiB server disk storage freed
