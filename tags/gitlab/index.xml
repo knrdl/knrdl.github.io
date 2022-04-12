@@ -4,11 +4,11 @@ Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener no
 image layer blobs will be kept as orphans. To clean those up run:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="automation" class="paragraph-header">Automation &lt;a
-href="#automation">¶&lt;/a>&lt;/h2>
+href="#automation">&lt;/a>&lt;/h2>
 &lt;ul>
 &lt;li>run the command via Cron (the gitlab image contains &lt;code>go-crond&lt;/code>)&lt;/li>
 &lt;li>set command in env var &lt;code>GITLAB_POST_RECONFIGURE_SCRIPT&lt;/code> (executed at least on each container start)&lt;/li>
 &lt;/ul>
 &lt;h2 id="conclusion" class="paragraph-header">Conclusion &lt;a
-href="#conclusion">¶&lt;/a>&lt;/h2>
+href="#conclusion">&lt;/a>&lt;/h2>
 &lt;p>170GiB server disk storage freed&lt;/p></description></item></channel></rss>

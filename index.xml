@@ -4,18 +4,18 @@ Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener no
 the
 &lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>
 &lt;/p>
-&lt;p>For best performance the traffic between nodes stays unencrypted. Such a glusterfs should only be operated in a dedicated, trustworthy network.&lt;/p>
 &lt;h2 id="setup" class="paragraph-header">Setup &lt;a
-href="#setup">¶&lt;/a>&lt;/h2>
+href="#setup">&lt;/a>&lt;/h2>
+&lt;p>For best performance the traffic between nodes stays unencrypted. Such a glusterfs should only be operated in a dedicated, trustworthy network.&lt;/p>
 &lt;p>The following setup will create a storage cluster on 3 nodes (node1, node2, node3) as NAS RAID1 (mirroring)&lt;/p>
 &lt;h3 id="1-on-each-node" class="paragraph-header">1. On each node: &lt;a
-href="#1-on-each-node">¶&lt;/a>&lt;/h3>
+href="#1-on-each-node">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo apt install --no-install-recommends glusterfs-server rpcbind
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl start glusterd.service
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> glusterd.service
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/storage0/gluster &lt;span style="color:#6272a4"># where cluster data should be stored&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-on-primary-node" class="paragraph-header">2. On primary node: &lt;a
-href="#2-on-primary-node">¶&lt;/a>&lt;/h3>
+href="#2-on-primary-node">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo gluster peer probe node1 &lt;span style="color:#6272a4"># replace node1 with real hostname&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster peer probe node2
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster peer probe node3
@@ -28,13 +28,13 @@ href="#2-on-primary-node">¶&lt;/a>&lt;/h3>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># allow connections only from localhost (each gluster-node will mount their local storage, access from other hosts in network is prevented)&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo gluster volume info
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-on-each-node" class="paragraph-header">3. On each node: &lt;a
-href="#3-on-each-node">¶&lt;/a>&lt;/h3>
+href="#3-on-each-node">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/gluster0 &lt;span style="color:#6272a4"># where gluster gets mounted&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown -R 1000:1000 /media/gluster0
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo bash -c &lt;span style="color:#f1fa8c">&amp;#39;echo &amp;#34;127.0.0.1:/vol0 /media/gluster0 glusterfs defaults,_netdev 0 0&amp;#34; &amp;gt;&amp;gt; /etc/fstab&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount -a
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="4-test" class="paragraph-header">4. Test: &lt;a
-href="#4-test">¶&lt;/a>&lt;/h3>
+href="#4-test">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># one one node: &lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;hello world&amp;#34;&lt;/span> &amp;gt; /media/gluster0/testfile
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># on another node:&lt;/span>
@@ -44,27 +44,27 @@ href="#4-test">¶&lt;/a>&lt;/h3>
 &lt;p class="warning">Never write a file/dir directly to &lt;code>/media/storage0/gluster&lt;/code>. GlusterFS won&amp;rsquo;t be able to detect the changes, and they will not be synchronised.&lt;/p>
 &lt;/blockquote>
 &lt;h3 id="5-on-each-node" class="paragraph-header">5. On each node: &lt;a
-href="#5-on-each-node">¶&lt;/a>&lt;/h3>
+href="#5-on-each-node">&lt;/a>&lt;/h3>
 &lt;p>Add the ip addresses of all nodes to the &lt;code>/etc/hosts&lt;/code> files to prevent cluster split on DNS outages:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>192.168.123.2 node1
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>192.168.123.3 node2
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>192.168.123.4 node3
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Cleanup bloated postgres index</title><link>https://knrdl.github.io/posts/postgres-bloated-index/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-bloated-index/</guid><description>&lt;h2 id="1-find-db-byte-sizes" class="paragraph-header">1. find db byte sizes &lt;a
-href="#1-find-db-byte-sizes">¶&lt;/a>&lt;/h2>
+href="#1-find-db-byte-sizes">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">SELECT&lt;/span> datname, pg_size_pretty(pg_database_size(datname))
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">FROM&lt;/span> pg_database
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">ORDER&lt;/span> &lt;span style="color:#ff79c6">by&lt;/span> pg_database_size(datname) &lt;span style="color:#ff79c6">DESC&lt;/span>;
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-find-tables--indices-sizes" class="paragraph-header">2. find tables + indices sizes &lt;a
-href="#2-find-tables--indices-sizes">¶&lt;/a>&lt;/h2>
+href="#2-find-tables--indices-sizes">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">select&lt;/span> &lt;span style="color:#ff79c6">table_name&lt;/span>, pg_size_pretty(pg_total_relation_size(quote_ident(&lt;span style="color:#ff79c6">table_name&lt;/span>)))
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">from&lt;/span> information_schema.tables
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">where&lt;/span> table_schema &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;public&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">order&lt;/span> &lt;span style="color:#ff79c6">by&lt;/span> pg_total_relation_size(quote_ident(&lt;span style="color:#ff79c6">table_name&lt;/span>)) &lt;span style="color:#ff79c6">desc&lt;/span>;
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-recreate-index" class="paragraph-header">3. recreate index &lt;a
-href="#3-recreate-index">¶&lt;/a>&lt;/h2>
+href="#3-recreate-index">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">REINDEX&lt;/span> &lt;span style="color:#ff79c6">TABLE&lt;/span> hungry;
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="conclusion" class="paragraph-header">Conclusion &lt;a
-href="#conclusion">¶&lt;/a>&lt;/h2>
+href="#conclusion">&lt;/a>&lt;/h2>
 &lt;p>index shrank from ~12GiB to ~800MiB&lt;/p></description></item><item><title>Docker Swarm: `error creating vxlan interface: file exists`</title><link>https://knrdl.github.io/posts/docker-swarm-error-create-vxlan/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-swarm-error-create-vxlan/</guid><description>&lt;p>If docker swarm rejects to deploy a service because network interface already exists:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ docker service ps stackname_appname --no-trunc
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
@@ -74,10 +74,10 @@ href="#conclusion">¶&lt;/a>&lt;/h2>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ip link delete vx-001095-owhr8 &lt;span style="color:#6272a4"># for each entry&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now redeploying should work!&lt;/p></description></item><item><title>Svelte without node.js installation</title><link>https://knrdl.github.io/posts/svelte-without-node-installation/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-without-node-installation/</guid><description>&lt;p>Docker to the rescue!&lt;/p>
 &lt;h2 id="setup-project" class="paragraph-header">Setup project &lt;a
-href="#setup-project">¶&lt;/a>&lt;/h2>
+href="#setup-project">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> node:alpine npm init
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="development" class="paragraph-header">Development &lt;a
-href="#development">¶&lt;/a>&lt;/h2>
+href="#development">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic">HOST&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>0.0.0.0 node:alpine npm run dev
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open
 &lt;a href="http://localhost:8080" target="_blank" rel="noopener noreferrer">localhost:8080&lt;/a>
@@ -86,21 +86,21 @@ href="#development">¶&lt;/a>&lt;/h2>
 &lt;p class="info">Port 35729 is live reload websocket (optional)&lt;/p>
 &lt;/blockquote>
 &lt;h2 id="custom-bashrc-shortcut" class="paragraph-header">Custom &lt;code>.bashrc&lt;/code> shortcut &lt;a
-href="#custom-bashrc-shortcut">¶&lt;/a>&lt;/h2>
+href="#custom-bashrc-shortcut">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> svelte-npm&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; -p8080:8080 -p35729:35729 --env HOST=0.0.0.0 node:alpine npm&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Usage: &lt;code>$ svelte-npm run dev&lt;/code>&lt;/p>
 &lt;h3 id="more-general-approach" class="paragraph-header">More general approach &lt;a
-href="#more-general-approach">¶&lt;/a>&lt;/h3>
+href="#more-general-approach">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> docker-dir&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p>The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
 image layer blobs will be kept as orphans. To clean those up run:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="automation" class="paragraph-header">Automation &lt;a
-href="#automation">¶&lt;/a>&lt;/h2>
+href="#automation">&lt;/a>&lt;/h2>
 &lt;ul>
 &lt;li>run the command via Cron (the gitlab image contains &lt;code>go-crond&lt;/code>)&lt;/li>
 &lt;li>set command in env var &lt;code>GITLAB_POST_RECONFIGURE_SCRIPT&lt;/code> (executed at least on each container start)&lt;/li>
 &lt;/ul>
 &lt;h2 id="conclusion" class="paragraph-header">Conclusion &lt;a
-href="#conclusion">¶&lt;/a>&lt;/h2>
+href="#conclusion">&lt;/a>&lt;/h2>
 &lt;p>170GiB server disk storage freed&lt;/p></description></item></channel></rss>
