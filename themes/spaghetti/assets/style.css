@@ -241,3 +241,7 @@ footer {
 .paragraph-header:hover a {
     visibility: visible;
 }
+
+.paragraph-header:hover a::before {
+    content: "¶";
+}
