@@ -1,6 +1,211 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on knrdlog</title><link>https://knrdl.github.io/posts/</link><description>Recent content in Posts on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 13 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>SSH Tunneling</title><link>https://knrdl.github.io/posts/ssh-tunneling/</link><pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ssh-tunneling/</guid><description>&lt;p>SSH allows tcp port forwarding between ssh client and ssh server as part of the encrypted ssh connection.&lt;/p>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 13 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Arduino: ESP as static webserver</title><link>https://knrdl.github.io/posts/arduino-esp-static-webserver/</link><pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/arduino-esp-static-webserver/</guid><description>&lt;p>The ESP8266/ESP32/NodeMCU boards firmware has builtin support to run a http server. It&amp;rsquo;s possible to build a restful
+json api but also to serve static files.&lt;/p>
+&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
+href="#setup">&lt;/a>&lt;/h2>
+&lt;p>Arduino IDE → File → Preferences → Additional Board Manager
+URLs:
+&lt;a href="http://arduino.esp8266.com/stable/package_esp8266com_index.json" target="_blank" rel="noopener noreferrer">http://arduino.esp8266.com/stable/package_esp8266com_index.json&lt;/a>
+&lt;/p>
+&lt;h2 id="connect-to-wifi" class="paragraph-header">Connect to Wifi &lt;a
+href="#connect-to-wifi">&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;ESP8266WiFi.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;WiFiClient.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> &lt;span style="color:#8be9fd">char&lt;/span> &lt;span style="color:#ff79c6">*&lt;/span>ssid &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;YOUR_NETWORK_NAME&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> &lt;span style="color:#8be9fd">char&lt;/span> &lt;span style="color:#ff79c6">*&lt;/span>password &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;YOUR_NETWORK_PASSWORD&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">setup&lt;/span>(&lt;span style="color:#8be9fd">void&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> WiFi.mode(WIFI_STA); &lt;span style="color:#6272a4">// stationary mode
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span> WiFi.begin(ssid, password);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#6272a4">// Wait for connection
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span> &lt;span style="color:#ff79c6">while&lt;/span> (WiFi.status() &lt;span style="color:#ff79c6">!=&lt;/span> WL_CONNECTED) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> delay(&lt;span style="color:#bd93f9">50&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">loop&lt;/span>(&lt;span style="color:#8be9fd">void&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="basic-api-server" class="paragraph-header">Basic API Server &lt;a
+href="#basic-api-server">&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;ESP8266WiFi.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;WiFiClient.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;ESP8266WebServer.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ESP8266WebServer &lt;span style="color:#50fa7b">server&lt;/span>(&lt;span style="color:#bd93f9">80&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">inline&lt;/span> &lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">handleNotFound&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.send(&lt;span style="color:#bd93f9">404&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;text/plain&amp;#34;&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;404 not found&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">inline&lt;/span> &lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">serveInfo&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String json &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;{&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">free_heap&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> String(ESP.getFreeHeap());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">heap_frag_perc&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> String(ESP.getHeapFragmentation());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">last_reset_reason&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> String(ESP.getResetReason()) &lt;span style="color:#ff79c6">+&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">uptime&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> String(millis() &lt;span style="color:#ff79c6">/&lt;/span> &lt;span style="color:#bd93f9">1000&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">cpu_freq&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> String(ESP.getCpuFreqMHz());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">wifi_rssi&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> String(WiFi.RSSI());
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">ip&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> WiFi.localIP().toString() &lt;span style="color:#ff79c6">+&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;,&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">mac&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> WiFi.macAddress() &lt;span style="color:#ff79c6">+&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">\&amp;#34;&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> json &lt;span style="color:#ff79c6">+=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;}&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.send(&lt;span style="color:#bd93f9">200&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;application/json&amp;#34;&lt;/span>, json);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">setup&lt;/span>(&lt;span style="color:#8be9fd">void&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.on(&lt;span style="color:#f1fa8c">&amp;#34;/api/system&amp;#34;&lt;/span>, serveInfo);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.onNotFound(handleNotFound);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.begin();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">loop&lt;/span>(&lt;span style="color:#8be9fd">void&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.handleClient();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="static-file-server" class="paragraph-header">Static file server &lt;a
+href="#static-file-server">&lt;/a>&lt;/h2>
+&lt;p>There a few more steps to take here:&lt;/p>
+&lt;ol>
+&lt;li>Aggregate files which should be served by the arduino&lt;/li>
+&lt;li>Flash files from computer to a filesystem on the arduino board&lt;/li>
+&lt;li>Serve files from the arduino filesystem via http.&lt;/li>
+&lt;/ol>
+&lt;h3 id="littlefs" class="paragraph-header">LittleFS &lt;a
+href="#littlefs">&lt;/a>&lt;/h3>
+&lt;p>LittleFS is a filesystem for microcontrollers. It supports path-based read/write operations:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;#34;LittleFS.h&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">inline&lt;/span> &lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">writeFile&lt;/span>(&lt;span style="color:#ff79c6">const&lt;/span> String path, &lt;span style="color:#ff79c6">const&lt;/span> String message) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> File file &lt;span style="color:#ff79c6">=&lt;/span> LittleFS.open(path, &lt;span style="color:#f1fa8c">&amp;#34;w&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file.print(message);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file.close();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">inline&lt;/span> String &lt;span style="color:#50fa7b">readFile&lt;/span>(&lt;span style="color:#ff79c6">const&lt;/span> String path) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> File file &lt;span style="color:#ff79c6">=&lt;/span> LittleFS.open(path, &lt;span style="color:#f1fa8c">&amp;#34;r&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">if&lt;/span> (&lt;span style="color:#ff79c6">!&lt;/span>file &lt;span style="color:#ff79c6">||&lt;/span> file.isDirectory()) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">const&lt;/span> String message &lt;span style="color:#ff79c6">=&lt;/span> file.readString();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file.close();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> message;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="fileserver" class="paragraph-header">Fileserver &lt;a
+href="#fileserver">&lt;/a>&lt;/h3>
+&lt;p>A webserver to serve files from a single directory (e.g. &lt;code>/index.html&lt;/code>, &lt;code>/styles.css&lt;/code>, &lt;code>/main.js&lt;/code>, &amp;hellip;) based on
+LittleFS would look like this:&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;ESP8266WebServer.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;#34;LittleFS.h&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;uri/UriBraces.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ESP8266WebServer &lt;span style="color:#50fa7b">server&lt;/span>(&lt;span style="color:#bd93f9">80&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">inline&lt;/span> &lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">serveStaticFiles&lt;/span>() {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String filename &lt;span style="color:#ff79c6">=&lt;/span> server.pathArg(&lt;span style="color:#bd93f9">0&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename.replace(&lt;span style="color:#f1fa8c">&amp;#34;..&amp;#34;&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span>); &lt;span style="color:#6272a4">// mitigate path traversal attacks
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span> filename.replace(&lt;span style="color:#f1fa8c">&amp;#34;/&amp;#34;&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span>); &lt;span style="color:#6272a4">// serve from a single folder only
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span> filename.trim();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">if&lt;/span> (filename &lt;span style="color:#ff79c6">==&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;index.html&amp;#34;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> String path &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;/www/&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> filename; &lt;span style="color:#6272a4">// assuming files are served from /www/
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span> &lt;span style="color:#ff79c6">const&lt;/span> String contentType &lt;span style="color:#ff79c6">=&lt;/span> mime&lt;span style="color:#ff79c6">::&lt;/span>getContentType(path);
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#3d3f4a">&lt;span> &lt;span style="color:#ff79c6">if&lt;/span> (&lt;span style="color:#ff79c6">!&lt;/span>LittleFS.exists(path)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#3d3f4a">&lt;span> path &lt;span style="color:#ff79c6">=&lt;/span> path &lt;span style="color:#ff79c6">+&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;.gz&amp;#34;&lt;/span>; &lt;span style="color:#6272a4">// explained in compression section below
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#3d3f4a">&lt;span>&lt;span style="color:#6272a4">&lt;/span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">if&lt;/span> (&lt;span style="color:#ff79c6">!&lt;/span>LittleFS.exists(path)) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.send(&lt;span style="color:#bd93f9">404&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;text/plain&amp;#34;&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;404 not found&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#ff79c6">else&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> File file &lt;span style="color:#ff79c6">=&lt;/span> LittleFS.open(path, &lt;span style="color:#f1fa8c">&amp;#34;r&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.streamFile(file, contentType);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file.close();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">setup&lt;/span>(&lt;span style="color:#8be9fd">void&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> LittleFS.begin();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.on(UriBraces(&lt;span style="color:#f1fa8c">&amp;#34;/{}&amp;#34;&lt;/span>), serveStaticFiles);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.begin();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd">void&lt;/span> &lt;span style="color:#50fa7b">loop&lt;/span>(&lt;span style="color:#8be9fd">void&lt;/span>) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server.handleClient();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="setup-1" class="paragraph-header">Setup &lt;a
+href="#setup-1">&lt;/a>&lt;/h3>
+&lt;p>To flash files to the arduino an additional library for Arduino IDE is required:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;a href="https://github.com/earlephilhower/arduino-esp8266littlefs-plugin" target="_blank" rel="noopener noreferrer">https://github.com/earlephilhower/arduino-esp8266littlefs-plugin&lt;/a>
+&lt;/li>
+&lt;li>unpack to &lt;code>~/Arduino/tools/ESP8266LittleFS/tool/esp8266littlefs.jar&lt;/code>&lt;/li>
+&lt;li>Restart Arduino IDE&lt;/li>
+&lt;li>In Arduino IDE: Tools → ESP8266 Little FS Data Upload&lt;/li>
+&lt;li>It will upload all files (and dirs) in the &lt;code>data&lt;/code> directory, which needs to be in the same folder as the
+sketch (&lt;code>.ino&lt;/code>
+file)&lt;/li>
+&lt;/ol>
+&lt;h3 id="compression" class="paragraph-header">Compression &lt;a
+href="#compression">&lt;/a>&lt;/h3>
+&lt;p>The ESP8266 runs at 80MHz cpu frequency (can be changed to 160MHz). Transferring large files takes some time (e.g. more
+than a second for a couple of megabytes).&lt;/p>
+&lt;p>So pre-compressing files might improve performance. The following script gzips all files in the &lt;code>www&lt;/code> dir and saves them
+to &lt;code>data/www&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>rm -rf data/www
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p data/www
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">for&lt;/span> filename in ./www/*; &lt;span style="color:#ff79c6">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cat &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$filename&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> | gzip -9 &amp;gt; &lt;span style="color:#f1fa8c">&amp;#34;data/&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$filename&lt;/span>&lt;span style="color:#f1fa8c">.gz&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>So when using the &amp;ldquo;ESP8266 Little FS Data Upload&amp;rdquo; button only the compressed versions will be uploaded (as &lt;code>/www/...&lt;/code> on
+the arduino). The server can handle pre-compressed files because of the precaution in Lines 17-19 of the server script
+above. The correct http response header &lt;code>Content-Encoding: gzip&lt;/code> will be automatically set by the command on Line 24.&lt;/p></description></item><item><title>SSH Tunneling</title><link>https://knrdl.github.io/posts/ssh-tunneling/</link><pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ssh-tunneling/</guid><description>&lt;p>SSH allows tcp port forwarding between ssh client and ssh server as part of the encrypted ssh connection.&lt;/p>
 &lt;h2 id="server--client-local" class="paragraph-header">Server → Client (local) &lt;a
 href="#server--client-local">&lt;/a>&lt;/h2>
 &lt;p>A socket on the server (source) gets forwarded to the client (target).&lt;/p>
