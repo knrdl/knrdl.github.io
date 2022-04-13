@@ -1,0 +1,16 @@
+{{ define "main" }}
+    <main>
+        <h1 class="tag-header">{{ .Title | markdownify }}</h1>
+
+        <div class="post-list">
+            <ul>
+                {{ range sort .Pages "Title" }}
+                    <li>
+                        <span class="post-title"><a href="{{ .Permalink }}" class="hashtag">{{ .Title }}</a></span>
+                    </li>
+                {{ end }}
+            </ul>
+        </div>
+    </main>
+{{ end }}
+

@@ -1,14 +1,11 @@
 {{ define "main" }}
     <main>
-        {{if not .IsHome }}
-            <h1>{{ .Title | markdownify }}</h1>
-        {{ end }}
+        <p><a href="/tags/">◀ Tag List</a></p>
+        <h1 class="tag-header hashtag">{{ .Title | markdownify }}</h1>
 
         <div class="post-list">
             <ul>
-                {{ $pages := .Pages }}
-                {{ if .IsHome }}{{ $pages = .Site.RegularPages }}{{ end }}
-                {{ range (where $pages "Section" "!=" "") }}
+                {{ range .Pages }}
                     <li>
                         <div class="post">
                             <span class="pubdate"> {{ .Date.Format "2006-01-02" }}</span> -

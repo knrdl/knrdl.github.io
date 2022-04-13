@@ -10,7 +10,7 @@
                     {{ end }}
                     <span class="tags">
                     {{ range sort .Params.tags }}
-                        <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">#{{ . }}</a>
+                        <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}" class="hashtag">{{ . }}</a>
                     {{ end }}
                     </span>
                 {{ end }}
