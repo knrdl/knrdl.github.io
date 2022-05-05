@@ -60,7 +60,7 @@ by using a hook of the network manager.&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">function&lt;/span> askConnectVpn&lt;span style="color:#ff79c6">()&lt;/span> &lt;span style="color:#ff79c6">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">[[&lt;/span> zenity --question --title &lt;span style="color:#f1fa8c">&amp;#34;Foreign Wifi&amp;#34;&lt;/span> --text &lt;span style="color:#f1fa8c">&amp;#34;Connect to home VPN?&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">]]&lt;/span> &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> nmcli con up id yourvpn
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zenity --question --title &lt;span style="color:#f1fa8c">&amp;#34;Foreign Wifi&amp;#34;&lt;/span> --text &lt;span style="color:#f1fa8c">&amp;#34;Connect to home VPN?&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> nmcli con up id yourvpn
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">SSID&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>iwgetid -r&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
