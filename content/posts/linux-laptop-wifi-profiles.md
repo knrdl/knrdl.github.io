@@ -64,7 +64,7 @@ function soundOn() {
 }
 
 function askConnectVpn() {
-  [[ zenity --question --title "Foreign Wifi" --text "Connect to home VPN?" ]] && nmcli con up id yourvpn
+  zenity --question --title "Foreign Wifi" --text "Connect to home VPN?" && nmcli con up id yourvpn
 }
 
 SSID="$(iwgetid -r)"
