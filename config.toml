@@ -25,6 +25,8 @@ lang = 'lang'
 style = 'dracula'
 [markup.goldmark.parser.attribute]
 block = true
+[markup.goldmark.renderer]
+unsafe = true
 
 [[menu.main]]
 name = "github"
