@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on knrdlog</title><link>https://knrdl.github.io/posts/</link><description>Recent content in Posts on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 17 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Postgres: Create enum if not exists</title><link>https://knrdl.github.io/posts/postgres-enum/</link><pubDate>Tue, 17 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-enum/</guid><description>&lt;p>In postgres there is nothing like &lt;code>create table if not exists&lt;/code> for enums. Workaround:&lt;/p>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 15 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
+user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p>
+&lt;p>But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
+the host is still unproblematic, e.g. &lt;code>docker run -p 80:8080 ...&lt;/code> will bind port 8080 of the container to port 80 on the
+host.&lt;/p>
+&lt;p>But what if two services share a Docker Network to reach each other? Then requests have to be made to
+e.g. &lt;strong>http://service2:8080/api&lt;/strong> (includes the port 8080). This is a bit ugly because &lt;strong>service1&lt;/strong> now needs to contain
+runtime information about &lt;strong>service2&lt;/strong> (contradicts goal of loose coupling). An endpoint like &lt;strong>http://service2/api&lt;/strong> (defaults to port 80) is preferable.&lt;/p>
+&lt;p>The following Dockerfile achieves that goal:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">FROM&lt;/span>&lt;span style="color:#f1fa8c"> python:3-alpine&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># allow non privileged user to run server on port 80&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> apk add --no-cache libcap &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f1fa8c">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c">&lt;/span> setcap &lt;span style="color:#f1fa8c">&amp;#39;cap_net_bind_service=+ep&amp;#39;&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>readlink -f &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>which python3&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f1fa8c">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c">&lt;/span> apk del libcap
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">EXPOSE&lt;/span>&lt;span style="color:#f1fa8c"> 80/tcp&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> adduser --home /home/appname --disabled-password --shell /bin/false --uid &lt;span style="color:#bd93f9">1000&lt;/span> appname
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># all commands after the USER-command will be executed as user `appname`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">USER&lt;/span>&lt;span style="color:#f1fa8c"> appname&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> whoami
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># now the app can run on port 80 as non root user&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">CMD&lt;/span> python3 myapp.py
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The program &lt;code>setcap&lt;/code> is used to give the executable (e.g. &lt;code>/usr/bin/python3&lt;/code> or &lt;code>/bin/myapp&lt;/code>) the necessary capability (permission). It&amp;rsquo;s not needed afterwards, so it might be deleted to keep the image small.&lt;/p>
+&lt;blockquote>
+&lt;p class="info">If you work with &lt;abbr title="Advanced Packaging Tool">APT&lt;/abbr> (Ubuntu/Debian images) just use the
+package &lt;code>libcap2-bin&lt;/code> instead of &lt;code>libcap&lt;/code>.&lt;/p>
+&lt;/blockquote></description></item><item><title>Postgres: Create enum if not exists</title><link>https://knrdl.github.io/posts/postgres-enum/</link><pubDate>Tue, 17 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-enum/</guid><description>&lt;p>In postgres there is nothing like &lt;code>create table if not exists&lt;/code> for enums. Workaround:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">DO&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$$
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">BEGIN&lt;/span>
