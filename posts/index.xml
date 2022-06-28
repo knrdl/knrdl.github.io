@@ -1,6 +1,69 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on knrdlog</title><link>https://knrdl.github.io/posts/</link><description>Recent content in Posts on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 15 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 27 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Strategies for Docker image tagging</title><link>https://knrdl.github.io/posts/docker-image-tagging/</link><pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-image-tagging/</guid><description>&lt;p>Each docker image has a URI-style name like &lt;code>domain.tld:port/directory/subdir:tag&lt;/code>. The image name &lt;code>ubuntu&lt;/code> is just a shortcut for &lt;code>docker.io/library/ubuntu:latest&lt;/code>. The default tag (if omitted) is &lt;code>latest&lt;/code>. Docker (or &lt;abbr title="Open Container Initiative">OCI&lt;/abbr>) images should be built automatically in &lt;abbr title="Continuous Integration">CI&lt;/abbr>-Pipelines. There are multiple strategies for tagging those images:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Docker Image Tagging via Git Commit Tags:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>Relevant git commits are tagged as versions, e.g. &lt;code>v3.2.1&lt;/code>&lt;/li>
+&lt;li>The corresponding docker image gets tagged as &lt;code>3.2.1&lt;/code>. If there are multiple image flavours, maybe also &lt;code>3.2.1-alpine&lt;/code> or &lt;code>v3.2.1-slim&lt;/code>&lt;/li>
+&lt;li>
+&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">Semantic Versioning&lt;/a>
+is also applicable: In addition to the image tag &lt;code>3.2.1&lt;/code>, the tags &lt;code>3.2&lt;/code> and &lt;code>3&lt;/code> should also be assigned, if &lt;code>3.2.1&lt;/code> is the newest version for both version series.&lt;/li>
+&lt;li>The image created from the newest git commit tag (the newest version) must also be tagged as &lt;code>latest&lt;/code>&lt;/li>
+&lt;li>Docker images without associated git commit tag can be tagged as &lt;code>edge&lt;/code> (convention) or something like &lt;code>unstable&lt;/code>, &lt;code>nightly&lt;/code> etc.&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Docker Image Tagging via Git Commit Hash:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>If there are no distinguishable software versions, the first 6 letters of the git commit hash (SHA) can be used to tag an image.&lt;/li>
+&lt;li>The &lt;code>latest&lt;/code> tag gets assigned manually to a docker image.&lt;/li>
+&lt;li>Pro: It&amp;rsquo;s easy to find the belonging image for a git commit. So an old version can easily be deployed if the newer one fails. Therefore, you must know which commit introduced the problem.&lt;/li>
+&lt;li>Contra:
+&lt;ul>
+&lt;li>Produces many tagged images =&amp;gt; Docker Image Tag Deletion Policy must be enforced&lt;/li>
+&lt;li>Tags will only be sortable by their creation date (might be wrong in case of manual intervention)&lt;/li>
+&lt;li>It&amp;rsquo;s hard to know which tags bring in small or big changes (missing
+&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">semantic versioning&lt;/a>
+)&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Strategy is only useful if there is no software versioning scheme in place and also git push&amp;rsquo;s to the main branch are not too frequent.&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Docker Image Tagging for the Bleeding Edge:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>There is not dedicated tagging at all&lt;/li>
+&lt;li>The newest commit gets tagged as &lt;code>latest&lt;/code>&lt;/li>
+&lt;li>Move fast and break things&lt;/li>
+&lt;li>To reproduce old versions the old image must be built again (make sure to pin the versions of all dependencies your software needs). Alternatively important old versions can be tagged manually.&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Docker Image Tagging with Timestamps:&lt;/strong>&lt;/p>
+&lt;ul>
+&lt;li>Each docker image tag is a timestamp of the build date.&lt;/li>
+&lt;li>The last run build is tagged as &lt;code>latest&lt;/code>&lt;/li>
+&lt;li>Problematic if old versions are built via CI-Pipelines at a later time&lt;/li>
+&lt;li>Useful for nightly builds only. Produce tags like &lt;code>nightly-YYYYMMDD&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;p>Which strategy is right for me? It depends! Maybe a combination &amp;hellip;&lt;/p>
+&lt;hr>
+&lt;h3 id="tldr--opinion" class="paragraph-header">TL;DR / Opinion &lt;a
+href="#tldr--opinion">&lt;/a>&lt;/h3>
+&lt;ul>
+&lt;li>&lt;strong>Use git tags for software versioning&lt;/strong>
+&lt;ul>
+&lt;li>If the newest git tag is &lt;code>v3.2.1&lt;/code>, the built docker image should be tagged as &lt;code>3.2.1&lt;/code>, &lt;code>3.2&lt;/code> and &lt;code>3&lt;/code>.&lt;/li>
+&lt;li>The newest software version (by git tag) additionally gets tagged as &lt;code>latest&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Building a docker image from a git commit without tag, the resulting docker image should be tagged as &lt;code>edge&lt;/code>&lt;/li>
+&lt;/ul></description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
 user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p>
 &lt;p>But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
 the host is still unproblematic, e.g. &lt;code>docker run -p 80:8080 ...&lt;/code> will bind port 8080 of the container to port 80 on the
