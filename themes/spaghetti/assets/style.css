@@ -259,3 +259,7 @@ footer {
     content: "#";
     padding-right: 2px;
 }
+
+article {
+    text-align: justify;
+}
