@@ -601,6 +601,9 @@ href="#client-setup">&lt;/a>&lt;/h3>
 the
 &lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>
 &lt;/p>
+&lt;blockquote>
+&lt;p class="danger">GlusterFs works great for semi-static files, but not for databases like sqlite or postgres!&lt;/p>
+&lt;/blockquote>
 &lt;h2 id="setup" class="paragraph-header">Setup &lt;a
 href="#setup">&lt;/a>&lt;/h2>
 &lt;p>For best performance the traffic between nodes stays unencrypted. Such a glusterfs should only be operated in a dedicated, trustworthy network.&lt;/p>
