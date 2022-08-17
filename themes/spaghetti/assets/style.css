@@ -184,6 +184,10 @@ blockquote > p {
     border: var(--border);
 }
 
+blockquote > p.danger {
+    border-color: #ff0707;
+}
+
 blockquote > p.warning {
     border-color: #ffc107;
 }
