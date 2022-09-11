@@ -1,6 +1,118 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on knrdlog</title><link>https://knrdl.github.io/posts/</link><description>Recent content in Posts on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 05 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>How to make your program generate pdf files</title><link>https://knrdl.github.io/posts/pdf-rendering/</link><pubDate>Fri, 05 Aug 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pdf-rendering/</guid><description>&lt;p>PDF files are still highly popular. The user will find all information in a single, human-readable file which is quite durable.
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Conceptualize Docker Networks to be minimal</title><link>https://knrdl.github.io/posts/minimal-docker-networks/</link><pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-networks/</guid><description>&lt;h2 id="introduction" class="paragraph-header">Introduction &lt;a
+href="#introduction">&lt;/a>&lt;/h2>
+&lt;p>There are three kinds of private ip ranges:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Class&lt;/th>
+&lt;th>CIDR&lt;/th>
+&lt;th>Last IP&lt;/th>
+&lt;th>IPs&lt;/th>
+&lt;th>Typical Usage&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>A&lt;/td>
+&lt;td>10.0.0.0/8&lt;/td>
+&lt;td>10.255.255.255&lt;/td>
+&lt;td>16,777,216&lt;/td>
+&lt;td>Big Company Network&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>B&lt;/td>
+&lt;td>172.16.0.0/12&lt;/td>
+&lt;td>172.31.255.255&lt;/td>
+&lt;td>1,048,576&lt;/td>
+&lt;td>&lt;em>&lt;strong>Docker Network!&lt;/strong>&lt;/em>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>C&lt;/td>
+&lt;td>192.168.0.0/16&lt;/td>
+&lt;td>192.168.255.255&lt;/td>
+&lt;td>65,536&lt;/td>
+&lt;td>Home Network&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>So there are about a million IPs available for docker containers in docker networks. However, docker per default splits them up as /24 CIDRs. Therefore, every docker network can include up to
+&lt;math>
+&lt;msup>
+&lt;mi>2&lt;/mi>
+&lt;mrow>
+(&lt;mn>32&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>24&lt;/mn>)
+&lt;/mrow>
+&lt;/msup>
+&lt;mo>-&lt;/mo>
+&lt;mn>2&lt;/mn>
+&lt;mo>=&lt;/mo>
+&lt;mn>254&lt;/mn>
+&lt;/math>
+Container-IPs. The total number of docker networks is limited to
+&lt;math>
+&lt;msup>
+&lt;mi>2&lt;/mi>
+&lt;mrow>
+(&lt;mn>24&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>12&lt;/mn>)
+&lt;/mrow>
+&lt;/msup>
+&lt;mo>=&lt;/mo>
+&lt;mn>4096&lt;/mn>
+&lt;/math>.&lt;/p>
+&lt;p>While these defaults are okay, it&amp;rsquo;s possible to run out of address spaces, &lt;strong>especially if private Class B addresses are used elsewhere&lt;/strong> (by other applications/routing). Using more docker networks with fewer containers per network has two benefits: Security and Safety.&lt;/p>
+&lt;h2 id="security--safety" class="paragraph-header">Security &amp;amp; Safety &lt;a
+href="#security--safety">&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Scenario with three containers: gateway, appserver, database.&lt;/p>
+&lt;p>It&amp;rsquo;s easy to put all three of them in a single docker network. But this would allow the gateway to access the database, which is not required. Therefore, 2 docker networks should be utilized.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Scenario with three containers: gateway, appserver1, appserver2.&lt;/p>
+&lt;p>Using a single network to connect the appservers to the gateway, allows appserver1 to talk to appserver2. This might not be desired, if app1 and app2 are two distinct applications.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>The security gain is a better separation of trust levels, following the principle of least privilege. Anyway, an advanced attacker can still try OSI-Layer 2 (&amp;ldquo;MAC-Level&amp;rdquo;) sniffing attacks.&lt;/p>
+&lt;p>The bigger gain is the safety of the container environment. The impact of configuration mistakes is limited. The architecture is clearer: Confusion about what service the hostname &amp;ldquo;app&amp;rdquo; belongs to is hopefully prevented.&lt;/p>
+&lt;p>The cost of this approach is that there might be more docker networks needed than the 4096 possible ones. A config change allows to create more networks.&lt;/p>
+&lt;h2 id="configuration" class="paragraph-header">Configuration &lt;a
+href="#configuration">&lt;/a>&lt;/h2>
+&lt;p>In &lt;code>/etc/docker/daemon.json&lt;/code> add:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;default-address-pools&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;base&amp;#34;&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;172.16.0.0/12&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;size&amp;#34;&lt;/span>: &lt;span style="color:#bd93f9">27&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will use the complete Class B private namespace (&lt;code>172.16.0.0/12&lt;/code>). The CIDR per docker network is /27.&lt;/p>
+&lt;p>Max docker networks per host:
+&lt;math>
+&lt;msup>
+&lt;mi>2&lt;/mi>
+&lt;mrow>
+(&lt;mn>27&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>12&lt;/mn>)
+&lt;/mrow>
+&lt;/msup>
+&lt;mo>=&lt;/mo>
+&lt;mn>32,768&lt;/mn>
+&lt;/math>&lt;/p>
+&lt;p>Max containers per docker network:
+&lt;math>
+&lt;msup>
+&lt;mi>2&lt;/mi>
+&lt;mrow>
+(&lt;mn>32&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>27&lt;/mn>)
+&lt;/mrow>
+&lt;/msup>
+&lt;mo>-&lt;/mo>
+&lt;mn>2&lt;/mn>
+&lt;mo>=&lt;/mo>
+&lt;mn>30&lt;/mn>
+&lt;/math>&lt;/p></description></item><item><title>How to make your program generate pdf files</title><link>https://knrdl.github.io/posts/pdf-rendering/</link><pubDate>Fri, 05 Aug 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pdf-rendering/</guid><description>&lt;p>PDF files are still highly popular. The user will find all information in a single, human-readable file which is quite durable.
 However, the programmatic generation of pdf files can be a bit tricky. A rendering engine is needed to transform the source data into the target pdf file. The source data can be broken up into two parts: templates and dynamic data. The template is a skeleton of the pdf document. It contains static texts, images, styling and positioning rules etc. It also contains field definitions where the dynamic data will be filled in. The process of merging template and dynamic data is done by a templating engine.&lt;/p>
 &lt;p>There are multiple technologies applicable.&lt;/p>
 &lt;h2 id="office-suites" class="paragraph-header">Office Suites &lt;a
