@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>docker on knrdlog</title><link>https://knrdl.github.io/tags/docker/</link><description>Recent content in docker on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
 Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sat, 10 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Conceptualize Docker Networks to be minimal</title><link>https://knrdl.github.io/posts/minimal-docker-networks/</link><pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-networks/</guid><description>&lt;h2 id="introduction" class="paragraph-header">Introduction &lt;a
 href="#introduction">&lt;/a>&lt;/h2>
 &lt;p>There are three kinds of private ip ranges:&lt;/p>
@@ -77,6 +77,9 @@ href="#security--safety">&lt;/a>&lt;/h2>
 &lt;p>The security gain is a better separation of trust levels, following the principle of least privilege. Anyway, an advanced attacker can still try OSI-Layer 2 (&amp;ldquo;MAC-Level&amp;rdquo;) sniffing attacks.&lt;/p>
 &lt;p>The bigger gain is the safety of the container environment. The impact of configuration mistakes is limited. The architecture is clearer: Confusion about what service the hostname &amp;ldquo;app&amp;rdquo; belongs to is hopefully prevented.&lt;/p>
 &lt;p>The cost of this approach is that there might be more docker networks needed than the 4096 possible ones. A config change allows to create more networks.&lt;/p>
+&lt;blockquote>
+&lt;p class="info">This is just an example! 4096 is a reasonable amount of networks. But if there is only a subspace of private class B addresses available or class C must be used, then things might look different. Per default max 256 docker networks can be produced in class C, which could be limiting.&lt;/p>
+&lt;/blockquote>
 &lt;h2 id="configuration" class="paragraph-header">Configuration &lt;a
 href="#configuration">&lt;/a>&lt;/h2>
 &lt;p>In &lt;code>/etc/docker/daemon.json&lt;/code> add:&lt;/p>

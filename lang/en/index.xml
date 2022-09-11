@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>en on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in en on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
 Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sun, 11 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>The magic world of HTML inputs</title><link>https://knrdl.github.io/posts/html5-input-elements/</link><pubDate>Sun, 11 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/html5-input-elements/</guid><description>&lt;p>The HTML &lt;code>input&lt;/code> element is the principal construct when it comes to site local interactivity from user provided data on the web. Here are my 5 cents to the topic.&lt;/p>
 &lt;h2 id="button-tag" class="paragraph-header">Button Tag &lt;a
 href="#button-tag">&lt;/a>&lt;/h2>
@@ -98,8 +98,7 @@ href="#1-define-constraints">&lt;/a>&lt;/h3>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">form&lt;/span>&amp;gt;
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-visual-feedback" class="paragraph-header">2. Visual Feedback &lt;a
 href="#2-visual-feedback">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">style&lt;/span>&amp;gt;
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">style&lt;/span>&amp;gt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">form&lt;/span>.&lt;span style="color:#50fa7b">validate&lt;/span> &lt;span style="color:#ff79c6">input&lt;/span>:invalid {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">border&lt;/span>: &lt;span style="color:#bd93f9">2&lt;/span>&lt;span style="color:#8be9fd">px&lt;/span> &lt;span style="color:#ff79c6">solid&lt;/span> &lt;span style="color:#ff79c6">red&lt;/span>;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
@@ -207,6 +206,9 @@ href="#security--safety">&lt;/a>&lt;/h2>
 &lt;p>The security gain is a better separation of trust levels, following the principle of least privilege. Anyway, an advanced attacker can still try OSI-Layer 2 (&amp;ldquo;MAC-Level&amp;rdquo;) sniffing attacks.&lt;/p>
 &lt;p>The bigger gain is the safety of the container environment. The impact of configuration mistakes is limited. The architecture is clearer: Confusion about what service the hostname &amp;ldquo;app&amp;rdquo; belongs to is hopefully prevented.&lt;/p>
 &lt;p>The cost of this approach is that there might be more docker networks needed than the 4096 possible ones. A config change allows to create more networks.&lt;/p>
+&lt;blockquote>
+&lt;p class="info">This is just an example! 4096 is a reasonable amount of networks. But if there is only a subspace of private class B addresses available or class C must be used, then things might look different. Per default max 256 docker networks can be produced in class C, which could be limiting.&lt;/p>
+&lt;/blockquote>
 &lt;h2 id="configuration" class="paragraph-header">Configuration &lt;a
 href="#configuration">&lt;/a>&lt;/h2>
 &lt;p>In &lt;code>/etc/docker/daemon.json&lt;/code> add:&lt;/p>
