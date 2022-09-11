@@ -117,17 +117,17 @@ h1, h2, h3 {
 
 h1 {
     font-size: 2rem;
-    margin: 2.2rem 0 0.1rem 0;
+    margin: 2.5rem 0 0.5rem 0;
 }
 
 h2 {
     font-size: 1.66rem;
-    margin: 1.8rem 0 0.1rem 0;
+    margin: 2rem 0 0.5rem 0;
 }
 
 h3 {
     font-size: 1.33rem;
-    margin: 1.4rem 0 0.1rem 0;
+    margin: 1.4rem 0 0.5rem 0;
 }
 
 img {
@@ -210,6 +210,10 @@ blockquote > p.info {
     margin: 0.5rem 0;
 }
 
+.post-header .lastmod, .post-header .pubdate, .post-header .tags {
+    font-family: monospace;
+}
+
 .post-header .lastmod {
     opacity: .5;
 }
@@ -220,7 +224,6 @@ blockquote > p.info {
 
 .post-header .tags {
     opacity: .9;
-    font-family: monospace;
 }
 
 h1.tag-header, .post-header .tags {

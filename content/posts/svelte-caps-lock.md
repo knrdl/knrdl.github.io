@@ -7,7 +7,7 @@ lang: "en"
 
 Useful when webpage contains password inputs
 
-```html
+```svelte
 <script lang="ts">
     let warnCapsLockOn: boolean = false
 
