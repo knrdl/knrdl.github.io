@@ -1,17 +1,147 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>html5 on knrdlog</title><link>https://knrdl.github.io/tags/html5/</link><description>Recent content in html5 on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 17 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/html5/index.xml" rel="self" type="application/rss+xml"/><item><title>Svelte: Warn user when caps lock is active</title><link>https://knrdl.github.io/posts/svelte-caps-lock/</link><pubDate>Tue, 17 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-caps-lock/</guid><description>&lt;p>Useful when webpage contains password inputs&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">script&lt;/span> &lt;span style="color:#50fa7b">lang&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;ts&amp;#34;&lt;/span>&amp;gt;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">let&lt;/span> warnCapsLockOn&lt;span style="color:#ff79c6">:&lt;/span> &lt;span style="color:#ff79c6">boolean&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">false&lt;/span>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sun, 11 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/html5/index.xml" rel="self" type="application/rss+xml"/><item><title>The magic world of HTML inputs</title><link>https://knrdl.github.io/posts/html5-input-elements/</link><pubDate>Sun, 11 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/html5-input-elements/</guid><description>&lt;p>The HTML &lt;code>input&lt;/code> element is the principal construct when it comes to site local interactivity from user provided data on the web. Here are my 5 cents to the topic.&lt;/p>
+&lt;h2 id="button-tag" class="paragraph-header">Button Tag &lt;a
+href="#button-tag">&lt;/a>&lt;/h2>
+&lt;p>There is a &lt;code>&amp;lt;input type=&amp;quot;button&amp;quot;&amp;gt;&lt;/code>. However, it only allows unformatted text as button content. Use &lt;code>&amp;lt;button type=&amp;quot;button&amp;quot;&amp;gt;&lt;/code> instead. The &lt;code>type=&amp;quot;button&amp;quot;&lt;/code> might seems redundant, but it prevents browsers from interpreting the button as &lt;code>type=&amp;quot;submit&amp;quot;&lt;/code> if there is only one button in a &lt;code>&amp;lt;form&amp;gt;&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;button&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;simple button&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">button&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;button&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">span&lt;/span> &lt;span style="color:#50fa7b">style&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;color:orange&amp;#34;&lt;/span>&amp;gt;styled button&amp;lt;/&lt;span style="color:#ff79c6">span&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">button&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;input type="button" value="simple button">
+&lt;button type="button">
+&lt;span style="color:orange">styled button&lt;/span>
+&lt;/button>
+&lt;h2 id="example-values-are-no-placeholders" class="paragraph-header">Example values are no placeholders! &lt;a
+href="#example-values-are-no-placeholders">&lt;/a>&lt;/h2>
+&lt;p>Providing the attribute &lt;code>placeholder&lt;/code> is a good idea. But it&amp;rsquo;s easy for users to mistake placeholders for actual values. For example: What is the selected limit value here?&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>Wrong: &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;number&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">placeholder&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;100&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Correct with default: &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;number&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">placeholder&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;limit&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;100&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Correct without default: &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;number&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">placeholder&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;limit&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div>Wrong: &lt;input type="number" placeholder="100" value="">&lt;/div>
+&lt;div>Correct with default: &lt;input type="number" placeholder="limit" value="100">&lt;/div>
+&lt;div>Correct without default: &lt;input type="number" placeholder="limit" value="">&lt;/div>
+&lt;blockquote>
+&lt;p class="info">Using actual values as placeholders is only a good idea, if the chosen value is always the default value. If there is no default, don&amp;rsquo;t misuse an example value as a placeholder!&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="use-the-system-picker" class="paragraph-header">Use the system picker &lt;a
+href="#use-the-system-picker">&lt;/a>&lt;/h2>
+&lt;p>Often the first idea to create date or color pickers is to use one of the dozen available npm-modules. But these solutions offer no system integration and tend to be hacky or misfitting on mobile screens. Instead, the html5 elements provide quite an acceptable user experience on all modern devices.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>Date input: &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;date&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;2022-01-01&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Time input: &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;time&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;14:00&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Color input: &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;color&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;#123456&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div>Date input: &lt;input type="date" value="2022-01-01">&lt;/div>
+&lt;div>Time input: &lt;input type="time" value="03:00">&lt;/div>
+&lt;div>Color input: &lt;input type="color" value="#123456">&lt;/div>
+&lt;p>It&amp;rsquo;s even possible to use the picker dialog without the corresponding input field:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">button&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;button&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">onclick&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;document.getElementById(&amp;#39;date-input&amp;#39;).showPicker()&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;date&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">style&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;position: absolute; visibility: hidden;&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">id&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;date-input&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 📆 Select a date
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">button&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;button type="button" onclick="document.getElementById('date-input').showPicker()">
+&lt;input type="date" style="position: absolute; visibility: hidden;" id="date-input">
+📆 Select a date
+&lt;/button>
+&lt;h2 id="autocomplete" class="paragraph-header">Autocomplete &lt;a
+href="#autocomplete">&lt;/a>&lt;/h2>
+&lt;p>Autocompleting text is pretty easy as well. However, if more sophisticated suggestions are required (formatted text, images, &amp;hellip;) then you will have to build it on your own.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">list&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;autocomplete-values&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">placeholder&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;Search a location&amp;#34;&lt;/span>&amp;gt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">function&lt;/span> checkCapsLock(e&lt;span style="color:#ff79c6">:&lt;/span> KeyboardEvent) {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">datalist&lt;/span> &lt;span style="color:#50fa7b">id&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;autocomplete-values&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">option&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;Berlin&amp;#34;&lt;/span>&amp;gt;Berlin&amp;lt;/&lt;span style="color:#ff79c6">option&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">option&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;Hamburg&amp;#34;&lt;/span>&amp;gt;Hamburg&amp;lt;/&lt;span style="color:#ff79c6">option&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">option&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;Munich&amp;#34;&lt;/span>&amp;gt;Munich&amp;lt;/&lt;span style="color:#ff79c6">option&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">datalist&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;input list="autocomplete-values" placeholder="Search a location">
+&lt;datalist id="autocomplete-values">
+&lt;option value="Berlin">Berlin&lt;/option>
+&lt;option value="Hamburg">Hamburg&lt;/option>
+&lt;option value="Munich">Munich&lt;/option>
+&lt;/datalist>
+&lt;blockquote>
+&lt;p class="warning">Old browsers might perform a startswith-search instead of a contains-search to provide completion results!&lt;/p>
+&lt;/blockquote>
+&lt;p>Autocomplete suggestions can be updated dynamically. With Svelte it might look like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-svelte" data-lang="svelte">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">datalist&lt;/span> &lt;span style="color:#50fa7b">id&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;list-id&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#ff79c6">#each&lt;/span> items &lt;span style="color:#ff79c6">as&lt;/span> item}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">option&lt;/span> &lt;span style="color:#50fa7b">value&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>{item}&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&amp;gt;{item}&amp;lt;/&lt;span style="color:#ff79c6">option&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#ff79c6">/each&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">datalist&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="take-advantage-of-semantics" class="paragraph-header">Take advantage of semantics &lt;a
+href="#take-advantage-of-semantics">&lt;/a>&lt;/h2>
+&lt;p>HTML is a semantic markup language. While &lt;code>&amp;lt;input type=&amp;quot;text&amp;quot;&amp;gt;&lt;/code> works, it&amp;rsquo;s sometimes not the best fit:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>&amp;lt;input type=&amp;quot;password&amp;quot; autocomplete=&amp;quot;new-password&amp;quot;&amp;gt;&lt;/code> allows the browser to generate and store secure passwords&lt;/li>
+&lt;li>&lt;code>&amp;lt;input type=&amp;quot;password&amp;quot; autocomplete=&amp;quot;current-password&amp;quot;&amp;gt;&lt;/code> allows the browser to autofill a stored password&lt;/li>
+&lt;li>&lt;code>&amp;lt;input type=&amp;quot;tel&amp;quot;&amp;gt;&lt;/code> allows the browser to display a phone number keypad&lt;/li>
+&lt;li>&lt;code>&amp;lt;input type=&amp;quot;search&amp;quot;&amp;gt;&lt;/code> allows the user to define a custom keyword as additional search engine for the browser&lt;/li>
+&lt;li>&amp;hellip;&lt;/li>
+&lt;/ul>
+&lt;p>Use labels to combine input description and control element:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">label&lt;/span>&amp;gt;Select a value:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;range&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">label&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;label>Select a value:
+&lt;input type="range">
+&lt;/label>&lt;/p>
+&lt;h2 id="input-validation" class="paragraph-header">Input Validation &lt;a
+href="#input-validation">&lt;/a>&lt;/h2>
+&lt;h3 id="1-define-constraints" class="paragraph-header">1. Define Constraints &lt;a
+href="#1-define-constraints">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">form&lt;/span> &lt;span style="color:#50fa7b">class&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;validate&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;email&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">required&lt;/span> &lt;span style="color:#50fa7b">pattern&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;[^@]+@\w+\.\w+&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;url&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">required&lt;/span> &lt;span style="color:#50fa7b">pattern&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;^https?://.+&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;text&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">required&lt;/span> &lt;span style="color:#50fa7b">minlength&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;3&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">maxlength&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;8&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">pattern&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;\w+&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;number&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">required&lt;/span> &lt;span style="color:#50fa7b">min&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;0&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">max&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;1000&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">form&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="2-visual-feedback" class="paragraph-header">2. Visual Feedback &lt;a
+href="#2-visual-feedback">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">form&lt;/span>.&lt;span style="color:#50fa7b">validate&lt;/span> &lt;span style="color:#ff79c6">input&lt;/span>:invalid {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">border&lt;/span>: &lt;span style="color:#bd93f9">2&lt;/span>&lt;span style="color:#8be9fd">px&lt;/span> &lt;span style="color:#ff79c6">solid&lt;/span> &lt;span style="color:#ff79c6">red&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">form&lt;/span>.&lt;span style="color:#50fa7b">validate&lt;/span> &lt;span style="color:#ff79c6">input&lt;/span>:valid {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">border&lt;/span>: &lt;span style="color:#bd93f9">2&lt;/span>&lt;span style="color:#8be9fd">px&lt;/span> &lt;span style="color:#ff79c6">solid&lt;/span> &lt;span style="color:#ff79c6">black&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">style&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Keep in mind that controls like &lt;code>&amp;lt;textare&amp;gt;&lt;/code> or &lt;code>&amp;lt;select&amp;gt;&lt;/code> also use the pseudo-selectors &lt;code>:valid&lt;/code> and &lt;code>:invalid&lt;/code>. They can be combined with e.g. &lt;code>:required&lt;/code> or &lt;code>:focus&lt;/code>.&lt;/p>
+&lt;h3 id="3-provide-custom-error-messages" class="paragraph-header">3. Provide custom error messages &lt;a
+href="#3-provide-custom-error-messages">&lt;/a>&lt;/h3>
+&lt;p>Either via
+&lt;a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#validating_forms_using_javascript" target="_blank" rel="noopener noreferrer">JavaScript&lt;/a>
+or via
+&lt;a href="https://css-tricks.com/snippets/css/form-validation-styling-on-input-focus/" target="_blank" rel="noopener noreferrer">CSS&lt;/a>
+.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">Clientside form validation is an improvement to the user experience but no security measure. All user provided data must be sanitized and strictly validated serverside.&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="multimedia" class="paragraph-header">Multimedia &lt;a
+href="#multimedia">&lt;/a>&lt;/h2>
+&lt;p>The file picker &lt;code>&amp;lt;input type=&amp;quot;file&amp;quot;&amp;gt;&lt;/code> can be used to take photos or videos on mobile devices:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-html" data-lang="html">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;file&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">onchange&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;addPhotos(this.files)&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">accept&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;image/*&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">multiple&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;multiple&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">input&lt;/span> &lt;span style="color:#50fa7b">type&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;file&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">onchange&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;addVideos(this.files)&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">accept&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;video/*&amp;#34;&lt;/span> &lt;span style="color:#50fa7b">multiple&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;multiple&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="foobar" class="paragraph-header">Foobar &lt;a
+href="#foobar">&lt;/a>&lt;/h2>
+&lt;p>&lt;code>&amp;lt;input type=&amp;quot;image&amp;quot;&amp;gt;&lt;/code> is much like &lt;code>&amp;lt;button type=&amp;quot;submit&amp;quot;&amp;gt;&lt;/code>, except that it also transmits the xy coordinates where the user clicked on the image. This could be used e.g. to zoom in on a geo map &lt;em>without any javascript&lt;/em>. Click on the image below and watch the url parameter.&lt;/p>
+&lt;form>
+&lt;input type="image" src="https://tile.openstreetmap.org/11/1098/674.png" width="256" height="256">
+&lt;/form>
+&amp;copy; OpenStreetMap contributors</description></item><item><title>Svelte: Warn user when caps lock is active</title><link>https://knrdl.github.io/posts/svelte-caps-lock/</link><pubDate>Tue, 17 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-caps-lock/</guid><description>&lt;p>Useful when webpage contains password inputs&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-svelte" data-lang="svelte">&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">script&lt;/span> &lt;span style="color:#50fa7b">lang&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;ts&amp;#34;&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">let&lt;/span> warnCapsLockOn: &lt;span style="color:#8be9fd">boolean&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">function&lt;/span> checkCapsLock(e: &lt;span style="color:#8be9fd">KeyboardEvent&lt;/span>) {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> warnCapsLockOn &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">!!&lt;/span>e.getModifierState(&lt;span style="color:#f1fa8c">&amp;#34;CapsLock&amp;#34;&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;/&lt;span style="color:#ff79c6">script&lt;/span>&amp;gt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">svelte:body&lt;/span> &lt;span style="color:#50fa7b">on:keyup&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">{checkCapsLock}/&lt;/span>&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;&lt;span style="color:#ff79c6">svelte:body&lt;/span> &lt;span style="color:#50fa7b">on:keyup&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>{checkCapsLock}&lt;span style="color:#f1fa8c">/&lt;/span>&amp;gt;
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{#if warnCapsLockOn}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{&lt;span style="color:#ff79c6">#if&lt;/span> warnCapsLockOn}
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &amp;lt;&lt;span style="color:#ff79c6">div&lt;/span> &lt;span style="color:#50fa7b">class&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;text-danger&amp;#34;&lt;/span>&amp;gt;Attention, caps lock on!&amp;lt;/&lt;span style="color:#ff79c6">div&lt;/span>&amp;gt;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{/if}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>{&lt;span style="color:#ff79c6">/if&lt;/span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
