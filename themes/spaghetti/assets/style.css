@@ -7,10 +7,10 @@
     --border: 0.1rem solid hsl(0, 0%, 33%);
 
     /* light theme color */
-    --light-background: #fcfcfc;
+    --light-background: #e0e9e9;
     --light-link-color: #37a681;
     --light-link-visited-color: #551a8b;
-    --light-font-color: black;
+    --light-font-color: #333;
     --light-inline-code-color: #eedd82;
 
     /* dark theme colors */
@@ -65,7 +65,7 @@ body {
     margin: 2rem auto;
     padding: 0 1rem;
     font-size: 1rem;
-    font-family: menlo, dejavu sans mono, courier new, monospace, serif;
+    font-family: sans-serif;
     text-rendering: optimizeLegibility;
     line-height: 1.33em;
 }
@@ -90,8 +90,9 @@ header {
 
 .site-title {
     font-size: 2rem;
-    letter-spacing: 5px;
+    letter-spacing: 10px;
     font-family: 'Bungee Outline', monospace;
+    font-weight: bold;
 }
 
 .right-menu {
@@ -171,6 +172,11 @@ main {
     overflow: auto;
     padding: 0.8rem;
     margin: 0.5rem 0;
+    border-radius: .5rem;
+}
+
+.highlight pre > code > span {
+    line-height: 1.33em;
 }
 
 blockquote {
@@ -214,6 +220,7 @@ blockquote > p.info {
 
 .post-header .tags {
     opacity: .9;
+    font-family: monospace;
 }
 
 h1.tag-header, .post-header .tags {
@@ -259,9 +266,13 @@ footer {
     content: "¶";
 }
 
+.hashtag {
+    font-family: monospace;
+}
+
 .hashtag::before {
     content: "#";
-    padding-right: 2px;
+    padding-right: 1px;
 }
 
 article {
