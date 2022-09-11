@@ -5,7 +5,7 @@ theme = "spaghetti"
 enableGitInfo = true  # get lastmod date from git
 
 copyright = """Licensed under <a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0</a> |
-<a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo</a> theme by <a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19</a> |
+<a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo</a> theme inspired by <a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19</a> |
  Hosted by <a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github</a> (<a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy</a>)
 """
 

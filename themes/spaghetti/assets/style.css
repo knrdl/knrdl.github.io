@@ -4,7 +4,7 @@
 }
 
 :root {
-    --border: 0.1rem solid hsl(0, 0%, 33%);
+    --border: 0.2rem solid hsl(0, 0%, 33%);
 
     /* light theme color */
     --light-background: #e0e9e9;
@@ -188,6 +188,7 @@ blockquote > p {
     margin: 0;
     padding: 1rem;
     border: var(--border);
+    border-radius: .5rem;
 }
 
 blockquote > p.danger {

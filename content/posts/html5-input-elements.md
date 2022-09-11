@@ -142,8 +142,7 @@ Use labels to combine input description and control element:
 
 ## 2. Visual Feedback
 
-```html
-
+```html 
 <style>
     form.validate input:invalid {
         border: 2px solid red;

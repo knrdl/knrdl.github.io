@@ -58,6 +58,9 @@ The bigger gain is the safety of the container environment. The impact of config
 
 The cost of this approach is that there might be more docker networks needed than the 4096 possible ones. A config change allows to create more networks.
 
+> This is just an example! 4096 is a reasonable amount of networks. But if there is only a subspace of private class B addresses available or class C must be used, then things might look different. Per default max 256 docker networks can be produced in class C, which could be limiting. 
+> {.info }
+
 # Configuration
 
 In `/etc/docker/daemon.json` add:
