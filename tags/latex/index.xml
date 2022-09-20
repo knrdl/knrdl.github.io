@@ -6,8 +6,7 @@ However, the programmatic generation of pdf files can be a bit tricky. A renderi
 &lt;h2 id="office-suites" class="paragraph-header">Office Suites &lt;a
 href="#office-suites">&lt;/a>&lt;/h2>
 &lt;p>It&amp;rsquo;s pretty easy to generate a pdf file by using an office suite like LibreOffice or Google Docs. It&amp;rsquo;s even possible to automate this with a headless LibreOffice instance. But working with
-&lt;a href="https://de.wikipedia.org/wiki/OpenDocument" target="_blank" rel="noopener noreferrer">OpenDocument&lt;/a>
-files as templates for the pdf creation is not developer friendly (e.g. no git diffs &amp;hellip;). The implementation will be extra hard if the dynamic data also include complicated stuff like styling directives. On the other hand templates might be maintained in a WYSIWYG manner with user know software (basically just the office suite).&lt;/p>
+&lt;a href="https://de.wikipedia.org/wiki/OpenDocument" target="_blank" rel="noopener noreferrer">OpenDocument&lt;/a> files as templates for the pdf creation is not developer friendly (e.g. no git diffs &amp;hellip;). The implementation will be extra hard if the dynamic data also include complicated stuff like styling directives. On the other hand templates might be maintained in a WYSIWYG manner with user know software (basically just the office suite).&lt;/p>
 &lt;h2 id="programmatic-drawing" class="paragraph-header">Programmatic drawing &lt;a
 href="#programmatic-drawing">&lt;/a>&lt;/h2>
 &lt;p>Drawing and writing elements programmatically on the pdf canvas is a pragmatic approach. The template is just a regular pdf file with some blanks. While this approach definitely works for simple documents, it gets harder with increasing document complexity. For example necessary line breaks and text alignments are easy to get wrong. In the long run a more sophisticated approach will be easier to handle.&lt;/p>
@@ -27,7 +26,5 @@ href="#webbrowsers">&lt;/a>&lt;/h2>
 &lt;h2 id="pseudo-webbrowsers" class="paragraph-header">Pseudo Webbrowsers &lt;a
 href="#pseudo-webbrowsers">&lt;/a>&lt;/h2>
 &lt;p>Full-featured browser engines like firefox and chromium are powerful but (relatively) slow. There are engines which only implement a subset of the web standards (e.g. only HTML4 with some CSS3 rules) but have a significant higher throughput and less resource usage. Examples are
-&lt;a href="https://weasyprint.org/" target="_blank" rel="noopener noreferrer">WeasyPrint&lt;/a>
-and
-&lt;a href="https://xhtml2pdf.readthedocs.io/" target="_blank" rel="noopener noreferrer">xhtml2pdf&lt;/a>
-. The downside of this approach is that due to the non-standard conforming behaviour each engine interprets the html and css rules differently. So the templates will not be portable. It might also be difficult to figure out how the engine actually interprets positioning and styling rules.&lt;/p></description></item></channel></rss>
+&lt;a href="https://weasyprint.org/" target="_blank" rel="noopener noreferrer">WeasyPrint&lt;/a> and
+&lt;a href="https://xhtml2pdf.readthedocs.io/" target="_blank" rel="noopener noreferrer">xhtml2pdf&lt;/a>. The downside of this approach is that due to the non-standard conforming behaviour each engine interprets the html and css rules differently. So the templates will not be portable. It might also be difficult to figure out how the engine actually interprets positioning and styling rules.&lt;/p></description></item></channel></rss>

@@ -6,8 +6,7 @@ json api but also to serve static files.&lt;/p>
 href="#setup">&lt;/a>&lt;/h2>
 &lt;p>Arduino IDE → File → Preferences → Additional Board Manager
 URLs:
-&lt;a href="http://arduino.esp8266.com/stable/package_esp8266com_index.json" target="_blank" rel="noopener noreferrer">http://arduino.esp8266.com/stable/package_esp8266com_index.json&lt;/a>
-&lt;/p>
+&lt;a href="http://arduino.esp8266.com/stable/package_esp8266com_index.json" target="_blank" rel="noopener noreferrer">http://arduino.esp8266.com/stable/package_esp8266com_index.json&lt;/a>&lt;/p>
 &lt;h2 id="connect-to-wifi" class="paragraph-header">Connect to Wifi &lt;a
 href="#connect-to-wifi">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;ESP8266WiFi.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">
@@ -182,8 +181,7 @@ href="#setup-1">&lt;/a>&lt;/h3>
 &lt;p>To flash files to the arduino an additional library for Arduino IDE is required:&lt;/p>
 &lt;ol>
 &lt;li>
-&lt;a href="https://github.com/earlephilhower/arduino-esp8266littlefs-plugin" target="_blank" rel="noopener noreferrer">https://github.com/earlephilhower/arduino-esp8266littlefs-plugin&lt;/a>
-&lt;/li>
+&lt;a href="https://github.com/earlephilhower/arduino-esp8266littlefs-plugin" target="_blank" rel="noopener noreferrer">https://github.com/earlephilhower/arduino-esp8266littlefs-plugin&lt;/a>&lt;/li>
 &lt;li>unpack to &lt;code>~/Arduino/tools/ESP8266LittleFS/tool/esp8266littlefs.jar&lt;/code>&lt;/li>
 &lt;li>Restart Arduino IDE&lt;/li>
 &lt;li>In Arduino IDE: Tools → ESP8266 Little FS Data Upload&lt;/li>

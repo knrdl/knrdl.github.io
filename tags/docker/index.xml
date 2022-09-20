@@ -123,8 +123,7 @@ href="#configuration">&lt;/a>&lt;/h2>
 &lt;li>Relevant git commits are tagged as versions, e.g. &lt;code>v3.2.1&lt;/code>&lt;/li>
 &lt;li>The corresponding docker image gets tagged as &lt;code>3.2.1&lt;/code>. If there are multiple image flavours, maybe also &lt;code>3.2.1-alpine&lt;/code> or &lt;code>v3.2.1-slim&lt;/code>&lt;/li>
 &lt;li>
-&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">Semantic Versioning&lt;/a>
-is also applicable: In addition to the image tag &lt;code>3.2.1&lt;/code>, the tags &lt;code>3.2&lt;/code> and &lt;code>3&lt;/code> should also be assigned, if &lt;code>3.2.1&lt;/code> is the newest version for both version series.&lt;/li>
+&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">Semantic Versioning&lt;/a> is also applicable: In addition to the image tag &lt;code>3.2.1&lt;/code>, the tags &lt;code>3.2&lt;/code> and &lt;code>3&lt;/code> should also be assigned, if &lt;code>3.2.1&lt;/code> is the newest version for both version series.&lt;/li>
 &lt;li>The image created from the newest git commit tag (the newest version) must also be tagged as &lt;code>latest&lt;/code>&lt;/li>
 &lt;li>Docker images without associated git commit tag can be tagged as &lt;code>edge&lt;/code> (convention) or something like &lt;code>unstable&lt;/code>, &lt;code>nightly&lt;/code> etc.&lt;/li>
 &lt;/ul>
@@ -140,8 +139,7 @@ is also applicable: In addition to the image tag &lt;code>3.2.1&lt;/code>, the t
 &lt;li>Produces many tagged images =&amp;gt; Docker Image Tag Deletion Policy must be enforced&lt;/li>
 &lt;li>Tags will only be sortable by their creation date (might be wrong in case of manual intervention)&lt;/li>
 &lt;li>It&amp;rsquo;s hard to know which tags bring in small or big changes (missing
-&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">semantic versioning&lt;/a>
-)&lt;/li>
+&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">semantic versioning&lt;/a>)&lt;/li>
 &lt;/ul>
 &lt;/li>
 &lt;li>Strategy is only useful if there is no software versioning scheme in place and also git push&amp;rsquo;s to the main branch are not too frequent.&lt;/li>
@@ -223,8 +221,7 @@ href="#setup-project">&lt;/a>&lt;/h2>
 href="#development">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic">HOST&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>0.0.0.0 node:alpine npm run dev
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open
-&lt;a href="http://localhost:8080" target="_blank" rel="noopener noreferrer">localhost:8080&lt;/a>
-&lt;/p>
+&lt;a href="http://localhost:8080" target="_blank" rel="noopener noreferrer">localhost:8080&lt;/a>&lt;/p>
 &lt;blockquote>
 &lt;p class="info">Port 35729 is live reload websocket (optional)&lt;/p>
 &lt;/blockquote>

@@ -37,14 +37,12 @@ other source addresses than &lt;code>127.0.0.1&lt;/code>.&lt;/p>
 &lt;h3 id="use-case-2-tls-terminating-web-proxy-as-a-service" class="paragraph-header">Use case 2: TLS terminating web proxy as a service &lt;a
 href="#use-case-2-tls-terminating-web-proxy-as-a-service">&lt;/a>&lt;/h3>
 &lt;p>Client starts a http server on local machine on port 8000. That service will be available as
-&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer">https://server.tld&lt;/a>
-&lt;/p>
+&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer">https://server.tld&lt;/a>&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -R 8001:127.0.0.1:8000
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Processing order:&lt;/p>
 &lt;ol>
 &lt;li>Webbrowser (User Agent) requests
-&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer">https://server.tld&lt;/a>
-&lt;/li>
+&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer">https://server.tld&lt;/a>&lt;/li>
 &lt;li>Reaches a reverse proxy on port 443
 &lt;ul>
 &lt;li>does tls termination&lt;/li>

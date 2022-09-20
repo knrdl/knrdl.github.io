@@ -2,8 +2,7 @@
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
 Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 11 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/glusterfs/index.xml" rel="self" type="application/rss+xml"/><item><title>GlusterFs Setup</title><link>https://knrdl.github.io/posts/glusterfs-setup/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/glusterfs-setup/</guid><description>&lt;p>GlusterFs is a distributed storage layer based on
 the
-&lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>
-&lt;/p>
+&lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>&lt;/p>
 &lt;blockquote>
 &lt;p class="danger">GlusterFs works great for semi-static files, but not for databases like sqlite or postgres!&lt;/p>
 &lt;/blockquote>
