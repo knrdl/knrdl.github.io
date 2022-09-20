@@ -29,11 +29,16 @@ block = true
 unsafe = true
 
 [[menu.main]]
+name = "tags"
+url = "/tags/"
+weight = 1
+
+[[menu.main]]
 name = "github"
 url = "https://github.com/knrdl"
-weight = 1
+weight = 2
 
 [[menu.main]]
 name = "rss"
 url = "/index.xml"
-weight = 2
+weight = 3

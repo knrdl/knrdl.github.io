@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo</title>
+</head>
+<body>
+
+<form onsubmit="login(); return false">
+    <fieldset>
+        <legend>Login Dialog</legend>
+        <label>Password required:<br>
+            <input type=password required>
+        </label>
+        <em>Hint: Don't try "password"</em>
+        <p><input type=submit value=Login></p>
+    </fieldset>
+</form>
+
+</body>
+<script>
+    /** clientside hashing a password
+     * @param {string} password - as provided by user
+     * @param {string} salt - as base64 encoded
+     * @return {Promise<string>} - the hash value
+     */
+    async function hashPassword(password, salt) {
+        const passwordKey = await window.crypto.subtle.importKey(
+            "raw",
+            new TextEncoder().encode(password),
+            {name: "PBKDF2"},
+            false, // key should not be extractable
+            ["deriveBits"]
+        )
+        const hashBuffer = await window.crypto.subtle.deriveBits(
+            {"name": "PBKDF2", salt: base64ToArrayBuffer(salt), "iterations": 310_000, "hash": "SHA-256"},
+            passwordKey,
+            256
+        )
+        const hashArray = Array.from(new Uint8Array(hashBuffer))
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()
+    }
+
+    /** converts a base64 encoded string into an arraybuffer
+     * @param {string} base64text
+     * @return {ArrayBuffer}
+     */
+    function base64ToArrayBuffer(base64text) {
+        const bytes = new Uint8Array(base64text.length)
+        for (let i = 0; i < base64text.length; i++)
+            bytes[i] = base64text.charCodeAt(i)
+        return bytes.buffer
+    }
+
+    async function login() {
+        const password = document.querySelector('input[type=password]').value
+        const salt = 'ChangeTheSaltValueASAP=='
+        const hashValue = await hashPassword(password, salt)
+        const url = window.location.origin + window.location.pathname + '/' + hashValue
+        fetch(url).then(async res => {
+            if (res.ok)
+                window.location.replace(url)
+            else throw Error(await res.text())
+        }).catch(err => {
+            alert('Password wrong')  // todo: evaluate error msg
+        })
+    }
+
+
+</script>
+</html>

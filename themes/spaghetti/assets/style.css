@@ -118,6 +118,8 @@ h1, h2, h3 {
 h1 {
     font-size: 2rem;
     margin: 2.5rem 0 0.5rem 0;
+    text-align: left;
+    line-height: 1em;
 }
 
 h2 {
