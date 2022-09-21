@@ -1,0 +1,17 @@
+:root {
+    --border: 0.2rem solid hsl(0, 0%, 33%);
+
+    /* light theme color */
+    --light-background: #e0e9e9;
+    --light-link-color: #37a681;
+    --light-link-visited-color: #551a8b;
+    --light-font-color: #333;
+    --light-inline-code-color: #eedd82;
+
+    /* dark theme colors */
+    --dark-background: #282828;
+    --dark-link-color: #55ffc7;
+    --dark-link-visited-color: #ccf;
+    --dark-font-color: white;
+    --dark-inline-code-color: #eedd82
+}

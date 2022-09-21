@@ -7,8 +7,9 @@
       <nav class="right-menu">
 			    {{ with .Site.Menus.main }}
                     {{ range . }}
-                        <span class="menu-item">/<a href="{{ .URL | relURL }}" target="_blank"
-                                                    rel="noopener noreferrer">{{ .Name }}</a></span>
+                        <span class="menu-item"><a href="{{ .URL | relURL }}"
+                                                   {{ if strings.HasPrefix .URL "http" }} target="_blank" rel="noopener noreferrer"{{ end }}
+                            >{{ .Name }}</a></span>
                     {{ end }}
                 {{ end }}
 	    </nav>

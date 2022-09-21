@@ -27,7 +27,7 @@
     {{ end -}}
 
     <!-- CSS -->
-    {{ $css := resources.Match "*.css" | resources.Concat "style.css" | minify }}
+    {{ $css := resources.Match "*.css" | resources.Concat "styles.css" | minify }}
     {{ $secureCss := $css | resources.Fingerprint "sha256" }}
     <link rel="stylesheet" href="{{ $secureCss.Permalink }}" integrity="{{ $secureCss.Data.Integrity }}">
 </head>

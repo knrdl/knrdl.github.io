@@ -1,0 +1,161 @@
+.post-header {
+    padding-bottom: 1rem;
+}
+
+.highlight {
+    margin: 1.5rem 0;
+}
+
+.highlight pre {
+    border: var(--border);
+    overflow: auto;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border-radius: .5rem;
+}
+
+.highlight pre > code > span {
+    line-height: 1.33em;
+}
+
+blockquote {
+    margin: 1rem;
+    padding: 0;
+}
+
+blockquote > p {
+    margin: 0;
+    padding: 1rem;
+    border: var(--border);
+    border-radius: .5rem;
+}
+
+blockquote > p.danger {
+    border-color: #ff0707;
+}
+
+blockquote > p.warning {
+    border-color: #ffc107;
+}
+
+blockquote > p.info {
+    border-color: #0dcaf0;
+}
+
+.post-list ul {
+    list-style-type: none;
+}
+
+.post-list li {
+    margin: 0.5rem 0;
+}
+
+.post-header .lastmod, .post-header .pubdate, .post-header .tags {
+    font-family: monospace;
+}
+
+.post-header .lastmod {
+    opacity: .5;
+}
+
+.post-header > h1 {
+    margin-bottom: .5rem;
+}
+
+.post-header .tags {
+    opacity: .9;
+}
+
+h1.tag-header, .post-header .tags {
+    font-style: italic;
+}
+
+
+h1, h2, h3 {
+    padding: 0;
+}
+
+h1 {
+    font-size: 2rem;
+    margin: 2.5rem 0 0.5rem 0;
+    text-align: left;
+    line-height: 1em;
+}
+
+h2 {
+    font-size: 1.66rem;
+    margin: 2rem 0 0.5rem 0;
+}
+
+h3 {
+    font-size: 1.33rem;
+    margin: 1.4rem 0 0.5rem 0;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    padding: 1rem;
+    margin: 1rem auto;
+}
+
+code {
+    white-space: pre;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    padding: 2px;
+    margin: 1rem auto;
+}
+
+table td, table th {
+    vertical-align: top;
+    border: var(--border);
+    line-height: 1rem;
+    padding: 0.6rem;
+}
+
+.comments {
+    margin-top: 3rem;
+    margin-right: .5rem;
+    display: flex;
+    justify-content: flex-end;
+    font-size: smaller;
+}
+
+.comments a {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 10px;
+}
+
+.comments img {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+    max-height: 1.3em;
+}
+
+.paragraph-header a {
+    visibility: hidden;
+}
+
+.paragraph-header:hover a {
+    visibility: visible;
+}
+
+.paragraph-header:hover a::before {
+    content: "¶";
+}
+
+.hashtag {
+    font-family: monospace;
+}
+
+.hashtag::before {
+    content: "#";
+    padding-right: 1px;
+}

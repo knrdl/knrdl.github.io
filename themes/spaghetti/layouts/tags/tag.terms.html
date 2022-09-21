@@ -2,11 +2,11 @@
     <main>
         <h1 class="tag-header">{{ .Title | markdownify }}</h1>
 
-        <div class="post-list">
-            <ul>
-                {{ range sort .Pages "Title" }}
+        <div class="flex-center">
+            <ul class="tag-cloud">
+                {{ range .Data.Terms.Alphabetical }}
                     <li>
-                        <span class="post-title"><a href="{{ .Permalink }}" class="hashtag">{{ .Title }}</a></span>
+                        <a href="{{ .Page.Permalink }}" data-weight="{{ .Count }}" class="hashtag">{{ .Page.Title }}</a>
                     </li>
                 {{ end }}
             </ul>
