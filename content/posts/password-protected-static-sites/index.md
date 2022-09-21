@@ -3,6 +3,7 @@ title: "Password-protected resources on static-site webhosters"
 date: "2022-09-20"
 tags: [html5, webdev, webcrypto, websec, hashing]
 lang: "en"
+hackerNewsId: 32917169
 ---
 
 # Scenario
