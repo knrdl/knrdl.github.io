@@ -6,12 +6,12 @@ ul.tag-cloud {
     align-items: center;
     justify-content: center;
     line-height: 2.75rem;
-    max-width: 500px;
+    max-width: 550px;
 }
 
 ul.tag-cloud a {
     color: var(--color);
-    font-size: calc(var(--size) * 0.25rem + 0.7rem);
+    font-size: calc(var(--size) * 0.25rem + 1rem);
     display: block;
     padding: 0.125rem 0.25rem;
     position: relative;

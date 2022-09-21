@@ -6,7 +6,7 @@
             <ul class="tag-cloud">
                 {{ range .Data.Terms.Alphabetical }}
                     <li>
-                        <a href="{{ .Page.Permalink }}" data-weight="{{ .Count }}" class="hashtag">{{ .Page.Title }}</a>
+                        <a href="{{ .Page.Permalink }}" data-weight="{{ math.Min .Count 10 }}" class="hashtag">{{ .Page.Title }}</a>
                     </li>
                 {{ end }}
             </ul>
