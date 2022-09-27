@@ -1,6 +1,77 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>en on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in en on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 21 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker Registry Mirror</title><link>https://knrdl.github.io/posts/docker-registry-mirror/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-registry-mirror/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 27 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header">Approach &lt;a
+href="#approach">&lt;/a>&lt;/h2>
+&lt;p>Wireguard is a modern VPN protocol. Per default all nodes are treated equally, named peers. Let&amp;rsquo;s build a point-to-point connection:&lt;/p>
+&lt;ul>
+&lt;li>Client: Wireguard running, &lt;strong>no&lt;/strong> port opened&lt;/li>
+&lt;li>Server: Wireguard running, &lt;strong>one&lt;/strong> port opened&lt;/li>
+&lt;/ul>
+&lt;p>Wireguard uses UDP packets only. If an incoming request is invalid (wrong encryption key) then it will be dropped silently. Thereby additional security measures like fail2ban are not necessary.&lt;/p>
+&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
+href="#setup">&lt;/a>&lt;/h2>
+&lt;h3 id="1-installation" class="paragraph-header">1. Installation &lt;a
+href="#1-installation">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt install wireguard
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>A docker based installation is
+&lt;a href="https://docs.linuxserver.io/images/docker-wireguard" target="_blank" rel="noopener noreferrer">possible&lt;/a>. But as wireguard requires a separate kernel module, there are no isolation benefits.&lt;/p>
+&lt;h3 id="2-generate-keys" class="paragraph-header">2. Generate keys &lt;a
+href="#2-generate-keys">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Client:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wg genkey &amp;gt; client.key
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wg pubkey &amp;lt; client.key &amp;gt; client.pub
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Server:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wg genkey &amp;gt; server.key
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wg pubkey &amp;lt; server.key &amp;gt; server.pub
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-config-files" class="paragraph-header">3. Config files &lt;a
+href="#3-config-files">&lt;/a>&lt;/h3>
+&lt;p>On the client in &lt;code>/etc/wireguard/wg0.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Interface]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PrivateKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # client.key&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">Address&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.2/32&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">ListenPort&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">51822&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Peer]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PublicKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # server.pub&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">Endpoint&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">fqdn:51821 # public fqdn (domain) or static ip addr of the server&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">AllowedIPs&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.1/32&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PersistentKeepalive&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">25&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>On the server in &lt;code>/etc/wireguard/wg0.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Interface]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PrivateKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # server.key&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">Address&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.1/32&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">ListenPort&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">51821&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Peer]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PublicKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # client.pub&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">AllowedIPs&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.2/32&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PersistentKeepalive&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">25&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Wireguard won&amp;rsquo;t send any messages per default if there is no traffic. If both peers provide an &lt;code>Endpoint&lt;/code> in the config (Server - Server Setup), this works well. But in the presented setup keepalives are required for the client to contact the server. &lt;code>PersistentKeepalive = 25&lt;/code> will send a ping every 25sec through the tunnel.&lt;/p>
+&lt;h3 id="4-up-and-running" class="paragraph-header">4. Up and running &lt;a
+href="#4-up-and-running">&lt;/a>&lt;/h3>
+&lt;p>&lt;code>wg-quick&lt;/code> is a convenient wrapper around the &lt;code>wireguard&lt;/code> and &lt;code>ip&lt;/code> commands. It allows to configure wireguard tunnels in a declarative fashion. Config files are stored as &lt;code>/etc/wireguard/IFNAME.conf&lt;/code>.&lt;/p>
+&lt;p>Setup autostart on both hosts and check logs after startup:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> --now wg-quick@wg0.service
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo journalctl -u wg-quick@wg0.service
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-test-connection" class="paragraph-header">5. Test connection &lt;a
+href="#5-test-connection">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ping 192.168.7.2 &lt;span style="color:#6272a4"># on the server&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ping 192.168.7.1 &lt;span style="color:#6272a4"># on the client&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="6-restart-a-tunnel" class="paragraph-header">6. Restart a tunnel &lt;a
+href="#6-restart-a-tunnel">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>wg-quick down wg0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wg-quick up wg0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="usage" class="paragraph-header">Usage &lt;a
+href="#usage">&lt;/a>&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Server: bind a port to the wireguard tunnel address&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>docker run -it --rm -p 192.168.7.1:80:80 nginx:alpine
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Client: query a connection&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl 192.168.7.1:80
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="limitations" class="paragraph-header">Limitations &lt;a
+href="#limitations">&lt;/a>&lt;/h2>
+&lt;p>This wireguard setup is fairly simple. A tunneled client/server relation is realized.&lt;/p>
+&lt;p>However, there is no routing of container traffic through the tunnel in place. This would require additional network config on the server host.&lt;/p></description></item><item><title>Docker Registry Mirror</title><link>https://knrdl.github.io/posts/docker-registry-mirror/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-registry-mirror/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
 href="#concept">&lt;/a>&lt;/h2>
 &lt;p>A docker-registry stores docker-images, composed of:&lt;/p>
 &lt;ul>
