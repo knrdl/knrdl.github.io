@@ -1,6 +1,57 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>en on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in en on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 27 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header">Approach &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 03 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
+href="#problem">&lt;/a>&lt;/h2>
+&lt;p>SD (or MicroSD) Cards are cheap flash storage. Their lifetime is limited by the performable write operations. If their end of life is reached, they don&amp;rsquo;t work at all or read data unreliably.&lt;/p>
+&lt;p>A Raspberry Pi produces more IO operations than a typical digital camera (which SD Cards are conceptualized for). The load is mostly produced by writing:&lt;/p>
+&lt;ul>
+&lt;li>Temporary files in &lt;code>/tmp/&lt;/code>&lt;/li>
+&lt;li>Variable files in &lt;code>/var/&lt;/code>&lt;/li>
+&lt;li>The swap file in &lt;code>/var/swap&lt;/code>&lt;/li>
+&lt;li>Files in other application and user specific directories&lt;/li>
+&lt;/ul>
+&lt;p>It also depends on the usage of the Pi: e.g. compiling a big pile of software on the Pi is never a good idea in terms of SD Card lifetime.&lt;/p>
+&lt;p>It&amp;rsquo;s possible to run a Pi only with a SD Card for a long time. One of my Pi&amp;rsquo;s now runs successfully for more than 5 years that way. However, you can&amp;rsquo;t tell it beforehand.&lt;/p>
+&lt;h2 id="solution" class="paragraph-header">Solution &lt;a
+href="#solution">&lt;/a>&lt;/h2>
+&lt;p>So the solution is to reduce the IO operations performed against the SD Card. A simple attempt is to disable swapping: &lt;code>sudo systemctl disable --now dphys-swapfile&lt;/code>. A better alternative is moving write intense directories to an external drive. There are two options:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Option A&lt;/strong>: The Raspberry boots directly from a USB drive (e.g. USB thumb drive, SSD or HDD). No SD Card required.&lt;/li>
+&lt;li>&lt;strong>Option B&lt;/strong>: The Raspberry boots from the SD Card and mounts an external USB drive where the heavy disk IO is performed later on.&lt;/li>
+&lt;/ul>
+&lt;h3 id="option-a---fresh-installation" class="paragraph-header">Option A - Fresh installation &lt;a
+href="#option-a---fresh-installation">&lt;/a>&lt;/h3>
+&lt;p>This option is pretty easy to realize, just flash the OS image (e.g. Raspberry Pi OS, formerly known as Raspbian) to the USB drive. However, it might not work with all kinds of USB drives. Also, a cheap USB thumb drive might have the same problems as a SD Card. Therefore, a durable SSD should be used instead. An old HDD is also a valid alternative. But your Pi might crash if spinning up the HDD consumes more power than can be supplied.&lt;/p>
+&lt;h3 id="option-b---external-disk" class="paragraph-header">Option B - External disk &lt;a
+href="#option-b---external-disk">&lt;/a>&lt;/h3>
+&lt;p>This is useful if your Pi is already set up and running. The separation will split the filestorage into static files (stored on the SD Card) and dynamic files (stored on the USB drive).&lt;/p>
+&lt;p>You need to copy the dynamic files to the external drive. But first you should stop all running applications to prevent inconsistency when copying files.&lt;/p>
+&lt;p>Disable the swap:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo swapoff -a &lt;span style="color:#6272a4"># disable the swap&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cat /proc/swaps &lt;span style="color:#6272a4"># check that no swap is active&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Mount the external usb drive. In the example it has the Label &amp;ldquo;usb0&amp;rdquo;:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ls /dev/disk/by-label/usb0 &lt;span style="color:#6272a4"># check the device file exists&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/usb0 &lt;span style="color:#6272a4"># create the mountpoint&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount -o defaults /dev/disk/by-label/usb0 /media/usb0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy all directories with dynamic data (at least &lt;code>/tmp&lt;/code> and &lt;code>/var&lt;/code>):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cp -ar /tmp/ /media/usb0/tmp
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cp -ar /var/ /media/usb0/var
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p class="info">It&amp;rsquo;s optional to copy &lt;code>/tmp&lt;/code> as it only contains ephemeral data. But the directory must exist and have the correct permissions set!&lt;/p>
+&lt;/blockquote>
+&lt;p>Add to &lt;code>/etc/fstab&lt;/code> the new mount records:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>/dev/disk/by-label/usb0 /media/usb0 ext4 defaults 0 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/media/usb0/var /var none bind 0 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/media/usb0/tmp /tmp none bind 0 0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The external drive will be mounted to &lt;code>/media/usb0&lt;/code>. The directories &lt;code>/tmp&lt;/code> and &lt;code>/var&lt;/code> (dynamic data) will be pointed to the corresponding directories on the external device.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">The external drive is mounted with option &lt;code>defaults&lt;/code>. If the disk is not connected or cannot be read, the raspi will not boot! As a countermeasure the options &lt;code>defaults,nofail&lt;/code> could be used. But then the data will be written to the SD card in case of a disk failure. Inconsistent data would be the result.&lt;/p>
+&lt;/blockquote>
+&lt;p>Now reboot the Pi: &lt;code>sudo reboot&lt;/code>.&lt;/p>
+&lt;p>Check that everything is working:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>touch /tmp/fs.test
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"># should output the filepath&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item><item><title>A short evolution of Authentication and Sessions</title><link>https://knrdl.github.io/posts/evolution-authentication-sessions/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/evolution-authentication-sessions/</guid><description/></item><item><title>How to prevent CORS from being necessary</title><link>https://knrdl.github.io/posts/prevent-cors/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/prevent-cors/</guid><description/></item><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header">Approach &lt;a
 href="#approach">&lt;/a>&lt;/h2>
 &lt;p>Wireguard is a modern VPN protocol. Per default all nodes are treated equally, named peers. Let&amp;rsquo;s build a point-to-point connection:&lt;/p>
 &lt;ul>
@@ -131,7 +182,96 @@ href="#kaniko">&lt;/a>&lt;/h4>
 href="#operations">&lt;/a>&lt;/h2>
 &lt;p>The registry mirror might be part of the critical path for high availability. Make sure all hosts are provided with their docker-images before shutting it down for maintenance etc.&lt;/p>
 &lt;p>There is no authentication in place, anybody with access can download arbitrary images. Therefore, the registry mirror should only be exposed to the server&amp;rsquo;s network segment.&lt;/p>
-&lt;p>There is no storage limit per default and old blobs will not be pruned automatically. An attacker might crash the server by querying too many images. As countermeasure a storage quota should be applied. Also restarting the mirror container from time to time (e.g. patch-day server reboots) helps to reduce the storage usage.&lt;/p></description></item><item><title>Password-protected resources on static-site webhosters</title><link>https://knrdl.github.io/posts/password-protected-static-sites/</link><pubDate>Tue, 20 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/password-protected-static-sites/</guid><description>&lt;h2 id="scenario" class="paragraph-header">Scenario &lt;a
+&lt;p>There is no storage limit per default and old blobs will not be pruned automatically. An attacker might crash the server by querying too many images. As countermeasure a storage quota should be applied. Also restarting the mirror container from time to time (e.g. patch-day server reboots) helps to reduce the storage usage.&lt;/p></description></item><item><title>Postgres Custom Datatype</title><link>https://knrdl.github.io/posts/postgres-custom-datatype/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-custom-datatype/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
+href="#concept">&lt;/a>&lt;/h2>
+&lt;p>A docker-registry stores docker-images, composed of metadata (image names and tags) and blobs (actual image contents). The most famous public docker-registry is
+&lt;a href="https://hub.docker.com" target="_blank" rel="noopener noreferrer">DockerHub&lt;/a>. DockerHub applies a rate-limiting for downloading blobs. The fetching of metadata is not sanctioned. Therefore, a local docker-registry mirror can be used to circumvent DockerHub&amp;rsquo;s rate-limiting. This might also reduce the bandwidth usage of your ISP connection.&lt;/p>
+&lt;p>The docker-registry mirror will serve as a simple proxy server for metadata from upstream (e.g. DockerHub). If you retrieve a docker-image via the mirror the blobs are stored locally by the mirror. That way the mirror can serve as a cache for further requests. For example, when multiple servers deploy the same docker-image, only the first request will be a cache-miss. As the metadata are always fetched from upstream, there is no risk of serving outdated docker-images.&lt;/p>
+&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
+href="#setup">&lt;/a>&lt;/h2>
+&lt;h3 id="server" class="paragraph-header">Server &lt;a
+href="#server">&lt;/a>&lt;/h3>
+&lt;p>The registry mirror is a simple docker container:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">version&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;3.9&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">services&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">registry-mirror&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: registry:2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">hostname&lt;/span>: registry-mirror
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">environment&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">REGISTRY_PROXY_REMOTEURL&lt;/span>: https://registry-1.docker.io
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">networks&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - reverse_proxy_net &lt;span style="color:#6272a4"># just an example&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">deploy&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">resources&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">reservations&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">memory&lt;/span>: 16m
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">limits&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">memory&lt;/span>: 250m
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It should always be exposed via HTTPS to the clients, by a tls-terminating reverse-proxy. The registry-mirror runs http on port 5000.&lt;/p>
+&lt;p>Cached images can be listed via &lt;code>curl https://registry-mirror.example.org/v2/_catalog&lt;/code>.&lt;/p>
+&lt;h3 id="clients" class="paragraph-header">Clients &lt;a
+href="#clients">&lt;/a>&lt;/h3>
+&lt;h4 id="docker" class="paragraph-header">Docker &lt;a
+href="#docker">&lt;/a>&lt;/h4>
+&lt;blockquote>
+&lt;p class="warning">On the server which should execute the registry-mirror run &lt;code>docker pull registry:2&lt;/code> first, to prevent the chicken or egg problem.&lt;/p>
+&lt;/blockquote>
+&lt;p>To make Docker use the registry mirror, add to &lt;code>/etc/docker/daemon.json&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;registry-mirrors&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;https://registry-mirror.example.org&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then restart the docker daemon: &lt;code>sudo systemctl restart docker.service&lt;/code>&lt;/p>
+&lt;h4 id="podman" class="paragraph-header">Podman &lt;a
+href="#podman">&lt;/a>&lt;/h4>
+&lt;p>Add to &lt;code>$HOME/.config/containers/registries.conf&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[[registry.mirror]]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">location&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;registry-mirror.example.org&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="kaniko" class="paragraph-header">Kaniko &lt;a
+href="#kaniko">&lt;/a>&lt;/h4>
+&lt;p>To make Kaniko use the mirror, run it with the flag:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/kaniko/executor --registry-mirror&lt;span style="color:#ff79c6">=&lt;/span>registry-mirror.example.org ...
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="operations" class="paragraph-header">Operations &lt;a
+href="#operations">&lt;/a>&lt;/h2>
+&lt;p>The registry mirror might be part of the critical path for high availability. Make sure all hosts are provided with their docker-images before shutting it down for maintenance etc.&lt;/p>
+&lt;p>There is no authentication in place, anybody with access can download arbitrary images. Therefore, the registry mirror should only be exposed to the server&amp;rsquo;s network segment.&lt;/p>
+&lt;p>There is no storage limit per default and old blobs will not be pruned automatically. An attacker might crash the server by querying many images. As countermeasure a storage quota should be applied. Also restarting the mirror container from time to time (e.g. patch-day server reboots) helps to reduce storage usage.&lt;/p></description></item><item><title>Multi-Processing, Multi-Threading, Async: What's the difference?</title><link>https://knrdl.github.io/posts/multiprocessing-multithreading-async/</link><pubDate>Tue, 20 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/multiprocessing-multithreading-async/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">The problem &lt;a
+href="#the-problem">&lt;/a>&lt;/h2>
+&lt;p>In programming there is often a need to run things in parallel:&lt;/p>
+&lt;ul>
+&lt;li>Execution time is optimized if tasks run in parallel&lt;/li>
+&lt;li>A webserver needs to handle multiple requests simultaneously&lt;/li>
+&lt;li>If the program sends an email, this should not block other operations&lt;/li>
+&lt;li>&amp;hellip;&lt;/li>
+&lt;/ul>
+&lt;p>There are three different approaches for these requirements.&lt;/p>
+&lt;h2 id="multi-processing--multi-programming" class="paragraph-header">Multi Processing / Multi Programming &lt;a
+href="#multi-processing--multi-programming">&lt;/a>&lt;/h2>
+&lt;p>gitlab&amp;rsquo;, &amp;lsquo;docker&amp;rsquo;, &amp;lsquo;devops
+This is the typical use-case for batch jobs:&lt;/p>
+&lt;ul>
+&lt;li>convert a lot of images between formats&lt;/li>
+&lt;li>compress files&lt;/li>
+&lt;li>reproject a bunch of gis objects&lt;/li>
+&lt;li>convert the slides of a presentation into the pdf-format and concat them afterwards&lt;/li>
+&lt;/ul>
+&lt;p>A typical setup looks like this:&lt;/p>
+&lt;ul>
+&lt;li>one &lt;strong>manager&lt;/strong> process: coordinates the workers by distributing the tasks among them&lt;/li>
+&lt;li>one &lt;strong>worker&lt;/strong> process per logical cpu core: performs the supplied task and gets the next one from the manager when finished&lt;/li>
+&lt;/ul>
+&lt;p>To reduce overhead the manager might not supply single tasks to the workers, but small batches of tasks.&lt;/p>
+&lt;p>This concept is useful when there is no shared memory between the tasks, e.g. converting image #170 has no influence on the conversion of image #171 or #172. An implementation might use the process infrastructure as provided by the operating system.&lt;/p>
+&lt;h2 id="multi-threading" class="paragraph-header">Multi Threading &lt;a
+href="#multi-threading">&lt;/a>&lt;/h2>
+&lt;p>green threads&lt;/p>
+&lt;p>lock/release gil&lt;/p>
+&lt;h2 id="async-programming" class="paragraph-header">Async Programming &lt;a
+href="#async-programming">&lt;/a>&lt;/h2>
+&lt;p>go routines&lt;/p>
+&lt;p>rust tokio async executor&lt;/p></description></item><item><title>Password-protected resources on static-site webhosters</title><link>https://knrdl.github.io/posts/password-protected-static-sites/</link><pubDate>Tue, 20 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/password-protected-static-sites/</guid><description>&lt;h2 id="scenario" class="paragraph-header">Scenario &lt;a
 href="#scenario">&lt;/a>&lt;/h2>
 &lt;p>Some web hosters only serve static files and allow no config changes to the webserver. But maybe you want to provide files which are not intended for public view, for example sharing a file with a friend. Therefore, the best you can do is protecting files by giving them names which are hard to guess. Obviously these files should also not be linked somewhere publicly at all.&lt;/p>
 &lt;p>This concept can be expanded with a clientside-only authentication mechanism, as described next.&lt;/p>
@@ -1124,7 +1264,25 @@ href="#5-on-each-node">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>192.168.123.2 node1
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>192.168.123.3 node2
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>192.168.123.4 node3
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Cleanup bloated postgres index</title><link>https://knrdl.github.io/posts/postgres-bloated-index/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-bloated-index/</guid><description>&lt;h2 id="1-find-db-byte-sizes" class="paragraph-header">1. find db byte sizes &lt;a
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Rootless Docker as a Service</title><link>https://knrdl.github.io/posts/rootless-docker-as-a-service/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/rootless-docker-as-a-service/</guid><description>&lt;p>Sometimes access to a docker daemon on a remote host is needed, e.g. a developer without docker on local machine or a
+CI/CD pipeline to test docker image runtime behaviour.&lt;/p>
+&lt;h2 id="exposing-the-docker-socket-of-the-remote-host" class="paragraph-header">Exposing the docker socket of the remote host &lt;a
+href="#exposing-the-docker-socket-of-the-remote-host">&lt;/a>&lt;/h2>
+&lt;p>This could be done via TCP directly by docker, or indirectly via tcp socket to unix socket redirect:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>socat TODO
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The lack of authentication means everybody on the network can get trivially root access on the host (via starting a
+docker container). As a countermeasure the tcp socket can be tunneled via e.g. SSH:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># server:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>socat TODO
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># client:&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ssh TODO
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>But this still means giving the client full root access to the host&lt;/p>
+&lt;h2 id="rootless-docker-in-a-docker-container" class="paragraph-header">Rootless Docker in a Docker container &lt;a
+href="#rootless-docker-in-a-docker-container">&lt;/a>&lt;/h2>
+&lt;p>Docker in Docker (DinD) is nothing new. But since v19.03 docker supports rootless mode (stable in
+v20.10). So an unprivileged container can be started&lt;/p>
+&lt;p>todo: problem container außen ist immernoch priviligiert&lt;/p></description></item><item><title>Cleanup bloated postgres index</title><link>https://knrdl.github.io/posts/postgres-bloated-index/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-bloated-index/</guid><description>&lt;h2 id="1-find-db-byte-sizes" class="paragraph-header">1. find db byte sizes &lt;a
 href="#1-find-db-byte-sizes">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">SELECT&lt;/span> datname, pg_size_pretty(pg_database_size(datname))
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">FROM&lt;/span> pg_database
@@ -1147,7 +1305,7 @@ href="#conclusion">&lt;/a>&lt;/h2>
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then find all problematic interfaces on the host and delete them:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ip -d link show | grep vx | grep DOWN
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ip link delete vx-001095-owhr8 &lt;span style="color:#6272a4"># for each entry&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now redeploying should work!&lt;/p></description></item><item><title>Svelte without node.js installation</title><link>https://knrdl.github.io/posts/svelte-without-node-installation/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-without-node-installation/</guid><description>&lt;p>Docker to the rescue!&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now redeploying should work!&lt;/p></description></item><item><title>Svelte without node.js installation</title><link>https://knrdl.github.io/posts/svelte-without-node-installation/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-without-node-installation/</guid><description>&lt;p>Docker (or podman) to the rescue!&lt;/p>
 &lt;h2 id="setup-project" class="paragraph-header">Setup project &lt;a
 href="#setup-project">&lt;/a>&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> node:alpine npm init
@@ -1166,7 +1324,7 @@ href="#custom-bashrc-shortcut">&lt;/a>&lt;/h2>
 &lt;h3 id="more-general-approach" class="paragraph-header">More general approach &lt;a
 href="#more-general-approach">&lt;/a>&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> docker-dir&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p>The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>todo: podman&lt;/p></description></item><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p>The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
 image layer blobs will be kept as orphans. To clean those up run:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="automation" class="paragraph-header">Automation &lt;a
