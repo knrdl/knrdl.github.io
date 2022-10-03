@@ -1,61 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>sql on knrdlog</title><link>https://knrdl.github.io/tags/sql/</link><description>Recent content in sql on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 21 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/sql/index.xml" rel="self" type="application/rss+xml"/><item><title>Postgres Custom Datatype</title><link>https://knrdl.github.io/posts/postgres-custom-datatype/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-custom-datatype/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
-href="#concept">&lt;/a>&lt;/h2>
-&lt;p>A docker-registry stores docker-images, composed of metadata (image names and tags) and blobs (actual image contents). The most famous public docker-registry is
-&lt;a href="https://hub.docker.com" target="_blank" rel="noopener noreferrer">DockerHub&lt;/a>. DockerHub applies a rate-limiting for downloading blobs. The fetching of metadata is not sanctioned. Therefore, a local docker-registry mirror can be used to circumvent DockerHub&amp;rsquo;s rate-limiting. This might also reduce the bandwidth usage of your ISP connection.&lt;/p>
-&lt;p>The docker-registry mirror will serve as a simple proxy server for metadata from upstream (e.g. DockerHub). If you retrieve a docker-image via the mirror the blobs are stored locally by the mirror. That way the mirror can serve as a cache for further requests. For example, when multiple servers deploy the same docker-image, only the first request will be a cache-miss. As the metadata are always fetched from upstream, there is no risk of serving outdated docker-images.&lt;/p>
-&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
-href="#setup">&lt;/a>&lt;/h2>
-&lt;h3 id="server" class="paragraph-header">Server &lt;a
-href="#server">&lt;/a>&lt;/h3>
-&lt;p>The registry mirror is a simple docker container:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">version&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;3.9&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">services&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">registry-mirror&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: registry:2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">hostname&lt;/span>: registry-mirror
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">environment&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">REGISTRY_PROXY_REMOTEURL&lt;/span>: https://registry-1.docker.io
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">networks&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - reverse_proxy_net &lt;span style="color:#6272a4"># just an example&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">deploy&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">resources&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">reservations&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">memory&lt;/span>: 16m
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">limits&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">memory&lt;/span>: 250m
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It should always be exposed via HTTPS to the clients, by a tls-terminating reverse-proxy. The registry-mirror runs http on port 5000.&lt;/p>
-&lt;p>Cached images can be listed via &lt;code>curl https://registry-mirror.example.org/v2/_catalog&lt;/code>.&lt;/p>
-&lt;h3 id="clients" class="paragraph-header">Clients &lt;a
-href="#clients">&lt;/a>&lt;/h3>
-&lt;h4 id="docker" class="paragraph-header">Docker &lt;a
-href="#docker">&lt;/a>&lt;/h4>
-&lt;blockquote>
-&lt;p class="warning">On the server which should execute the registry-mirror run &lt;code>docker pull registry:2&lt;/code> first, to prevent the chicken or egg problem.&lt;/p>
-&lt;/blockquote>
-&lt;p>To make Docker use the registry mirror, add to &lt;code>/etc/docker/daemon.json&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;registry-mirrors&amp;#34;&lt;/span>: [
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;https://registry-mirror.example.org&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then restart the docker daemon: &lt;code>sudo systemctl restart docker.service&lt;/code>&lt;/p>
-&lt;h4 id="podman" class="paragraph-header">Podman &lt;a
-href="#podman">&lt;/a>&lt;/h4>
-&lt;p>Add to &lt;code>$HOME/.config/containers/registries.conf&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[[registry.mirror]]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">location&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;registry-mirror.example.org&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="kaniko" class="paragraph-header">Kaniko &lt;a
-href="#kaniko">&lt;/a>&lt;/h4>
-&lt;p>To make Kaniko use the mirror, run it with the flag:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/kaniko/executor --registry-mirror&lt;span style="color:#ff79c6">=&lt;/span>registry-mirror.example.org ...
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="operations" class="paragraph-header">Operations &lt;a
-href="#operations">&lt;/a>&lt;/h2>
-&lt;p>The registry mirror might be part of the critical path for high availability. Make sure all hosts are provided with their docker-images before shutting it down for maintenance etc.&lt;/p>
-&lt;p>There is no authentication in place, anybody with access can download arbitrary images. Therefore, the registry mirror should only be exposed to the server&amp;rsquo;s network segment.&lt;/p>
-&lt;p>There is no storage limit per default and old blobs will not be pruned automatically. An attacker might crash the server by querying many images. As countermeasure a storage quota should be applied. Also restarting the mirror container from time to time (e.g. patch-day server reboots) helps to reduce storage usage.&lt;/p></description></item><item><title>Postgres: Create enum if not exists</title><link>https://knrdl.github.io/posts/postgres-enum/</link><pubDate>Tue, 17 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-enum/</guid><description>&lt;p>In postgres there is nothing like &lt;code>create table if not exists&lt;/code> for enums. Workaround:&lt;/p>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 17 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/sql/index.xml" rel="self" type="application/rss+xml"/><item><title>Postgres: Create enum if not exists</title><link>https://knrdl.github.io/posts/postgres-enum/</link><pubDate>Tue, 17 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/postgres-enum/</guid><description>&lt;p>In postgres there is nothing like &lt;code>create table if not exists&lt;/code> for enums. Workaround:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sql" data-lang="sql">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">DO&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$$
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">BEGIN&lt;/span>
