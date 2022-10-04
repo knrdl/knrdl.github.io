@@ -12,6 +12,9 @@ copyright = """Licensed under <a href='https://creativecommons.org/publicdomain/
 [frontmatter]
 lastmod = ['lastmod', ':git', 'date']
 
+[minify]
+minifyOutput = true
+
 [params]
 author = "knrdl"
 description = "notes to self"
