@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>knrdlog</title><link>https://knrdl.github.io/</link><description>Recent content on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 03 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Explaining Database Connection Pooling</title><link>https://knrdl.github.io/posts/db-connection-pooling/</link><pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db-connection-pooling/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">the problem &lt;a
+href="#the-problem">&lt;/a>&lt;/h2>
+&lt;p>Connection Pooling is an often overlooked concept when it comes to databases. An inexperienced developer might implement an API backend like this:&lt;/p>
+&lt;ol>
+&lt;li>HTTP Request comes in&lt;/li>
+&lt;li>Open connection to the database&lt;/li>
+&lt;li>Execute SQL command and read response&lt;/li>
+&lt;li>Close connection to the database (also often forgotten)&lt;/li>
+&lt;li>Send HTTP response&lt;/li>
+&lt;/ol>
+&lt;p>Opening and closing a connection (step 2 &amp;amp; 4) produces load on the database server instance. Beside the number of parallel open connections is limited. That way forgetting to close connections might even make the database unavailable in the long run. Connection pooling solves these issues by keeping a sufficient number of durable connections to the database open.&lt;/p>
+&lt;h2 id="the-metaphor" class="paragraph-header">the metaphor &lt;a
+href="#the-metaphor">&lt;/a>&lt;/h2>
+&lt;figure>
+&lt;img src="metaphor.png" alt="metaphor visualization" style="max-height: 375px;">
+&lt;/figure>
+&lt;p>Metaphor: Between Server and Database exists a tunnel, called network link. In the tunnel is a single track of rails, known as connection. As said, reusing the rails is easier than building new ones everytime. The track of rails carries a single wagon. The wagon transports a SQL command from the Server to the Database and returns the execution result (e.g. selected rows) back. If the wagon is in transit the railway is blocked. No other wagon can use the railway at the same time. Therefore, the tunnel doesn&amp;rsquo;t contain a single railway but a pool of railways. To execute a SQL statement you just need to acquire a free wagon. When the wagon returned from the Database with the SQL response the wagon is put back (into the pool). Now it is usable for another SQL statement. If all wagons are in transit, you need to enlarge the tunnel and add an addition railway (increase pool size).&lt;/p>
+&lt;p>Metaphor goes on: Transactions contain multiple SQL commands. Meaning, a transaction is a chain of wagons. Instead of a single wagon a whole train is on the railway. When it arrives at the Database, it gets processed wagon by wagon (SQL statement by statement). If there is a problem with a wagon the previous wagons are discarded and the whole train is sent back (transaction rollback). But if all wagons are processed successfully the train will return all wagons filled with their results (transaction commit). As a transaction is a train of wagons it is always handled on a single railway. That&amp;rsquo;s why SQL transactions are connection bound.&lt;/p>
+&lt;h2 id="the-realization" class="paragraph-header">the realization &lt;a
+href="#the-realization">&lt;/a>&lt;/h2>
+&lt;p>In practice a connection pool has the following parameter:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;abbr title="Data Source Name">dsn&lt;/abbr>&lt;/strong>: Connection parameter (host, port, user, password, dbname, encryption)&lt;/li>
+&lt;li>&lt;strong>min_pool_size&lt;/strong>: the minimum number of opened, parallel connections in the connection pool (e.g. 5)&lt;/li>
+&lt;li>&lt;strong>max_pool_size&lt;/strong>: the maximum number of opened, parallel connections in the connection pool (e.g. 25)&lt;/li>
+&lt;/ul>
+&lt;p>It&amp;rsquo;s highly recommendable to set a &lt;em>max_pool_size&lt;/em> for safety reasons. Otherwise, accidental long-running SQL statements might block all connection capacities of the database. In this situation the connection pooler will open up more and more connections until the database can&amp;rsquo;t handle anymore. Now the problem is the same as described above. With a &lt;em>max_pool_size&lt;/em> set, the application will crash before with an error message like &amp;ldquo;connection pool exhausted&amp;rdquo;.&lt;/p>
+&lt;p>A good implementation might work as follows:&lt;/p>
+&lt;ol>
+&lt;li>The Server is starting.&lt;/li>
+&lt;li>The connection pooler opens the &lt;em>min_pool_size&lt;/em> number of connections to the Database.&lt;/li>
+&lt;li>When the pooler is done the Server is ready to accept requests.&lt;/li>
+&lt;li>When an HTTP request comes in a connection is acquired from the connection pool.&lt;/li>
+&lt;li>The SQL statement gets executed.&lt;/li>
+&lt;li>Afterwards the connection is put back into the connection pool.&lt;/li>
+&lt;li>The HTTP request gets a response.&lt;/li>
+&lt;/ol>
+&lt;p>Most modern database drivers should include a connection pooling mechanism. Otherwise, there are separate tools like PgBouncer to get the job done.&lt;/p></description></item><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
 href="#problem">&lt;/a>&lt;/h2>
 &lt;p>SD (or MicroSD) Cards are cheap flash storage. Their lifetime is limited by the performable write operations. If their end of life is reached, they don&amp;rsquo;t work at all or read data unreliably.&lt;/p>
 &lt;p>A Raspberry Pi produces more IO operations than a typical digital camera (which SD Cards are conceptualized for). The load is mostly produced by writing:&lt;/p>
