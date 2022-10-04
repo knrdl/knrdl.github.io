@@ -1,8 +1,9 @@
 ---
 title: "Explaining Database Connection Pooling"
 date: "2022-10-04"
-tags: [databases, postgres]
+tags: [databases, postgres, sql]
 lang: "en"
+hackerNewsId: "33085854"
 ---
 
 # the problem
