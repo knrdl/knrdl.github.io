@@ -4,9 +4,15 @@
             <div class="post-header">
                 <h1>{{ .Title }}</h1>
                 {{ if ( ne true .Params.staticpage ) }}
-                    <time datetime="{{ .Date.Format "2006-01-02" }}" class="pubdate"> {{ .Date.Format "2006-01-02" }}</time>
+                    <time datetime="{{ .Date.Format "2006-01-02" }}"
+                          class="pubdate"> {{ .Date.Format "2006-01-02" }}</time>
                     {{ if (ne (.Date.Format "2006-01-02") (.Lastmod.Format "2006-01-02"))}}
-                        <time datetime="{{ .Lastmod.Format "2006-01-02" }}" class="lastmod"> [Updated {{ .Lastmod.Format "2006-01-02" }}]</time>
+                        <a href="https://github.com/knrdl/knrdl.github.io/commits/main/content/{{.File.Path}}"
+                           target="_blank" rel="noopener noreferrer">
+                            <time datetime="{{ .Lastmod.Format "2006-01-02" }}" class="lastmod">
+                                [Last update {{ .Lastmod.Format "2006-01-02" }}]
+                            </time>
+                        </a>
                     {{ end }}
                     <span class="tags">
                     {{ range sort .Params.tags }}
