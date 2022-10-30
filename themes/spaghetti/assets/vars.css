@@ -1,5 +1,6 @@
 :root {
     --border: 0.2rem solid hsl(0, 0%, 33%);
+    --border-radius: .5rem;
 
     /* light theme color */
     --light-background: #e0e9e9;

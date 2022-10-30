@@ -2,22 +2,6 @@
     padding-bottom: 1rem;
 }
 
-.highlight {
-    margin: 1.5rem 0;
-}
-
-.highlight pre {
-    border: var(--border);
-    overflow: auto;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
-    border-radius: .5rem;
-}
-
-.highlight pre > code > span {
-    line-height: 1.33em;
-}
-
 blockquote {
     margin: 1rem;
     padding: 0;
@@ -27,7 +11,7 @@ blockquote > p {
     margin: 0;
     padding: 1rem;
     border: var(--border);
-    border-radius: .5rem;
+    border-radius: var(--border-radius);
     border-left-width: 1rem;
 }
 
@@ -56,7 +40,7 @@ blockquote > p.info {
 }
 
 .post-header .lastmod {
-    opacity: .5;
+    opacity: .75;
 }
 
 .post-header > h1 {
@@ -162,4 +146,42 @@ table td, table th {
 .hashtag::before {
     content: "#";
     padding-right: 1px;
+}
+
+.highlight {
+    margin: 1.5rem 0;
+}
+
+.highlight > pre, .highlight > div {
+    border: var(--border);
+    overflow: auto;
+    margin: 0.5rem 0;
+    border-radius: var(--border-radius);
+    position: relative;
+}
+
+.highlight > pre > code {
+    margin: 0 15px 0 15px;
+    padding: 25px 0px 25px 0px;
+    display: block;
+    overflow: auto;
+}
+
+/*code with line numbers has pre's in tables*/
+.highlight pre > code > span, .highlight pre > code > span > span {
+    line-height: 1.33em;
+}
+
+.highlight > pre > code[data-lang]::before {
+    content: attr(data-lang);
+    background-color: #fff3;
+    color: #fffc;
+    text-transform: lowercase;
+    font-size: 0.65rem;
+    line-height: 0.55;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px;
+    border-bottom-left-radius: var(--border-radius);
 }
