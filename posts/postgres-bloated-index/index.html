@@ -2,7 +2,7 @@
 <span><nav class=right-menu><span class=menu-item><a href=/tags/>tags</a></span>
 <span class=menu-item><a href=https://github.com/knrdl target=_blank rel="noopener noreferrer">github</a></span>
 <span class=menu-item><a href=/index.xml>rss</a></span></nav></span></div><div class=separator>================================================================================================================================================================</div></header><main><article><div class=post-header><h1>Cleanup bloated postgres index</h1><time datetime=2022-04-10 class=pubdate>2022-04-10</time>
-<time datetime=2022-04-11 class=lastmod>[Updated 2022-04-11]</time>
+<a href=https://github.com/knrdl/knrdl.github.io/commits/main/content/posts/postgres-bloated-index.md target=_blank rel="noopener noreferrer"><time datetime=2022-04-11 class=lastmod>[Last update 2022-04-11]</time></a>
 <span class=tags><a href=/tags/devops class=hashtag>devops</a>
 <a href=/tags/postgres class=hashtag>postgres</a>
 <a href=/tags/sql class=hashtag>sql</a></span></div><h2 id=1-find-db-byte-sizes class=paragraph-header>1. find db byte sizes <a href=#1-find-db-byte-sizes></a></h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#ff79c6>SELECT</span> datname, pg_size_pretty(pg_database_size(datname))
