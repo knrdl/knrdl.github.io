@@ -11,15 +11,15 @@ Docker (or podman) to the rescue!
 # Setup project
 
 ```bash
-sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" node:alpine npm init
-podman run -it --rm -v "$PWD:$PWD" -w "$PWD" node:alpine npm init
+sudo docker run --pull always -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" node:alpine npm init
+podman run --pull always -it --rm -v "$PWD:$PWD" -w "$PWD" node:alpine npm init
 ```
 
 # Development
 
 ```bash
-sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm run dev
-podman run -it --rm -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm run dev
+sudo docker run --pull always -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm run dev
+podman run --pull always -it --rm -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm run dev
 ```
 
 Open [localhost:8080](http://localhost:8080)
@@ -30,8 +30,8 @@ Open [localhost:8080](http://localhost:8080)
 # Custom `.bashrc` shortcut
 
 ```bash
-alias svelte-npm='sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm'
-alias svelte-npm='podman run -it --rm -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm'
+alias svelte-npm='sudo docker run --pull always -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm'
+alias svelte-npm='podman run --pull always -it --rm -v "$PWD:$PWD" -w "$PWD" -p8080:8080 -p5173:5173 --env HOST=0.0.0.0 node:alpine npm'
 ```
 
 Usage: `$ svelte-npm run dev`
@@ -39,8 +39,8 @@ Usage: `$ svelte-npm run dev`
 ## More general approach
 
 ```bash
-alias docker-dir='sudo docker run -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" --env HOST=0.0.0.0'
-alias podman-dir='podman run -it --rm -v "$PWD:$PWD" -w "$PWD" --env HOST=0.0.0.0'
+alias docker-dir='sudo docker run --pull always -it --rm --user "$UID:$UID" -v "$PWD:$PWD" -w "$PWD" --env HOST=0.0.0.0'
+alias podman-dir='podman run --pull always -it --rm -v "$PWD:$PWD" -w "$PWD" --env HOST=0.0.0.0'
 ```
 
 Example: `$ docker-dir node:alpine -v`
