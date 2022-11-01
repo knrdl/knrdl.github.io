@@ -6,9 +6,10 @@ lang: "en"
 ---
 
 GlusterFs is a distributed storage layer based on
-the [rsync algorithm](https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf)
+the [rsync algorithm](https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf).
 
 > GlusterFs works great for semi-static files, but not for databases like sqlite or postgres!
+> Furthermore, inotify-based programs (file change monitoring) won't work reliable.
 > {.danger }
 
 # Setup
