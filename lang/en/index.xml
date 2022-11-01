@@ -1163,9 +1163,10 @@ href="#client-setup">&lt;/a>&lt;/h3>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">kill&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">$pid&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check that &lt;code>/jail/backup/bigfile&lt;/code> has been created on the server.&lt;/p></description></item><item><title>GlusterFs Setup</title><link>https://knrdl.github.io/posts/glusterfs-setup/</link><pubDate>Mon, 11 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/glusterfs-setup/</guid><description>&lt;p>GlusterFs is a distributed storage layer based on
 the
-&lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>&lt;/p>
+&lt;a href="https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf" target="_blank" rel="noopener noreferrer">rsync algorithm&lt;/a>.&lt;/p>
 &lt;blockquote>
-&lt;p class="danger">GlusterFs works great for semi-static files, but not for databases like sqlite or postgres!&lt;/p>
+&lt;p class="danger">GlusterFs works great for semi-static files, but not for databases like sqlite or postgres!
+Furthermore, inotify-based programs (file change monitoring) won&amp;rsquo;t work reliable.&lt;/p>
 &lt;/blockquote>
 &lt;h2 id="setup" class="paragraph-header">Setup &lt;a
 href="#setup">&lt;/a>&lt;/h2>
