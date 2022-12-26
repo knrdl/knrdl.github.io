@@ -51,7 +51,41 @@ href="#option-b---external-disk">&lt;/a>&lt;/h3>
 &lt;p>Check that everything is working:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>touch /tmp/fs.test
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"># should output the filepath&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item><item><title>LUKS: Encrypted data volumes</title><link>https://knrdl.github.io/posts/luks-data-volumes/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/luks-data-volumes/</guid><description>&lt;p>To realize encrypted data volumes, there are various tools for different use cases:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Veracrypt&lt;/strong> works cross-platform, predefined volume sizes&lt;/li>
+&lt;li>&lt;strong>Gocryptfs&lt;/strong> encrypts transparent, dynamic storage usage&lt;/li>
+&lt;li>&lt;strong>Restic&lt;/strong> encrypts backups, network capable, can do versioning&lt;/li>
+&lt;li>&lt;strong>LUKS&lt;/strong> provides full disk encryption for linux systems&lt;/li>
+&lt;/ul>
+&lt;p>But LUKS can also be used for regular data volumes which behave much like Veracrypt volumes.&lt;/p>
+&lt;h3 id="1-create-a-volume" class="paragraph-header">1. Create a volume &lt;a
+href="#1-create-a-volume">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/ &lt;span style="color:#6272a4"># here the encrypted volume files will be stored&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install cryptsetup pv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dd &lt;span style="color:#ff79c6">if&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>/dev/zero &lt;span style="color:#8be9fd;font-style:italic">bs&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>1M &lt;span style="color:#8be9fd;font-style:italic">count&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#bd93f9">10240&lt;/span> | pv | dd &lt;span style="color:#8be9fd;font-style:italic">of&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>~/volumes/vol1.luks &lt;span style="color:#6272a4"># will create a 1MiB * 10240 = 10GiB file, called &amp;#34;vol1.luks&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cryptsetup -y -v luksFormat ~/volumes/vol1.luks &lt;span style="color:#6272a4"># here you have to enter the passphrase to protect the new volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1 &lt;span style="color:#6272a4"># provide the volume as a device located at /dev/mapper/vol1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup -v status vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkfs.ext4 /dev/mapper/vol1 &lt;span style="color:#6272a4"># create filesystem inside the volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/vol1/ &lt;span style="color:#6272a4"># the volume will also be mounted in the &amp;#34;volumes&amp;#34; directory&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown &lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span>:&lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span> -R ~/volumes/vol1/ &lt;span style="color:#6272a4"># give current user ownership to work with the volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>df -H &lt;span style="color:#6272a4"># shows disk usage inside the volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>pv&lt;/code> adds the progress bar for &lt;code>dd&lt;/code> and can be omitted.&lt;/p>
+&lt;p>The blocksize provided to &lt;code>dd&lt;/code> will be overwritten when creating a filesystem inside the container. So it has no impact on the performance later on.&lt;/p>
+&lt;p>The command &amp;ldquo;luksFormat&amp;rdquo; will figure out good encryption parameters per default. But this requires a decent up-to-date version.&lt;/p>
+&lt;h3 id="2-open-the-volume" class="paragraph-header">2. Open the volume &lt;a
+href="#2-open-the-volume">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-close-the-volume" class="paragraph-header">3. Close the volume &lt;a
+href="#3-close-the-volume">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
 user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p>
 &lt;p>But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
 the host is still unproblematic, e.g. &lt;code>docker run -p 80:8080 ...&lt;/code> will bind port 8080 of the container to port 80 on the

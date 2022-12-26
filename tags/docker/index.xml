@@ -1,6 +1,100 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>docker on knrdlog</title><link>https://knrdl.github.io/tags/docker/</link><description>Recent content in docker on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 21 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker Registry Mirror</title><link>https://knrdl.github.io/posts/docker-registry-mirror/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-registry-mirror/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 01 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Minimal setup for a docker host</title><link>https://knrdl.github.io/posts/minimal-docker-host-setup/</link><pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-host-setup/</guid><description>&lt;h2 id="install-docker" class="paragraph-header">Install docker &lt;a
+href="#install-docker">&lt;/a>&lt;/h2>
+&lt;p>Comes with Docker Compose as &lt;code>$ docker compose&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install ca-certificates curl gnupg lsb-release
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;deb [arch=&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> &lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>lsb_release -cs&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> stable&amp;#34;&lt;/span> | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check docker is running: &lt;code>$ docker version&lt;/code>&lt;/p>
+&lt;h2 id="enable-swap" class="paragraph-header">Enable swap &lt;a
+href="#enable-swap">&lt;/a>&lt;/h2>
+&lt;p>If not enabled yet&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>fallocate -l 8G /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chmod &lt;span style="color:#bd93f9">600&lt;/span> /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkswap /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon --show
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add to &lt;code>/etc/fstab&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/swapfile swap swap defaults &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Optional reboot to check if it worked&lt;/p>
+&lt;h2 id="enable-fail2ban" class="paragraph-header">Enable fail2ban &lt;a
+href="#enable-fail2ban">&lt;/a>&lt;/h2>
+&lt;p>Necessary if ssh is accessible over the internet&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt install fail2ban
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> --now fail2ban
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Statistics of failed attempts:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>awk &lt;span style="color:#f1fa8c">&amp;#39;($(NF-1) = /Ban/){print $NF}&amp;#39;&lt;/span> /var/log/fail2ban.log | sort | uniq -c | sort -n
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>try to log in with wrong passwords to check banning is working!&lt;/p>
+&lt;h2 id="useful-shortcuts" class="paragraph-header">Useful shortcuts &lt;a
+href="#useful-shortcuts">&lt;/a>&lt;/h2>
+&lt;p>Add to &lt;code>~/.bashrc&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code>alias dc=&amp;#39;docker compose&amp;#39;
+alias dclf=&amp;#39;docker compose logs --follow&amp;#39;
+alias dcup=&amp;#39;docker compose up --detach --remove-orphans --build&amp;#39;
+&lt;/code>&lt;/pre>&lt;p>Test in new terminal or run &lt;code>source ~/.bashrc&lt;/code>&lt;/p>
+&lt;h2 id="docker-hardening" class="paragraph-header">Docker Hardening &lt;a
+href="#docker-hardening">&lt;/a>&lt;/h2>
+&lt;p>Disable inter container communication (ICC) via &lt;code>/etc/docker/daemon.json&lt;/code>, add:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;icc&amp;#34;&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Might also want to justify address pool, see
+&lt;a href="./minimal-docker-networks">other post&lt;/a>.&lt;/p>
+&lt;p>Don&amp;rsquo;t forget to apply changes: &lt;code>$ sudo systemctl restart docker.service&lt;/code>&lt;/p>
+&lt;h2 id="docker-housekeeping" class="paragraph-header">Docker Housekeeping &lt;a
+href="#docker-housekeeping">&lt;/a>&lt;/h2>
+&lt;p>/etc/crontab:&lt;/p>
+&lt;pre tabindex="0">&lt;code>0 1 * * * root apt-get -y update
+0 3 * * * root /apps/update_all.sh
+0 5 * * * root docker system prune --force
+*/3 * * * * root /apps/restart_unhealthy.sh
+&lt;/code>&lt;/pre>&lt;p>Cronjob commands in detail:&lt;/p>
+&lt;h4 id="1-apt-get--y-update" class="paragraph-header">1. &lt;code>apt-get -y update&lt;/code> &lt;a
+href="#1-apt-get--y-update">&lt;/a>&lt;/h4>
+&lt;p>Will install safe package updates.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">Be aware that upgrades (&lt;code>apt-get upgrade&lt;/code>) must be still done manually from time to time.&lt;/p>
+&lt;/blockquote>
+&lt;h4 id="2-appsupdate_allsh" class="paragraph-header">2. &lt;code>/apps/update_all.sh&lt;/code> &lt;a
+href="#2-appsupdate_allsh">&lt;/a>&lt;/h4>
+&lt;p>Update all container images (might not be desired):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> /apps
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">for&lt;/span> d in */; &lt;span style="color:#ff79c6">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose pull &lt;span style="color:#6272a4"># pull new images&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose build --pull &lt;span style="color:#6272a4"># pull new base images and build new images&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose up -d --remove-orphans &lt;span style="color:#6272a4"># start new containers from new images&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-docker-system-prune---force" class="paragraph-header">3. &lt;code>docker system prune --force&lt;/code> &lt;a
+href="#3-docker-system-prune---force">&lt;/a>&lt;/h4>
+&lt;p>Free disk space by cleaning up old docker entities, mostly stopped containers and images.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">&lt;code>docker system prune --force&lt;/code> might take some time. do not run container updates meanwhile as it could confuse docker (problems with port allocations)&lt;/p>
+&lt;/blockquote>
+&lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header">4. &lt;code>/apps/restart_unhealthy.sh&lt;/code> &lt;a
+href="#4-appsrestart_unhealthysh">&lt;/a>&lt;/h4>
+&lt;p>Docker detects failing health checks but will happily ignore those. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
+&lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer">extra container&lt;/a> or a really simple script:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>docker ps --filter &lt;span style="color:#8be9fd;font-style:italic">health&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>unhealthy --format &lt;span style="color:#f1fa8c">&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span> | bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="general-advices" class="paragraph-header">General advices &lt;a
+href="#general-advices">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>Add a &lt;code>mem_limit&lt;/code> for every container, don&amp;rsquo;t forget it!&lt;/li>
+&lt;li>If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li>
+&lt;li>If addressing a container in the network via it&amp;rsquo;s name fails then set the &lt;code>hostname&lt;/code> explicitly.&lt;/li>
+&lt;li>If volumes map to directories on the host (bind mounts) then create the folders before starting the containers. Otherwise docker will create the folders as user root which often causes permission problems.&lt;/li>
+&lt;/ul></description></item><item><title>Docker Registry Mirror</title><link>https://knrdl.github.io/posts/docker-registry-mirror/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-registry-mirror/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
 href="#concept">&lt;/a>&lt;/h2>
 &lt;p>A docker-registry stores docker-images, composed of:&lt;/p>
 &lt;ul>

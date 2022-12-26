@@ -1,6 +1,116 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>en on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in en on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Explaining Database Connection Pooling</title><link>https://knrdl.github.io/posts/db-connection-pooling/</link><pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db-connection-pooling/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">the problem &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu: configure custom dns resolver</title><link>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</link><pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</guid><description>&lt;p>DNS provisioning mostly works out of the box. But once for a cloud instance the DNS resolver had terrible response times. So I added another resolver.&lt;/p>
+&lt;p>Ubuntu uses &lt;code>netplan&lt;/code> as abstraction layer for network config.&lt;/p>
+&lt;p>&lt;code>sudo nano /etc/netplan/01-netcfg.yaml&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">nameservers&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">search&lt;/span>: [ invalid ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">addresses&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">127.0.0.1&lt;/span> &lt;span style="color:#6272a4"># the new resolver&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">123.123.123.1&lt;/span> &lt;span style="color:#6272a4"># provided dns resolver &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">223.123.123.2&lt;/span> &lt;span style="color:#6272a4"># provided dns resolver&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>For a containerized DNS resolver see
+&lt;a href="https://github.com/knrdl/unbound-dns-server" target="_blank" rel="noopener noreferrer">here&lt;/a>.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">DNS resolvers should NOT be exposed to public networks (dns amplification attacks etc.)! So make sure to bind the dns server socket to localhost or the local network.&lt;/p>
+&lt;/blockquote>
+&lt;p>Finally, run: &lt;code>sudo netplan apply&lt;/code>&lt;/p>
+&lt;p>Check which DNS resolver is currently in use: &lt;code>sudo resolvectl status eth0&lt;/code> (filter for network interface &lt;code>eth0&lt;/code> is optional)&lt;/p></description></item><item><title>Minimal setup for a docker host</title><link>https://knrdl.github.io/posts/minimal-docker-host-setup/</link><pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-host-setup/</guid><description>&lt;h2 id="install-docker" class="paragraph-header">Install docker &lt;a
+href="#install-docker">&lt;/a>&lt;/h2>
+&lt;p>Comes with Docker Compose as &lt;code>$ docker compose&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install ca-certificates curl gnupg lsb-release
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;deb [arch=&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> &lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>lsb_release -cs&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> stable&amp;#34;&lt;/span> | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check docker is running: &lt;code>$ docker version&lt;/code>&lt;/p>
+&lt;h2 id="enable-swap" class="paragraph-header">Enable swap &lt;a
+href="#enable-swap">&lt;/a>&lt;/h2>
+&lt;p>If not enabled yet&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>fallocate -l 8G /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chmod &lt;span style="color:#bd93f9">600&lt;/span> /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkswap /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon /swapfile
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon --show
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add to &lt;code>/etc/fstab&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/swapfile swap swap defaults &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Optional reboot to check if it worked&lt;/p>
+&lt;h2 id="enable-fail2ban" class="paragraph-header">Enable fail2ban &lt;a
+href="#enable-fail2ban">&lt;/a>&lt;/h2>
+&lt;p>Necessary if ssh is accessible over the internet&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt install fail2ban
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> --now fail2ban
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Statistics of failed attempts:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>awk &lt;span style="color:#f1fa8c">&amp;#39;($(NF-1) = /Ban/){print $NF}&amp;#39;&lt;/span> /var/log/fail2ban.log | sort | uniq -c | sort -n
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>try to log in with wrong passwords to check banning is working!&lt;/p>
+&lt;h2 id="useful-shortcuts" class="paragraph-header">Useful shortcuts &lt;a
+href="#useful-shortcuts">&lt;/a>&lt;/h2>
+&lt;p>Add to &lt;code>~/.bashrc&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code>alias dc=&amp;#39;docker compose&amp;#39;
+alias dclf=&amp;#39;docker compose logs --follow&amp;#39;
+alias dcup=&amp;#39;docker compose up --detach --remove-orphans --build&amp;#39;
+&lt;/code>&lt;/pre>&lt;p>Test in new terminal or run &lt;code>source ~/.bashrc&lt;/code>&lt;/p>
+&lt;h2 id="docker-hardening" class="paragraph-header">Docker Hardening &lt;a
+href="#docker-hardening">&lt;/a>&lt;/h2>
+&lt;p>Disable inter container communication (ICC) via &lt;code>/etc/docker/daemon.json&lt;/code>, add:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;icc&amp;#34;&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Might also want to justify address pool, see
+&lt;a href="./minimal-docker-networks">other post&lt;/a>.&lt;/p>
+&lt;p>Don&amp;rsquo;t forget to apply changes: &lt;code>$ sudo systemctl restart docker.service&lt;/code>&lt;/p>
+&lt;h2 id="docker-housekeeping" class="paragraph-header">Docker Housekeeping &lt;a
+href="#docker-housekeeping">&lt;/a>&lt;/h2>
+&lt;p>/etc/crontab:&lt;/p>
+&lt;pre tabindex="0">&lt;code>0 1 * * * root apt-get -y update
+0 3 * * * root /apps/update_all.sh
+0 5 * * * root docker system prune --force
+*/3 * * * * root /apps/restart_unhealthy.sh
+&lt;/code>&lt;/pre>&lt;p>Cronjob commands in detail:&lt;/p>
+&lt;h4 id="1-apt-get--y-update" class="paragraph-header">1. &lt;code>apt-get -y update&lt;/code> &lt;a
+href="#1-apt-get--y-update">&lt;/a>&lt;/h4>
+&lt;p>Will install safe package updates.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">Be aware that upgrades (&lt;code>apt-get upgrade&lt;/code>) must be still done manually from time to time.&lt;/p>
+&lt;/blockquote>
+&lt;h4 id="2-appsupdate_allsh" class="paragraph-header">2. &lt;code>/apps/update_all.sh&lt;/code> &lt;a
+href="#2-appsupdate_allsh">&lt;/a>&lt;/h4>
+&lt;p>Update all container images (might not be desired):&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> /apps
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">for&lt;/span> d in */; &lt;span style="color:#ff79c6">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose pull &lt;span style="color:#6272a4"># pull new images&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose build --pull &lt;span style="color:#6272a4"># pull new base images and build new images&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose up -d --remove-orphans &lt;span style="color:#6272a4"># start new containers from new images&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> ..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-docker-system-prune---force" class="paragraph-header">3. &lt;code>docker system prune --force&lt;/code> &lt;a
+href="#3-docker-system-prune---force">&lt;/a>&lt;/h4>
+&lt;p>Free disk space by cleaning up old docker entities, mostly stopped containers and images.&lt;/p>
+&lt;blockquote>
+&lt;p class="warning">&lt;code>docker system prune --force&lt;/code> might take some time. do not run container updates meanwhile as it could confuse docker (problems with port allocations)&lt;/p>
+&lt;/blockquote>
+&lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header">4. &lt;code>/apps/restart_unhealthy.sh&lt;/code> &lt;a
+href="#4-appsrestart_unhealthysh">&lt;/a>&lt;/h4>
+&lt;p>Docker detects failing health checks but will happily ignore those. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
+&lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer">extra container&lt;/a> or a really simple script:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>docker ps --filter &lt;span style="color:#8be9fd;font-style:italic">health&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>unhealthy --format &lt;span style="color:#f1fa8c">&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span> | bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="general-advices" class="paragraph-header">General advices &lt;a
+href="#general-advices">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>Add a &lt;code>mem_limit&lt;/code> for every container, don&amp;rsquo;t forget it!&lt;/li>
+&lt;li>If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li>
+&lt;li>If addressing a container in the network via it&amp;rsquo;s name fails then set the &lt;code>hostname&lt;/code> explicitly.&lt;/li>
+&lt;li>If volumes map to directories on the host (bind mounts) then create the folders before starting the containers. Otherwise docker will create the folders as user root which often causes permission problems.&lt;/li>
+&lt;/ul></description></item><item><title>Explaining Database Connection Pooling</title><link>https://knrdl.github.io/posts/db-connection-pooling/</link><pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db-connection-pooling/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">the problem &lt;a
 href="#the-problem">&lt;/a>&lt;/h2>
 &lt;p>Connection Pooling is an often overlooked concept when it comes to databases. An inexperienced developer might implement an API backend like this:&lt;/p>
 &lt;ol>
@@ -88,7 +198,41 @@ href="#option-b---external-disk">&lt;/a>&lt;/h3>
 &lt;p>Check that everything is working:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>touch /tmp/fs.test
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"># should output the filepath&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header">Approach &lt;a
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item><item><title>LUKS: Encrypted data volumes</title><link>https://knrdl.github.io/posts/luks-data-volumes/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/luks-data-volumes/</guid><description>&lt;p>To realize encrypted data volumes, there are various tools for different use cases:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Veracrypt&lt;/strong> works cross-platform, predefined volume sizes&lt;/li>
+&lt;li>&lt;strong>Gocryptfs&lt;/strong> encrypts transparent, dynamic storage usage&lt;/li>
+&lt;li>&lt;strong>Restic&lt;/strong> encrypts backups, network capable, can do versioning&lt;/li>
+&lt;li>&lt;strong>LUKS&lt;/strong> provides full disk encryption for linux systems&lt;/li>
+&lt;/ul>
+&lt;p>But LUKS can also be used for regular data volumes which behave much like Veracrypt volumes.&lt;/p>
+&lt;h3 id="1-create-a-volume" class="paragraph-header">1. Create a volume &lt;a
+href="#1-create-a-volume">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/ &lt;span style="color:#6272a4"># here the encrypted volume files will be stored&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install cryptsetup pv
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dd &lt;span style="color:#ff79c6">if&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>/dev/zero &lt;span style="color:#8be9fd;font-style:italic">bs&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>1M &lt;span style="color:#8be9fd;font-style:italic">count&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#bd93f9">10240&lt;/span> | pv | dd &lt;span style="color:#8be9fd;font-style:italic">of&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>~/volumes/vol1.luks &lt;span style="color:#6272a4"># will create a 1MiB * 10240 = 10GiB file, called &amp;#34;vol1.luks&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cryptsetup -y -v luksFormat ~/volumes/vol1.luks &lt;span style="color:#6272a4"># here you have to enter the passphrase to protect the new volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1 &lt;span style="color:#6272a4"># provide the volume as a device located at /dev/mapper/vol1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup -v status vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkfs.ext4 /dev/mapper/vol1 &lt;span style="color:#6272a4"># create filesystem inside the volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/vol1/ &lt;span style="color:#6272a4"># the volume will also be mounted in the &amp;#34;volumes&amp;#34; directory&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown &lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span>:&lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span> -R ~/volumes/vol1/ &lt;span style="color:#6272a4"># give current user ownership to work with the volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>df -H &lt;span style="color:#6272a4"># shows disk usage inside the volume&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>pv&lt;/code> adds the progress bar for &lt;code>dd&lt;/code> and can be omitted.&lt;/p>
+&lt;p>The blocksize provided to &lt;code>dd&lt;/code> will be overwritten when creating a filesystem inside the container. So it has no impact on the performance later on.&lt;/p>
+&lt;p>The command &amp;ldquo;luksFormat&amp;rdquo; will figure out good encryption parameters per default. But this requires a decent up-to-date version.&lt;/p>
+&lt;h3 id="2-open-the-volume" class="paragraph-header">2. Open the volume &lt;a
+href="#2-open-the-volume">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-close-the-volume" class="paragraph-header">3. Close the volume &lt;a
+href="#3-close-the-volume">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header">Approach &lt;a
 href="#approach">&lt;/a>&lt;/h2>
 &lt;p>Wireguard is a modern VPN protocol. Per default all nodes are treated equally, named peers. Let&amp;rsquo;s build a point-to-point connection:&lt;/p>
 &lt;ul>
