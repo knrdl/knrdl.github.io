@@ -83,12 +83,12 @@ href="#3-docker-system-prune---force">&lt;/a>&lt;/h4>
 &lt;/blockquote>
 &lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header">4. &lt;code>/apps/restart_unhealthy.sh&lt;/code> &lt;a
 href="#4-appsrestart_unhealthysh">&lt;/a>&lt;/h4>
-&lt;p>Docker detects failing health checks but will happily ignore those. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
+&lt;p>Docker detects failing health checks but will happily ignore them. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
 &lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer">extra container&lt;/a> or a really simple script:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>docker ps --filter &lt;span style="color:#8be9fd;font-style:italic">health&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>unhealthy --format &lt;span style="color:#f1fa8c">&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span> | bash
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="general-advices" class="paragraph-header">General advices &lt;a
-href="#general-advices">&lt;/a>&lt;/h2>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="general-advice" class="paragraph-header">General advice &lt;a
+href="#general-advice">&lt;/a>&lt;/h2>
 &lt;ul>
 &lt;li>Add a &lt;code>mem_limit&lt;/code> for every container, don&amp;rsquo;t forget it!&lt;/li>
 &lt;li>If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li>
