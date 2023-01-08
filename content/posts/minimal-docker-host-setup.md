@@ -131,14 +131,14 @@ Free disk space by cleaning up old docker entities, mostly stopped containers an
 
 ### 4. `/apps/restart_unhealthy.sh`
 
-Docker detects failing health checks but will happily ignore those. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an [extra container](https://github.com/willfarrell/docker-autoheal) or a really simple script:
+Docker detects failing health checks but will happily ignore them. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an [extra container](https://github.com/willfarrell/docker-autoheal) or a really simple script:
 
 ```shell
 #!/bin/bash
 docker ps --filter health=unhealthy --format "docker restart {{.ID}}" | bash
 ```
 
-# General advices
+# General advice
 
 * Add a `mem_limit` for every container, don't forget it!
 * If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks "internal".

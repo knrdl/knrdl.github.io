@@ -12,7 +12,7 @@ To realize encrypted data volumes, there are various tools for different use cas
 * **Restic** encrypts backups, network capable, can do versioning
 * **LUKS** provides full disk encryption for linux systems
 
-But LUKS can also be used for regular data volumes which behave much like Veracrypt volumes.
+But LUKS can also be used for regular data volumes which behave a lot like Veracrypt volumes.
 
 ## 1. Create a volume
 
