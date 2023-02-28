@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>microsoft on knrdlog</title><link>https://knrdl.github.io/tags/microsoft/</link><description>Recent content in microsoft on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 28 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/microsoft/index.xml" rel="self" type="application/rss+xml"/><item><title>Microsoft Office won't open links with SSO</title><link>https://knrdl.github.io/posts/msoffice-wont-open-links-with-sso/</link><pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/msoffice-wont-open-links-with-sso/</guid><description>&lt;p>M$ Office is tightly bundled with Internet Explorer. So it used to open links in office documents in a separate IE8 instance. That was already problematic as cookies were not preserved. So the user has to login every time he clicks on a link in a excel sheet if the website has authentication in place.&lt;/p>
+&lt;p>Nowadays the Internet Explorer is finally dead (at least I hope so). When you click on a link in an excel sheet the default browser will pop up. But M$ office still preprocesses links. After you click the link in the excel sheet M$ office will trigger a HTTP request to the link target. If the request is successful the browser will open the link. If it fails with a 4xx or 5xx status code M$ office will just show a error message. The built in user agent will also follow http 3xx redirects. If these end up on a SSO portal with status code 4xx the problem is the same.&lt;/p>
+&lt;p>Micro$oft offers a * fantastic * solution: Just change a registry key on every machine which might open that excel file. What we can do instead is presenting to M$ office always a 200 response:&lt;/p>
+&lt;ul>
+&lt;li>When doing the request the M$ office user agent uses a dedicated User Agent String which contains the M$ product name. So a filter can be applied.&lt;/li>
+&lt;li>Provide a dedicated domain for links in M$ office files. E.g.
+&lt;a href="https://appname-msoffice.example.org" target="_blank" rel="noopener noreferrer">https://appname-msoffice.example.org&lt;/a> instead of
+&lt;a href="https://appname.example.org" target="_blank" rel="noopener noreferrer">https://appname.example.org&lt;/a>. A request to this dedicated domain can return a 200 and trigger a Javascript redirect. Nginx code snippet:&lt;/li>
+&lt;/ul>
+&lt;pre tabindex="0">&lt;code>server {
+server_name appname-msoffice.example.org;
+location / {
+add_header Content-Type text/html;
+return 200 &amp;#39;&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;Please wait ...&amp;lt;/body&amp;gt;&amp;lt;script&amp;gt;window.location=window.location.href.replace(&amp;#34;-msoffice&amp;#34;, &amp;#34;&amp;#34;)&amp;lt;/script&amp;gt;&amp;lt;/html&amp;gt;&amp;#39;;
+}
+}
+&lt;/code>&lt;/pre></description></item></channel></rss>
