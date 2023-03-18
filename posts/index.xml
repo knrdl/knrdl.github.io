@@ -1,6 +1,94 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on knrdlog</title><link>https://knrdl.github.io/posts/</link><description>Recent content in Posts on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 28 Feb 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Microsoft Office won't open links with SSO</title><link>https://knrdl.github.io/posts/msoffice-wont-open-links-with-sso/</link><pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/msoffice-wont-open-links-with-sso/</guid><description>&lt;p>M$ Office is tightly bundled with Internet Explorer. So it used to open links in office documents in a separate IE8 instance. That was already problematic as cookies were not preserved. So the user has to login every time he clicks on a link in a excel sheet if the website has authentication in place.&lt;/p>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 17 Mar 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Cheatsheet: GIS Entities</title><link>https://knrdl.github.io/posts/gis-entities/</link><pubDate>Fri, 17 Mar 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gis-entities/</guid><description>&lt;p>This post will briefly explain the basic components of a geographic information system (GIS) from a technical point of view (for comp sci students).&lt;/p>
+&lt;h2 id="part-1" class="paragraph-header">Part 1 &lt;a
+href="#part-1">&lt;/a>&lt;/h2>
+&lt;figure>
+&lt;img src="gis1.svg" alt="GIS Entities 1">
+&lt;/figure>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>GIS&lt;/strong>: provides the required tools to perform operations on geospatial data, e.g. QGIS, OpenLayers, Google Maps&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Map&lt;/strong>: representation of geospatial information, shows multiple layers which are stacked over each other in a visual manner&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Projection&lt;/strong>: transformation of the earth shape into a rectangle (2d) or sphere (3d). This process is never lossless, see
+&lt;a href="https://www.thetruesize.com/" target="_blank" rel="noopener noreferrer">https://www.thetruesize.com/&lt;/a>. Projections can cover only parts of the earth or the whole globe (world projections). World projections are EPSG:3857 and EPSG:4236 (longitude+latitude)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Layer&lt;/strong>: contains geographical information for a specific topic, e.g. buildings, roads or rails.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Raster Layer&lt;/strong>: Shows georeferenced pixel-based photos, e.g. satellite photo, air photo or street map (like
+&lt;a href="https://www.openstreetmap.org/about" target="_blank" rel="noopener noreferrer">OpenStreetMap&lt;/a>)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Vector Layer&lt;/strong>: Shows georeferenced, scalable and interactive geometric shapes&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Feature&lt;/strong>: a technical unit represented on a map, e.g. a tree, a rail track, a building, a sea.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Tabular feature data&lt;/strong>: key value information about the feature, e.g. address of a building&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Geometry attribute of a feature&lt;/strong>: where and in which shape the feature is located on the map&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Geometry&lt;/strong>: a georeferenced shape&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Point&lt;/strong>: single pair of coordinates: &lt;code>(x,y)&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>LineString&lt;/strong>: list of coordinates: &lt;code>[(x1,y1), (x2,y2), (x3,y3)]&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Polygon&lt;/strong>: list of coordinates with first and last point connected: &lt;code>[(x1,y1), (x2,y2), (x3,y3), (x1,y1)]&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Circle&lt;/strong>: can either be constructed from a list of coordinates (as polygon, imprecise) or based on a centre and radius&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Multi Point, LineString, Polygon&lt;/strong>: a feature consisting of multiple non-connected geometries might have a composed type.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Style&lt;/strong>: how to present a feature on the map. Different styles allow a graphical analysis of the features. Therefore, varying styling rules can be built out of the &lt;em>Tabular feature data&lt;/em>.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="part-2" class="paragraph-header">Part 2 &lt;a
+href="#part-2">&lt;/a>&lt;/h2>
+&lt;figure>
+&lt;img src="gis2.svg" alt="GIS Entities 2">
+&lt;/figure>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>Service&lt;/strong>: Processes the geodata into a consumable format, e.g. render a raster image. Operates as web server.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>GeoJSON&lt;/strong>: JSON based exchange format for &lt;em>Geometries&lt;/em> and &lt;em>Tabular feature data&lt;/em>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>PostGIS&lt;/strong>: A postgres server instance with the &amp;ldquo;PostGIS&amp;rdquo; extension installed&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>GeoPackage&lt;/strong>: SQLite based geodata store&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>WMS&lt;/strong>: open standard protocol to render raster images out of geospatial data and styling rules&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>WMTS&lt;/strong>: same as &lt;em>WMS&lt;/em> but pre-rendered into Tiles of a fixed size&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>WFS&lt;/strong>: open standard protocol to query &lt;em>Features&lt;/em> with &lt;em>Geometries&lt;/em>, not &lt;em>Styles&lt;/em>!&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>WFS-T&lt;/strong>: same as &lt;em>WFS&lt;/em> but transactional (allow editing of &lt;em>Features&lt;/em>)&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Microsoft Office won't open links with SSO</title><link>https://knrdl.github.io/posts/msoffice-wont-open-links-with-sso/</link><pubDate>Tue, 28 Feb 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/msoffice-wont-open-links-with-sso/</guid><description>&lt;p>M$ Office is tightly bundled with Internet Explorer. So it used to open links in office documents in a separate IE8 instance. That was already problematic as cookies were not preserved. So the user has to login every time he clicks on a link in a excel sheet if the website has authentication in place.&lt;/p>
 &lt;p>Nowadays the Internet Explorer is finally dead (at least I hope so). When you click on a link in an excel sheet the default browser will pop up. But M$ office still preprocesses links. After you click the link in the excel sheet M$ office will trigger a HTTP request to the link target. If the request is successful the browser will open the link. If it fails with a 4xx or 5xx status code M$ office will just show a error message. The built in user agent will also follow http 3xx redirects. If these end up on a SSO portal with status code 4xx the problem is the same.&lt;/p>
 &lt;p>Micro$oft offers a * fantastic * solution: Just change a registry key on every machine which might open that excel file. What we can do instead is presenting to M$ office always a 200 response:&lt;/p>
 &lt;ul>
@@ -1069,44 +1157,44 @@ href="#fileserver">&lt;/a>&lt;/h3>
 LittleFS would look like this:&lt;/p>
 &lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">
 &lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-&lt;/span>&lt;span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;/span>&lt;span style="background-color:#3d3f4a">&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 &lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#include&lt;/span> &lt;span style="color:#ff79c6">&amp;lt;ESP8266WebServer.h&amp;gt;&lt;/span>&lt;span style="color:#ff79c6">

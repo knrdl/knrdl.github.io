@@ -1,0 +1,23 @@
+flowchart TD
+    Raster(raster layer)
+    Vector(vector layer)
+
+    DataSource(data source)
+
+    Service[service]
+
+    GeoJSON --> DataSource
+    PostGIS --> DataSource
+    WKT[WKT/WKB] --> DataSource
+    GML --> DataSource
+    Shapefile[ESRI Shapefile] --> DataSource
+    GeoPackage --> DataSource
+    GeoPhoto[geo referenced photo] --> DataSource
+    Service --> |can be a| DataSource
+    DataSource --> |feeds| Service
+    Service --> WMS
+    Service --> WFS
+    Service --> WMTS
+    WMS --> |renders to| Raster
+    WMTS[WMTS & XYZ] --> |renders to| Raster
+    WFS[WFS & WFS-T] --> |renders to| Vector
