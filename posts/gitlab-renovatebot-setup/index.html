@@ -1,0 +1,72 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="IE=edge"><meta http-equiv=content-security-policy content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; font-src 'self'; script-src 'unsafe-inline'"><link rel="shortcut icon" type=image/png href=/favicon.png><link rel=sitemap type=application/xml href=/sitemap.xml title=knrdlog><title>Gitlab: RenovateBot Setup</title><meta name=description content="notes to self"><meta property="og:title" content="Gitlab: RenovateBot Setup"><meta property="og:description" content="Create a gitlab user &ldquo;renovate.bot&rdquo;:
+External User: Yes Personal projects limit: 0 Can create top level groups: No Impersonate &ldquo;renovate.bot&rdquo; (or login as this user) and create a Settings → Access Tokens:
+Expiration: 1 year (place a reminder to renew this!) Scopes: api, read_api, read_repository, write_repository, read_registry Create a repository &ldquo;renovate.bot&rdquo; and add the user &ldquo;renovate.bot&rdquo; as Maintainer
+Set a pipeline schedule (how often the renovate bot will run), e."><meta property="og:type" content="article"><meta property="og:url" content="https://knrdl.github.io/posts/gitlab-renovatebot-setup/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2023-10-24T00:00:00+00:00"><meta property="article:modified_time" content="2023-10-24T21:16:17+02:00"><meta name=author content="knrdl"><link rel=stylesheet href=https://knrdl.github.io/styles.min.b1eb305989f01c7be31a7a19d4ab34ca470eddd06327253c7bcf3d1c5a41d28c.css integrity="sha256-seswWYnwHHvjGnoZ1Ks0ykcO3dBjJyU8e889HFpB0ow="></head><body><header><div class=site-header><span><a href=https://knrdl.github.io/ class=site-title>knrdlog</a></span>
+<span><nav class=right-menu><span class=menu-item><a href=/tags/>tags</a></span>
+<span class=menu-item><a href=https://github.com/knrdl target=_blank rel="noopener noreferrer">github</a></span>
+<span class=menu-item><a href=/index.xml>rss</a></span></nav></span></div><div class=separator>================================================================================================================================================================</div></header><main><article><div class=post-header><h1>Gitlab: RenovateBot Setup</h1><time datetime=2023-10-24 class=pubdate>2023-10-24</time>
+<span class=tags><a href=/tags/devops class=hashtag>devops</a>
+<a href=/tags/gitlab class=hashtag>gitlab</a></span></div><ol><li><p>Create a gitlab user &ldquo;renovate.bot&rdquo;:</p><ul><li>External User: Yes</li><li>Personal projects limit: 0</li><li>Can create top level groups: No</li></ul></li><li><p>Impersonate &ldquo;renovate.bot&rdquo; (or login as this user) and create a <code>Settings</code> → <code>Access Tokens</code>:</p><ul><li>Expiration: 1 year (place a reminder to renew this!)</li><li>Scopes: api, read_api, read_repository, write_repository, read_registry</li></ul></li><li><p>Create a repository &ldquo;renovate.bot&rdquo; and add the user &ldquo;renovate.bot&rdquo; as Maintainer</p></li><li><p>Set a pipeline schedule (how often the renovate bot will run), e.g. every day at 5am: <code>0 5 * * *</code></p></li><li><p><code>Settings</code> → <code>CI/CD</code> → <code>Variables</code>: add a variable to supply the access token:</p><ul><li>Key: <code>RENOVATE_TOKEN</code></li><li>Value: the access token of the &ldquo;renovate.bot&rdquo; user (step 2)</li><li>Protect and mask the variable</li></ul></li></ol><blockquote><p class=warning>Keep in mind that every gitlab user with (at least) Maintainer role in the &ldquo;renovate.bot&rdquo; repository can see the <code>RENOVATE_TOKEN</code>. For this reason every maintainer can see and do everything the &ldquo;renovate.bot&rdquo; user is capable of.</p></blockquote><ol start=6><li>Add these two files to the repo:</li></ol><ul><li><code>.gitlab-ci.yml</code>:</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#ff79c6>renovate</span>:
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>image</span>: renovatebot/renovate:37-slim
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>variables</span>:
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_LOG_FILE</span>: renovate-log.ndjson
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_LOG_FILE_LEVEL</span>: debug
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>LOG_LEVEL</span>: info   <span style=color:#6272a4># console logging should be less verbose than the logfile  because pipeline output is kept forever, logfiles can expire</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_BASE_DIR</span>: $CI_PROJECT_DIR
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_ENDPOINT</span>: $CI_API_V4_URL
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_PLATFORM</span>: gitlab
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_ALLOW_SCRIPTS</span>: <span style=color:#f1fa8c>&#39;true&#39;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_AUTODISCOVER</span>: <span style=color:#f1fa8c>&#39;true&#39;</span>  <span style=color:#6272a4># all repos where the &#34;renovate.bot&#34; user is (at least) developer are handled</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_ONBOARDING</span>: <span style=color:#f1fa8c>&#39;false&#39;</span>  <span style=color:#6272a4># no initial MR required</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_REPOSITORY_CACHE</span>: <span style=color:#f1fa8c>&#39;enabled&#39;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_REQUIRE_CONFIG</span>: <span style=color:#f1fa8c>&#39;optional&#39;</span>  <span style=color:#6272a4># the renovate.json file in each handled repo is not required</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_TOKEN</span>: <span style=color:#f1fa8c>&#34;$RENOVATE_TOKEN&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_PR_HOURLY_LIMIT</span>: <span style=color:#f1fa8c>&#39;50&#39;</span>  <span style=color:#6272a4># limit the creation of MRs</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>RENOVATE_CONFIG_FILE</span>: <span style=color:#f1fa8c>&#39;config.json&#39;</span>  <span style=color:#6272a4># path to renovate global config in &#34;renovate.bot&#34; repo</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>NODE_OPTIONS</span>: --use-openssl-ca
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>SSL_CERT_DIR</span>: /etc/ssl/certs
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>REQUESTS_CA_BUNDLE</span>: /etc/ssl/certs/ca-certificates.crt
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>cache</span>:
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>key</span>: ${CI_COMMIT_REF_SLUG}-renovate
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>paths</span>:
+</span></span><span style=display:flex><span>      - cache
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>script</span>:
+</span></span><span style=display:flex><span>    - renovate
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>rules</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#ff79c6>if</span>: <span style=color:#f1fa8c>&#39;$CI_PIPELINE_SOURCE == &#34;schedule&#34;&#39;</span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>artifacts</span>:
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>when</span>: always
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>expire_in</span>: 1d
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>paths</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f1fa8c>&#39;$RENOVATE_LOG_FILE&#39;</span>  <span style=color:#6272a4># remove the renovate logfile from each run after one day to reduce disk usage</span>
+</span></span></code></pre></div><ul><li><code>config.json</code>:</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>&#34;$schema&#34;</span>: <span style=color:#f1fa8c>&#34;https://docs.renovatebot.com/renovate-schema.json&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>&#34;packageRules&#34;</span>: [
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>&#34;matchDatasources&#34;</span>: [
+</span></span><span style=display:flex><span>                <span style=color:#f1fa8c>&#34;docker&#34;</span>
+</span></span><span style=display:flex><span>            ],
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>&#34;registryUrls&#34;</span>: [
+</span></span><span style=display:flex><span>                <span style=color:#f1fa8c>&#34;https://docker-registry-mirror.example.org&#34;</span>
+</span></span><span style=display:flex><span>            ]
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>&#34;matchUpdateTypes&#34;</span>: [
+</span></span><span style=display:flex><span>                <span style=color:#f1fa8c>&#34;minor&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#f1fa8c>&#34;patch&#34;</span>
+</span></span><span style=display:flex><span>            ],
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>&#34;enabled&#34;</span>: <span style=color:#ff79c6>true</span>
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>&#34;matchUpdateTypes&#34;</span>: [
+</span></span><span style=display:flex><span>                <span style=color:#f1fa8c>&#34;major&#34;</span>
+</span></span><span style=display:flex><span>            ],
+</span></span><span style=display:flex><span>            <span style=color:#ff79c6>&#34;enabled&#34;</span>: <span style=color:#ff79c6>false</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>This will use a docker registry mirror and open MRs for minor and patch updates (no breaking changes). Unless <code>"automerge": true</code> is specified, these MRs will stay open for manual intervention.</p><ol start=7><li><p>Add the &ldquo;renovate.bot&rdquo; user to your repositories:</p><ul><li>As <strong>Developer</strong> if the renovate bot should open MRs <em>but not</em> automerge them</li><li>As <strong>Maintainer</strong> if the renovate bot should open MRs <em>and</em> automerge them (on protected branches)</li><li>As <strong>Reporter</strong> if the renovate bot depends on this repo to do the version checks for another repo (e.g. another repo is based on the docker image in the gitlab docker registry of this repo)</li></ul></li><li><p>Trigger a run of the scheduled pipeline to test the setup.</p></li><li><p>View all MRs (for your repositories) opened by the renovate bot:
+<a href="https://git.example.org/dashboard/merge_requests?scope=all&amp;state=opened&amp;author_username=renovate.bot" target=_blank rel="noopener noreferrer">https://git.example.org/dashboard/merge_requests?scope=all&state=opened&author_username=renovate.bot</a></p></li></ol><div class=comments><a href="https://github.com/knrdl/knrdl.github.io/issues/new?title=Gitlab%3A+RenovateBot+Setup" target=_blank rel="noopener noreferrer"><img src=https://knrdl.github.io/github.png alt="Github logo" style=filter:invert(.7) width=17 height=17>
+<span>Feedback</span></a></div></article></main><hr><footer>Licensed under <a href=https://creativecommons.org/publicdomain/zero/1.0/ target=_blank rel='noopener norefferer'>CC0 1.0</a> |
+<a href=https://gohugo.io target=_blank rel='noopener norefferer'>Hugo</a> theme inspired by <a href=https://github.com/vamc19 target=_blank rel='noopener norefferer'>vamc19</a> |
+Hosted by <a href=https://pages.github.com target=_blank rel='noopener norefferer'>Github</a> (<a href=https://github.com/site/privacy target=_blank rel='noopener norefferer'>Privacy Policy</a>)</footer></body></html>

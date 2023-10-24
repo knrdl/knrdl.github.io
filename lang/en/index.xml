@@ -1,6 +1,125 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>en on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in en on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Thu, 18 May 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Multiprocessing, Multithreading, Asynchronous programming: What's the difference?</title><link>https://knrdl.github.io/posts/multiprocessing-multithreading-async/</link><pubDate>Thu, 18 May 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/multiprocessing-multithreading-async/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">The problem &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 24 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Gitlab: RenovateBot Setup</title><link>https://knrdl.github.io/posts/gitlab-renovatebot-setup/</link><pubDate>Tue, 24 Oct 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-renovatebot-setup/</guid><description>&lt;ol>
+&lt;li>
+&lt;p>Create a gitlab user &amp;ldquo;renovate.bot&amp;rdquo;:&lt;/p>
+&lt;ul>
+&lt;li>External User: Yes&lt;/li>
+&lt;li>Personal projects limit: 0&lt;/li>
+&lt;li>Can create top level groups: No&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>Impersonate &amp;ldquo;renovate.bot&amp;rdquo; (or login as this user) and create a &lt;code>Settings&lt;/code> → &lt;code>Access Tokens&lt;/code>:&lt;/p>
+&lt;ul>
+&lt;li>Expiration: 1 year (place a reminder to renew this!)&lt;/li>
+&lt;li>Scopes: api, read_api, read_repository, write_repository, read_registry&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>Create a repository &amp;ldquo;renovate.bot&amp;rdquo; and add the user &amp;ldquo;renovate.bot&amp;rdquo; as Maintainer&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Set a pipeline schedule (how often the renovate bot will run), e.g. every day at 5am: &lt;code>0 5 * * *&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>Settings&lt;/code> → &lt;code>CI/CD&lt;/code> → &lt;code>Variables&lt;/code>: add a variable to supply the access token:&lt;/p>
+&lt;ul>
+&lt;li>Key: &lt;code>RENOVATE_TOKEN&lt;/code>&lt;/li>
+&lt;li>Value: the access token of the &amp;ldquo;renovate.bot&amp;rdquo; user (step 2)&lt;/li>
+&lt;li>Protect and mask the variable&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;blockquote>
+&lt;p class="warning">Keep in mind that every gitlab user with (at least) Maintainer role in the &amp;ldquo;renovate.bot&amp;rdquo; repository can see the &lt;code>RENOVATE_TOKEN&lt;/code>. For this reason every maintainer can see and do everything the &amp;ldquo;renovate.bot&amp;rdquo; user is capable of.&lt;/p>
+&lt;/blockquote>
+&lt;ol start="6">
+&lt;li>Add these two files to the repo:&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>&lt;code>.gitlab-ci.yml&lt;/code>:&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">renovate&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: renovatebot/renovate:37-slim
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">variables&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_LOG_FILE&lt;/span>: renovate-log.ndjson
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_LOG_FILE_LEVEL&lt;/span>: debug
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">LOG_LEVEL&lt;/span>: info &lt;span style="color:#6272a4"># console logging should be less verbose than the logfile because pipeline output is kept forever, logfiles can expire&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_BASE_DIR&lt;/span>: $CI_PROJECT_DIR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_ENDPOINT&lt;/span>: $CI_API_V4_URL
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_PLATFORM&lt;/span>: gitlab
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_ALLOW_SCRIPTS&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;true&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_AUTODISCOVER&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;true&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># all repos where the &amp;#34;renovate.bot&amp;#34; user is (at least) developer are handled&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_ONBOARDING&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;false&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># no initial MR required&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_REPOSITORY_CACHE&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;enabled&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_REQUIRE_CONFIG&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;optional&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># the renovate.json file in each handled repo is not required&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_TOKEN&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;$RENOVATE_TOKEN&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_PR_HOURLY_LIMIT&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;50&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># limit the creation of MRs&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">RENOVATE_CONFIG_FILE&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;config.json&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># path to renovate global config in &amp;#34;renovate.bot&amp;#34; repo&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">NODE_OPTIONS&lt;/span>: --use-openssl-ca
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">SSL_CERT_DIR&lt;/span>: /etc/ssl/certs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">REQUESTS_CA_BUNDLE&lt;/span>: /etc/ssl/certs/ca-certificates.crt
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">cache&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">key&lt;/span>: ${CI_COMMIT_REF_SLUG}-renovate
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">paths&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - cache
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">script&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - renovate
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">rules&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#ff79c6">if&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;$CI_PIPELINE_SOURCE == &amp;#34;schedule&amp;#34;&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">artifacts&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">when&lt;/span>: always
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">expire_in&lt;/span>: 1d
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">paths&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#f1fa8c">&amp;#39;$RENOVATE_LOG_FILE&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># remove the renovate logfile from each run after one day to reduce disk usage&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>&lt;code>config.json&lt;/code>:&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;$schema&amp;#34;&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;https://docs.renovatebot.com/renovate-schema.json&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;packageRules&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;matchDatasources&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;docker&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;registryUrls&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;https://docker-registry-mirror.example.org&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;matchUpdateTypes&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;minor&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;patch&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;enabled&amp;#34;&lt;/span>: &lt;span style="color:#ff79c6">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;matchUpdateTypes&amp;#34;&lt;/span>: [
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;major&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ],
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;enabled&amp;#34;&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will use a docker registry mirror and open MRs for minor and patch updates (no breaking changes). Unless &lt;code>&amp;quot;automerge&amp;quot;: true&lt;/code> is specified, these MRs will stay open for manual intervention.&lt;/p>
+&lt;ol start="7">
+&lt;li>
+&lt;p>Add the &amp;ldquo;renovate.bot&amp;rdquo; user to your repositories:&lt;/p>
+&lt;ul>
+&lt;li>As &lt;strong>Developer&lt;/strong> if the renovate bot should open MRs &lt;em>but not&lt;/em> automerge them&lt;/li>
+&lt;li>As &lt;strong>Maintainer&lt;/strong> if the renovate bot should open MRs &lt;em>and&lt;/em> automerge them (on protected branches)&lt;/li>
+&lt;li>As &lt;strong>Reporter&lt;/strong> if the renovate bot depends on this repo to do the version checks for another repo (e.g. another repo is based on the docker image in the gitlab docker registry of this repo)&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>Trigger a run of the scheduled pipeline to test the setup.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>View all MRs (for your repositories) opened by the renovate bot:
+&lt;a href="https://git.example.org/dashboard/merge_requests?scope=all&amp;amp;state=opened&amp;amp;author_username=renovate.bot" target="_blank" rel="noopener noreferrer">https://git.example.org/dashboard/merge_requests?scope=all&amp;state=opened&amp;author_username=renovate.bot&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Multiprocessing, Multithreading, Asynchronous programming: What's the difference?</title><link>https://knrdl.github.io/posts/multiprocessing-multithreading-async/</link><pubDate>Thu, 18 May 2023 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/multiprocessing-multithreading-async/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">The problem &lt;a
 href="#the-problem">&lt;/a>&lt;/h2>
 &lt;p>In programming there is often a need to run things in parallel, for example:&lt;/p>
 &lt;ul>
