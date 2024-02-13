@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>zip on knrdlog</title><link>https://knrdl.github.io/tags/zip/</link><description>Recent content in zip on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 13 Feb 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/zip/index.xml" rel="self" type="application/rss+xml"/><item><title>Generate encrypted 7zip files</title><link>https://knrdl.github.io/posts/encrypted-7zip-files/</link><pubDate>Tue, 13 Feb 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/encrypted-7zip-files/</guid><description>&lt;p>Using 7zip files as encrypted backups is a quick and dirty workaround for a proper backup solution.&lt;/p>
+&lt;p>First generate a &lt;strong>strong&lt;/strong> password, e.g.: &lt;code>pwgen -1sB 128&lt;/code>&lt;/p>
+&lt;h2 id="backup-without-compression" class="paragraph-header">Backup without compression &lt;a
+href="#backup-without-compression">&lt;/a>&lt;/h2>
+&lt;p>&lt;code>7z a -mx=0 -mhe=on -m0=Copy -p&amp;quot;$PASSWORD&amp;quot; TARGET.7z SOURCE_FOLDERS_*&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>mx=0&lt;/code> and &lt;code>m0=Copy&lt;/code> mean: just copy the files, do not compress them&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>mhe=on&lt;/code> means: also encrypt the 7z headers, so the password is also required for listing the file tree&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="backup-with-compression" class="paragraph-header">Backup with compression &lt;a
+href="#backup-with-compression">&lt;/a>&lt;/h2>
+&lt;p>&lt;code>7z a -mx=3 -mhe=on -ms=on -p&amp;quot;$PASSWORD&amp;quot; TARGET.7z SOURCE_FOLDERS_*&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>ms=on&lt;/code> treats everything as a single file (find duplicates)&lt;/li>
+&lt;/ul>
+&lt;h2 id="check-the-archive-file" class="paragraph-header">Check the archive file &lt;a
+href="#check-the-archive-file">&lt;/a>&lt;/h2>
+&lt;p>&lt;code>7z l -slt -p&amp;quot;$PASSWORD&amp;quot; TARGET.7z&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>7zAES:19&lt;/code> means secure AES-256 encryption (plus some password hashing, see
+&lt;a href="https://sourceforge.net/p/p7zip/patches/25/#3da5" target="_blank" rel="noopener noreferrer">here&lt;/a>).&lt;/li>
+&lt;/ul></description></item></channel></rss>
