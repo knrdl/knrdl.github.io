@@ -1,6 +1,67 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>en on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in en on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>En on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in En on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 13 Feb 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Generate encrypted 7zip files</title><link>https://knrdl.github.io/posts/encrypted-7zip-files/</link><pubDate>Tue, 13 Feb 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/encrypted-7zip-files/</guid><description>&lt;p>Using 7zip files as encrypted backups is a quick and dirty workaround for a proper backup solution.&lt;/p>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sat, 02 Mar 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>A small selection of CSS libraries</title><link>https://knrdl.github.io/posts/css-libs/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/css-libs/</guid><description>&lt;h2 id="minimalism" class="paragraph-header">Minimalism &lt;a
+href="#minimalism">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;a href="https://milligram.io/" target="_blank" rel="noopener noreferrer">https://milligram.io/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://minicss.us/docs.htm" target="_blank" rel="noopener noreferrer">https://minicss.us/docs.htm&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://picnicss.com/documentation" target="_blank" rel="noopener noreferrer">https://picnicss.com/documentation&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="retro" class="paragraph-header">Retro &lt;a
+href="#retro">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;a href="https://nostalgic-css.github.io/NES.css/" target="_blank" rel="noopener noreferrer">https://nostalgic-css.github.io/NES.css/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://jdan.github.io/98.css/" target="_blank" rel="noopener noreferrer">https://jdan.github.io/98.css/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://botoxparty.github.io/XP.css/" target="_blank" rel="noopener noreferrer">https://botoxparty.github.io/XP.css/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://khang-nd.github.io/7.css/" target="_blank" rel="noopener noreferrer">https://khang-nd.github.io/7.css/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="components-as-css-classes" class="paragraph-header">Components as CSS classes &lt;a
+href="#components-as-css-classes">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;a href="https://www.getpapercss.com/docs/" target="_blank" rel="noopener noreferrer">https://www.getpapercss.com/docs/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://getbootstrap.com/docs/5.2/getting-started/introduction/" target="_blank" rel="noopener noreferrer">https://getbootstrap.com/docs/5.2/getting-started/introduction/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://bulma.io/documentation/components/" target="_blank" rel="noopener noreferrer">https://bulma.io/documentation/components/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://getuikit.com/docs/introduction" target="_blank" rel="noopener noreferrer">https://getuikit.com/docs/introduction&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://picturepan2.github.io/spectre/getting-started.html" target="_blank" rel="noopener noreferrer">https://picturepan2.github.io/spectre/getting-started.html&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="tailwind" class="paragraph-header">Tailwind &lt;a
+href="#tailwind">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;a href="https://tailwindcss.com/" target="_blank" rel="noopener noreferrer">https://tailwindcss.com/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://daisyui.com/components/" target="_blank" rel="noopener noreferrer">https://daisyui.com/components/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://flowbite.com/" target="_blank" rel="noopener noreferrer">https://flowbite.com/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="smartphone" class="paragraph-header">Smartphone &lt;a
+href="#smartphone">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;a href="https://ionicframework.com/docs/components" target="_blank" rel="noopener noreferrer">https://ionicframework.com/docs/components&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://framework7.io/svelte/introduction" target="_blank" rel="noopener noreferrer">https://framework7.io/svelte/introduction&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="svelte-components" class="paragraph-header">Svelte Components &lt;a
+href="#svelte-components">&lt;/a>&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;a href="https://illright.github.io/attractions/" target="_blank" rel="noopener noreferrer">https://illright.github.io/attractions/&lt;/a>&lt;/li>
+&lt;li>
+&lt;a href="https://sveltematerialui.com/" target="_blank" rel="noopener noreferrer">https://sveltematerialui.com/&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Generate encrypted 7zip files</title><link>https://knrdl.github.io/posts/encrypted-7zip-files/</link><pubDate>Tue, 13 Feb 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/encrypted-7zip-files/</guid><description>&lt;p>Using 7zip files as encrypted backups is a quick and dirty workaround for a proper backup solution.&lt;/p>
 &lt;p>First generate a &lt;strong>strong&lt;/strong> password, e.g.: &lt;code>pwgen -1sB 128&lt;/code>&lt;/p>
 &lt;h2 id="backup-without-compression" class="paragraph-header">Backup without compression &lt;a
 href="#backup-without-compression">&lt;/a>&lt;/h2>
