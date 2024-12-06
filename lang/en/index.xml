@@ -1,6 +1,85 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>En on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in En on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 06 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>LocalForage: Performant batch operations</title><link>https://knrdl.github.io/posts/indexeddb-localforage/</link><pubDate>Fri, 06 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/indexeddb-localforage/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 06 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>How to use IBM DB2 with async python</title><link>https://knrdl.github.io/posts/db2-async-python/</link><pubDate>Fri, 06 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db2-async-python/</guid><description>&lt;h2 id="async-python" class="paragraph-header">Async Python &lt;a
+href="#async-python">&lt;/a>&lt;/h2>
+&lt;p>Async frameworks are nowadays the standard for web development with python.
+&lt;a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">FastAPI&lt;/a> didn&amp;rsquo;t invent it, but is currently the most successful and popular web framework offering it. With the increasing popularity of async, the need for async libraries grew over time. Python&amp;rsquo;s standard library is sync only for historic reasons. So
+&lt;a href="https://github.com/aio-libs" target="_blank" rel="noopener noreferrer">async packages filled the gap&lt;/a> and sometimes replaced the old sync libraries, e.g.:&lt;/p>
+&lt;ul>
+&lt;li>DNS:
+&lt;a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener noreferrer">std socket&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/aiodns/" target="_blank" rel="noopener noreferrer">aiodns&lt;/a>&lt;/li>
+&lt;li>Docker Client:
+&lt;a href="https://pypi.org/project/docker/" target="_blank" rel="noopener noreferrer">docker&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/aiodocker/" target="_blank" rel="noopener noreferrer">aiodocker&lt;/a>&lt;/li>
+&lt;li>File IO:
+&lt;a href="https://docs.python.org/3/library/functions.html#open" target="_blank" rel="noopener noreferrer">std open&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/aiofiles/" target="_blank" rel="noopener noreferrer">aiofiles&lt;/a>&lt;/li>
+&lt;li>HTTP Client:
+&lt;a href="https://pypi.org/project/requests/" target="_blank" rel="noopener noreferrer">requests&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/aiohttp/" target="_blank" rel="noopener noreferrer">aiohttp&lt;/a>,
+&lt;a href="https://pypi.org/project/httpx/" target="_blank" rel="noopener noreferrer">httpx&lt;/a>&lt;/li>
+&lt;li>Postgres:
+&lt;a href="https://pypi.org/project/psycopg2/" target="_blank" rel="noopener noreferrer">psycopg2&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/psycopg/" target="_blank" rel="noopener noreferrer">psycopg3&lt;/a>,
+&lt;a href="https://pypi.org/project/asyncpg/" target="_blank" rel="noopener noreferrer">asyncpg&lt;/a>&lt;/li>
+&lt;li>SMTP Client:
+&lt;a href="https://docs.python.org/3/library/smtplib.html" target="_blank" rel="noopener noreferrer">std smtplib&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/aiosmtplib/" target="_blank" rel="noopener noreferrer">aiosmtplib&lt;/a>&lt;/li>
+&lt;li>Webserver:
+&lt;a href="https://pypi.org/project/Flask/" target="_blank" rel="noopener noreferrer">flask 1&lt;/a> &lt;strong>→&lt;/strong>
+&lt;a href="https://pypi.org/project/Flask/" target="_blank" rel="noopener noreferrer">flask 2&lt;/a>,
+&lt;a href="https://pypi.org/project/fastapi/" target="_blank" rel="noopener noreferrer">fastapi&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="ibm-db2" class="paragraph-header">IBM DB2 &lt;a
+href="#ibm-db2">&lt;/a>&lt;/h2>
+&lt;p>However, some old-fashioned libraries haven&amp;rsquo;t adapted yet and maybe never will, like the clunky
+&lt;a href="https://pypi.org/project/ibm-db/" target="_blank" rel="noopener noreferrer">ibm-db&lt;/a> package to connect to an IBM DB2 database. The package consists of a
+&lt;a href="https://github.com/ibmdb/python-ibmdb/blob/master/ibm_db.c" target="_blank" rel="noopener noreferrer">C driver&lt;/a> and
+&lt;a href="https://github.com/ibmdb/python-ibmdb/blob/master/ibm_db_dbi.py" target="_blank" rel="noopener noreferrer">python interface&lt;/a> (IMHO, the latter looks like it was poorly written by absolute python beginners together with naysayers to the idea that python code could be pythonic at all).&lt;/p>
+&lt;p>So the problem is to run the sync lib
+&lt;a href="https://pypi.org/project/ibm-db/" target="_blank" rel="noopener noreferrer">&lt;em>ibm-db&lt;/em>&lt;/a> in an async context, like a FastAPI webserver. The standard approach is to use &lt;code>asyncio.to_thread()&lt;/code> to delegate the sync tasks (db access operations) into additional threads to free the event loop on the main thread. As &lt;em>ibm-db&lt;/em> is not subject to the
+&lt;a href="https://wiki.python.org/moin/GlobalInterpreterLock" target="_blank" rel="noopener noreferrer">GIL&lt;/a> there should be no disadvantage except the overhead of spawning threads. But &lt;em>ibm-db&lt;/em> is also not thread-safe. Multiple threads interact with a DB2 instance result in race conditions, connection abortions and incomplete result set responses. So &lt;em>ibm-db&lt;/em> cannot be used in async nor multithreaded environments. So the workaround is to run &lt;em>ibm-db&lt;/em> in (at most) one dedicated thread, but never in the main thread to keep the event loop free. This can be achieved with Python&amp;rsquo;s
+&lt;a href="https://docs.python.org/3/library/concurrent.futures.html#threadpoolexecutor" target="_blank" rel="noopener noreferrer">&lt;code>ThreadPoolExecutor&lt;/code>&lt;/a> and the constraint &lt;code>max_workers=1&lt;/code>. See code below.&lt;/p>
+&lt;h3 id="old-code-blocks-the-async-loop" class="paragraph-header">Old code (blocks the async loop) &lt;a
+href="#old-code-blocks-the-async-loop">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> ibm_db_dbi &lt;span style="color:#ff79c6">as&lt;/span> db2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">def&lt;/span> &lt;span style="color:#50fa7b">run_query&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn: db2&lt;span style="color:#ff79c6">.&lt;/span>Connection &lt;span style="color:#ff79c6">=&lt;/span> db2&lt;span style="color:#ff79c6">.&lt;/span>pconnect(dsn&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;...&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">with&lt;/span> conn&lt;span style="color:#ff79c6">.&lt;/span>cursor() &lt;span style="color:#ff79c6">as&lt;/span> cursor:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cursor&lt;span style="color:#ff79c6">.&lt;/span>execute(&lt;span style="color:#f1fa8c">&amp;#39;select 1+1 from SYSIBM.SYSDUMMY1&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff79c6">=&lt;/span> cursor&lt;span style="color:#ff79c6">.&lt;/span>fetchone()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn&lt;span style="color:#ff79c6">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> result
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(run_query()) &lt;span style="color:#6272a4"># blocks event loop&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(run_query()) &lt;span style="color:#6272a4"># blocks event loop&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(run_query()) &lt;span style="color:#6272a4"># blocks event loop&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="new-code-frees-the-async-loop" class="paragraph-header">New code (frees the async loop) &lt;a
+href="#new-code-frees-the-async-loop">&lt;/a>&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> asyncio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">from&lt;/span> concurrent.futures &lt;span style="color:#ff79c6">import&lt;/span> ThreadPoolExecutor
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> ibm_db_dbi &lt;span style="color:#ff79c6">as&lt;/span> db2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>_executor &lt;span style="color:#ff79c6">=&lt;/span> ThreadPoolExecutor(max_workers&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#bd93f9">1&lt;/span>, thread_name_prefix&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;db2&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">async&lt;/span> &lt;span style="color:#ff79c6">def&lt;/span> &lt;span style="color:#50fa7b">run_query&lt;/span>(): &lt;span style="color:#6272a4"># can be invoked concurrently&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">def&lt;/span> &lt;span style="color:#50fa7b">do&lt;/span>():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn: db2&lt;span style="color:#ff79c6">.&lt;/span>Connection &lt;span style="color:#ff79c6">=&lt;/span> db2&lt;span style="color:#ff79c6">.&lt;/span>pconnect(dsn&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;...&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">with&lt;/span> conn&lt;span style="color:#ff79c6">.&lt;/span>cursor() &lt;span style="color:#ff79c6">as&lt;/span> cursor:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cursor&lt;span style="color:#ff79c6">.&lt;/span>execute(&lt;span style="color:#f1fa8c">&amp;#39;select 1+1 from SYSIBM.SYSDUMMY1&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff79c6">=&lt;/span> cursor&lt;span style="color:#ff79c6">.&lt;/span>fetchone()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn&lt;span style="color:#ff79c6">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> result
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> &lt;span style="color:#ff79c6">await&lt;/span> asyncio&lt;span style="color:#ff79c6">.&lt;/span>get_event_loop()&lt;span style="color:#ff79c6">.&lt;/span>run_in_executor(_executor, do)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> run_query()) &lt;span style="color:#6272a4"># does not block the event loop&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> run_query()) &lt;span style="color:#6272a4"># does not block the event loop&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> run_query()) &lt;span style="color:#6272a4"># does not block the event loop&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>LocalForage: Performant batch operations</title><link>https://knrdl.github.io/posts/indexeddb-localforage/</link><pubDate>Fri, 06 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/indexeddb-localforage/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
 href="#problem">&lt;/a>&lt;/h2>
 &lt;p>
 &lt;a href="https://github.com/localForage/localForage" target="_blank" rel="noopener noreferrer">LocalForage&lt;/a> is a thin wrapper around
