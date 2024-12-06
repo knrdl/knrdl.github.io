@@ -1,0 +1,102 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta http-equiv=Content-Security-Policy content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; font-src 'self'; script-src 'unsafe-inline'"><link rel="shortcut icon" type=image/png href=/favicon.png><link rel=sitemap type=application/xml href=/sitemap.xml title=knrdlog><title>LocalForage: Performant batch operations</title>
+<meta name=description content="notes to self"><meta property="og:url" content="https://knrdl.github.io/posts/indexeddb-localforage/"><meta property="og:site_name" content="knrdlog"><meta property="og:title" content="LocalForage: Performant batch operations"><meta property="og:description" content="Problem LocalForage is a thin wrapper around IndexedDB (and some fallbacks). IndexedDB is a NoSQL database API exposed by modern browsers. It allows storing JSON and blobs client-side. LocalForage simplifies interacting with IndexedDB by providing a simple key-value store as API instead. The method names are localStorage-like: getItem(), setItem(), removeItem() etc.
+However, batch operations (like a mass insert) are horribly slow when performed via LocalForage. That’s because LocalForage opens for every operation a new IndexedDB transaction and this action is remarkable time-consuming compared with other DBMS. So 1000 setItems() open 1000 transactions which can take multiple seconds to proceed. As LocalForage doesn’t provide the API to do this in a single transaction, you need to write your own thin wrapper around IndexedDB and expose transactions as entity."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-12-06T00:00:00+00:00"><meta property="article:modified_time" content="2024-12-06T13:33:35+01:00"><meta property="article:tag" content="Indexeddb"><meta property="article:tag" content="Localforage"><meta property="article:tag" content="Javascript"><meta property="article:tag" content="Typescript"><meta name=author content="knrdl"><link rel=stylesheet href=https://knrdl.github.io/styles.min.b1eb305989f01c7be31a7a19d4ab34ca470eddd06327253c7bcf3d1c5a41d28c.css integrity="sha256-seswWYnwHHvjGnoZ1Ks0ykcO3dBjJyU8e889HFpB0ow="></head><body><header><div class=site-header><span><a href=https://knrdl.github.io/ class=site-title>knrdlog</a>
+</span><span><nav class=right-menu><span class=menu-item><a href=/tags/>tags</a></span>
+<span class=menu-item><a href=https://github.com/knrdl target=_blank rel="noopener noreferrer">github</a></span>
+<span class=menu-item><a href=/index.xml>rss</a></span></nav></span></div><div class=separator>================================================================================================================================================================</div></header><main><article><div class=post-header><h1>LocalForage: Performant batch operations</h1><time datetime=2024-12-06 class=pubdate>2024-12-06</time>
+<span class=tags><a href=/tags/indexeddb class=hashtag>indexeddb</a>
+<a href=/tags/javascript class=hashtag>javascript</a>
+<a href=/tags/localforage class=hashtag>localforage</a>
+<a href=/tags/typescript class=hashtag>typescript</a></span></div><h2 id=problem class=paragraph-header>Problem <a href=#problem></a></h2><p><a href=https://github.com/localForage/localForage target=_blank rel="noopener noreferrer">LocalForage</a> is a thin wrapper around
+<a href=https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API target=_blank rel="noopener noreferrer">IndexedDB</a> (and some fallbacks). IndexedDB is a NoSQL database API exposed by modern browsers. It allows storing JSON and blobs client-side. LocalForage simplifies interacting with IndexedDB by providing a simple key-value store as API instead. The method names are
+<a href=https://developer.mozilla.org/de/docs/Web/API/Window/localStorage target=_blank rel="noopener noreferrer">localStorage</a>-like: <code>getItem()</code>, <code>setItem()</code>, <code>removeItem()</code> etc.</p><p>However, batch operations (like a mass insert) are horribly slow when performed via LocalForage. That&rsquo;s because LocalForage opens for every operation a new IndexedDB transaction and this action is remarkable time-consuming compared with other DBMS. So 1000 <code>setItems()</code> open 1000 transactions which can take multiple seconds to proceed. As LocalForage doesn&rsquo;t provide the API to do this in a single transaction, you need to write your own thin wrapper around IndexedDB and expose transactions as entity.</p><h2 id=solution class=paragraph-header>Solution <a href=#solution></a></h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#ff79c6>export</span> <span style=color:#8be9fd;font-style:italic>function</span> kvDb(name: <span style=color:#8be9fd>string</span> <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#39;kvdb&#39;</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>let</span> openedDb: <span style=color:#8be9fd>IDBDatabase</span> <span style=color:#ff79c6>|</span> <span style=color:#ff79c6>undefined</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>function</span> idbRequestToPromise&lt;<span style=color:#ff79c6>T</span>&gt;(request: <span style=color:#8be9fd>IDBRequest</span>&lt;<span style=color:#ff79c6>T</span>&gt;) {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>new</span> Promise&lt;<span style=color:#ff79c6>T</span>&gt;((resolve, reject) <span style=color:#ff79c6>=&gt;</span> {
+</span></span><span style=display:flex><span>      request.onsuccess <span style=color:#ff79c6>=</span> () <span style=color:#ff79c6>=&gt;</span> resolve(request.result)
+</span></span><span style=display:flex><span>      request.onerror <span style=color:#ff79c6>=</span> () <span style=color:#ff79c6>=&gt;</span> reject(request.error)
+</span></span><span style=display:flex><span>    })
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>async</span> <span style=color:#8be9fd;font-style:italic>function</span> openDb() {
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>const</span> dbRequest <span style=color:#ff79c6>=</span> indexedDB.open(name)
+</span></span><span style=display:flex><span>    dbRequest.onupgradeneeded <span style=color:#ff79c6>=</span> () <span style=color:#ff79c6>=&gt;</span> {
+</span></span><span style=display:flex><span>      dbRequest.result.createObjectStore(<span style=color:#f1fa8c>&#39;kv-pairs&#39;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>return</span> <span style=color:#ff79c6>await</span> idbRequestToPromise(dbRequest)
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>return</span> {
+</span></span><span style=display:flex><span>    <span style=color:#6272a4>/**
+</span></span></span><span style=display:flex><span><span style=color:#6272a4>     * A transaction is autocommitted as soon as no new requests are made (!)
+</span></span></span><span style=display:flex><span><span style=color:#6272a4>     * All requests must be added in the same cycle of the event loop.
+</span></span></span><span style=display:flex><span><span style=color:#6272a4>     * The transaction cannot be used afterwards.
+</span></span></span><span style=display:flex><span><span style=color:#6272a4>     */</span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> transaction() {
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>if</span> (<span style=color:#ff79c6>!</span>openedDb) openedDb <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>await</span> openDb()
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>return</span> openedDb.transaction(<span style=color:#f1fa8c>&#39;kv-pairs&#39;</span>, <span style=color:#f1fa8c>&#39;readwrite&#39;</span>).objectStore(<span style=color:#f1fa8c>&#39;kv-pairs&#39;</span>)
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>get</span>&lt;<span style=color:#ff79c6>T</span>&gt;(key: <span style=color:#8be9fd>string</span>, transaction?: <span style=color:#8be9fd>IDBObjectStore</span>)<span style=color:#ff79c6>:</span> Promise&lt;<span style=color:#ff79c6>T</span>&gt; {
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> store <span style=color:#ff79c6>=</span> transaction <span style=color:#ff79c6>??</span> (<span style=color:#ff79c6>await</span> <span style=color:#ff79c6>this</span>.transaction())
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> value: <span style=color:#8be9fd>T</span> <span style=color:#ff79c6>|</span> <span style=color:#ff79c6>undefined</span> <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>await</span> idbRequestToPromise(store.<span style=color:#ff79c6>get</span>(key))
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>if</span> (value <span style=color:#ff79c6>===</span> <span style=color:#ff79c6>undefined</span>) <span style=color:#ff79c6>throw</span> <span style=color:#ff79c6>new</span> <span style=color:#8be9fd;font-style:italic>Error</span>(<span style=color:#f1fa8c>`db &#34;</span><span style=color:#f1fa8c>${</span>name<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34; key &#34;</span><span style=color:#f1fa8c>${</span>key<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>&#34; not found`</span>)
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>else</span> <span style=color:#ff79c6>return</span> value
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> getDefault&lt;<span style=color:#ff79c6>T</span>&gt;(key: <span style=color:#8be9fd>string</span>, defaultValue: <span style=color:#8be9fd>T</span>, transaction?: <span style=color:#8be9fd>IDBObjectStore</span>)<span style=color:#ff79c6>:</span> Promise&lt;<span style=color:#ff79c6>T</span>&gt; {
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> store <span style=color:#ff79c6>=</span> transaction <span style=color:#ff79c6>??</span> (<span style=color:#ff79c6>await</span> <span style=color:#ff79c6>this</span>.transaction())
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> value: <span style=color:#8be9fd>T</span> <span style=color:#ff79c6>|</span> <span style=color:#ff79c6>undefined</span> <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>await</span> idbRequestToPromise(store.<span style=color:#ff79c6>get</span>(key))
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>if</span> (value <span style=color:#ff79c6>===</span> <span style=color:#ff79c6>undefined</span>) <span style=color:#ff79c6>return</span> defaultValue
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>else</span> <span style=color:#ff79c6>return</span> value
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>set</span>&lt;<span style=color:#ff79c6>T</span>&gt;(key: <span style=color:#8be9fd>string</span>, value: <span style=color:#8be9fd>T</span>, transaction?: <span style=color:#8be9fd>IDBObjectStore</span>) {
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> store <span style=color:#ff79c6>=</span> transaction <span style=color:#ff79c6>??</span> (<span style=color:#ff79c6>await</span> <span style=color:#ff79c6>this</span>.transaction())
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>await</span> idbRequestToPromise(store.put(value, key))
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> <span style=color:#ff79c6>delete</span>(key: <span style=color:#8be9fd>string</span>, transaction?: <span style=color:#8be9fd>IDBObjectStore</span>) {
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> store <span style=color:#ff79c6>=</span> transaction <span style=color:#ff79c6>??</span> (<span style=color:#ff79c6>await</span> <span style=color:#ff79c6>this</span>.transaction())
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>await</span> idbRequestToPromise(store.<span style=color:#ff79c6>delete</span>(key))
+</span></span><span style=display:flex><span>    },
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> clear(transaction?: <span style=color:#8be9fd>IDBObjectStore</span>) {
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>const</span> store <span style=color:#ff79c6>=</span> transaction <span style=color:#ff79c6>??</span> (<span style=color:#ff79c6>await</span> <span style=color:#ff79c6>this</span>.transaction())
+</span></span><span style=display:flex><span>      <span style=color:#ff79c6>await</span> idbRequestToPromise(store.clear())
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>As additional optimization the browser can be asked to persist the storage as long as possible:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#ff79c6>try</span> {
+</span></span><span style=display:flex><span>  <span style=color:#ff79c6>await</span> navigator.storage<span style=color:#ff79c6>?</span>.persist<span style=color:#ff79c6>?</span>.()
+</span></span><span style=display:flex><span>} <span style=color:#ff79c6>catch</span> (e) {
+</span></span><span style=display:flex><span>  console.error(<span style=color:#f1fa8c>&#39;navigator.storage.persist() failed:&#39;</span>, e)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=usage-example class=paragraph-header>Usage example <a href=#usage-example></a></h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#ff79c6>const</span> localCache <span style=color:#ff79c6>=</span> kvDb(<span style=color:#f1fa8c>&#39;cache&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// Without transaction (slow on batch):
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>await</span> localCache.clear()  <span style=color:#6272a4>// clear cache
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span><span style=color:#ff79c6>await</span> localCache.<span style=color:#ff79c6>set</span>(<span style=color:#f1fa8c>&#39;object1&#39;</span>, {hello<span style=color:#ff79c6>:</span> <span style=color:#f1fa8c>&#39;world&#39;</span>})
+</span></span><span style=display:flex><span><span style=color:#ff79c6>await</span> localCache.<span style=color:#ff79c6>get</span>(<span style=color:#f1fa8c>&#39;object1&#39;</span>)  <span style=color:#6272a4>// = {hello: &#39;world&#39;}
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span><span style=color:#ff79c6>await</span> localCache.getDefault(<span style=color:#f1fa8c>&#39;object2&#39;</span>, <span style=color:#f1fa8c>&#39;fallback&#39;</span>)  <span style=color:#6272a4>// = &#39;fallback&#39;
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span><span style=color:#ff79c6>await</span> localCache.<span style=color:#ff79c6>delete</span>(<span style=color:#f1fa8c>&#39;object1&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#6272a4>// With transaction (fast on batch):
+</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>const</span> transaction <span style=color:#ff79c6>=</span> <span style=color:#ff79c6>await</span> localCache.transaction()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#ff79c6>await</span> Promise.allSettled(
+</span></span><span style=display:flex><span>  <span style=color:#8be9fd;font-style:italic>Array</span>.<span style=color:#ff79c6>from</span>(<span style=color:#8be9fd;font-style:italic>Array</span>(<span style=color:#bd93f9>1000</span>).keys()).map(
+</span></span><span style=display:flex><span>    <span style=color:#ff79c6>async</span> i <span style=color:#ff79c6>=&gt;</span> localCache.<span style=color:#ff79c6>set</span>(<span style=color:#f1fa8c>`file-</span><span style=color:#f1fa8c>${</span>i<span style=color:#f1fa8c>}</span><span style=color:#f1fa8c>`</span>, <span style=color:#ff79c6>await</span> loadFile(i), transaction)
+</span></span><span style=display:flex><span>  )
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><p><strong>Gotchas:</strong> A transaction can only be used once with
+<a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all target=_blank rel="noopener noreferrer"><code>Promise.all()</code></a> or
+<a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled target=_blank rel="noopener noreferrer"><code>Promise.allSettled()</code></a>. Using the same transaction in multiple consecutive statements is not possible (thanks to the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/IDBTransaction#:~:text=A%20transaction%20alternates%20between%20active%20and%20inactive%20states%20between%20event%20loop%20tasks." target=_blank rel="noopener noreferrer">weird IndexedDB design</a>).</p><div class=comments><a href="https://github.com/knrdl/knrdl.github.io/issues/new?title=LocalForage%3A+Performant+batch+operations" target=_blank rel="noopener noreferrer"><img src=https://knrdl.github.io/github.png alt="Github logo" style=filter:invert(.7) width=17 height=17>
+<span>Feedback</span></a></div></article></main><hr><footer>Licensed under <a href=https://creativecommons.org/publicdomain/zero/1.0/ target=_blank rel='noopener norefferer'>CC0 1.0</a> |
+<a href=https://gohugo.io target=_blank rel='noopener norefferer'>Hugo</a> theme inspired by <a href=https://github.com/vamc19 target=_blank rel='noopener norefferer'>vamc19</a> |
+Hosted by <a href=https://pages.github.com target=_blank rel='noopener norefferer'>Github</a> (<a href=https://github.com/site/privacy target=_blank rel='noopener norefferer'>Privacy Policy</a>)</footer></body></html>
