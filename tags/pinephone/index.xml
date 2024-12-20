@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Pinephone on knrdlog</title><link>https://knrdl.github.io/tags/pinephone/</link><description>Recent content in Pinephone on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 20 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/pinephone/index.xml" rel="self" type="application/rss+xml"/><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p>The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Wireguard&lt;/strong> for the VPN tunnel&lt;/li>
+&lt;li>&lt;strong>SSH&lt;/strong> server&lt;/li>
+&lt;li>&lt;strong>Docker&lt;/strong> runtime, e.g. to run a time series database to collect sensor stats&lt;/li>
+&lt;/ol>
+&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
+href="#setup">&lt;/a>&lt;/h2>
+&lt;ol>
+&lt;li>flash PostmarketOS to a microSD card&lt;/li>
+&lt;li>run the wizard on the phone (to resize the root partition)&lt;/li>
+&lt;li>copy the PostmarketOS img-file to the microSD card&lt;/li>
+&lt;li>flash the img-file to the eMMC via &lt;code>dd&lt;/code>:
+&lt;a href="https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os" target="_blank" rel="noopener noreferrer">https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os&lt;/a>&lt;/li>
+&lt;li>remove the sd card and reboot&lt;/li>
+&lt;li>login (user:147147) and connect wifi&lt;/li>
+&lt;/ol>
+&lt;h3 id="ssh" class="paragraph-header">SSH &lt;a
+href="#ssh">&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>start ssh server: &lt;code>sudo service sshd start&lt;/code>&lt;/li>
+&lt;li>enable ssh on boot: &lt;code>sudo rc-update add sshd&lt;/code>&lt;/li>
+&lt;li>connect to the phone: &lt;code>ssh user@pine64-pinephone&lt;/code>&lt;/li>
+&lt;li>in &lt;code>/etc/ssh/sshd_config&lt;/code>: set &lt;code>AllowTcpForwarding yes&lt;/code> to forward ports from the remote network to your local host&lt;/li>
+&lt;/ol>
+&lt;h3 id="system" class="paragraph-header">System &lt;a
+href="#system">&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>check updates: &lt;code>sudo apk update&lt;/code> and &lt;code>sudo apk upgrade -a&lt;/code>&lt;/li>
+&lt;li>install some tools: &lt;code>sudo apk add htop curl nano&lt;/code>&lt;/li>
+&lt;li>remove unnecessary apps: &lt;code>sudo apk del gnome-maps gnome-calculator gnome-software gnome-clocks gnome-calendar gnome-text-editor gnome-contacts gnome-weather chatty portfolio lollypop firefox-esr evince calls megapixels postmarketos-default-camera postmarketos-welcome loupe flatpak&lt;/code>&lt;/li>
+&lt;li>list remaining packages: &lt;code>sudo apk list -I&lt;/code>&lt;/li>
+&lt;li>disable unnecessary services: &lt;code>sudo rc-update del bluetooth&lt;/code> and &lt;code>sudo rc-update del modemmanager&lt;/code>&lt;/li>
+&lt;li>list enabled services: &lt;code>sudo rc-update show&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;h3 id="wireguard" class="paragraph-header">Wireguard &lt;a
+href="#wireguard">&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>install: &lt;code>sudo apk add wireguard-tools-wg-quick wireguard-tools-openrc&lt;/code>&lt;/li>
+&lt;li>add wireguard config to &lt;code>/etc/wireguard/wg0.conf&lt;/code>, e.g.:&lt;/li>
+&lt;/ol>
+&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">[Interface]
+PrivateKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Address = 192.168.178.204/24
+DNS = 192.168.178.1
+DNS = fritz.box
+[Peer]
+PublicKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+PresharedKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+AllowedIPs = 192.168.178.0/24,0.0.0.0/0
+Endpoint = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX.myfritz.net:12345
+PersistentKeepalive = 25
+&lt;/code>&lt;/pre>&lt;ol start="3">
+&lt;li>fix permissions: &lt;code>sudo chmod o-r /etc/wireguard/wg0.conf&lt;/code>&lt;/li>
+&lt;li>
+&lt;a href="https://wiki.alpinelinux.org/wiki/Configure_a_Wireguard_interface_%28wg%29" target="_blank" rel="noopener noreferrer">autostart&lt;/a>:&lt;/li>
+&lt;/ol>
+&lt;pre tabindex="0">&lt;code>sudo ln -s /etc/init.d/wg-quick /etc/init.d/wg-quick.wg0
+sudo rc-update add wg-quick.wg0
+sudo service wg-quick.wg0 start
+&lt;/code>&lt;/pre>&lt;ol start="5">
+&lt;li>manual start: &lt;code>sudo wg-quick up wg0&lt;/code>&lt;/li>
+&lt;li>manual stop: &lt;code>sudo wg-quick down wg0&lt;/code>&lt;/li>
+&lt;/ol>
+&lt;h3 id="docker" class="paragraph-header">Docker &lt;a
+href="#docker">&lt;/a>&lt;/h3>
+&lt;ol>
+&lt;li>install: &lt;code>sudo apk add docker&lt;/code> (alpine sources typically provide an up-to-date version)&lt;/li>
+&lt;li>autostart: &lt;code>sudo rc-update add docker&lt;/code>&lt;/li>
+&lt;li>start: &lt;code>sudo service docker start&lt;/code>&lt;/li>
+&lt;li>the PinePhone can execute arm32v7 and also arm64v8 images&lt;/li>
+&lt;/ol></description></item></channel></rss>
