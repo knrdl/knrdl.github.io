@@ -31,7 +31,7 @@ services: secscan-reports: image: caddy:alpine command: caddy file-server --root
 </span></span></span><span style=display:flex><span><span style=color:#f1fa8c>            nice -n 19 trivy image --no-progress --scanners vuln,secret,misconfig --severity MEDIUM,HIGH,CRITICAL --format template --template &#34;@contrib/html.tpl&#34; -o &#34;/reports/$$filename.html&#34; &#34;$$imagename&#34;
 </span></span></span><span style=display:flex><span><span style=color:#f1fa8c>          done
 </span></span></span><span style=display:flex><span><span style=color:#f1fa8c>          sleep 24h
-</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        done</span>        
+</span></span></span><span style=display:flex><span><span style=color:#f1fa8c>        done</span>
 </span></span><span style=display:flex><span>    <span style=color:#ff79c6>volumes</span>:
 </span></span><span style=display:flex><span>      - ./reports:/reports
 </span></span><span style=display:flex><span>    <span style=color:#ff79c6>cpus</span>: <span style=color:#bd93f9>0.1</span>

@@ -1,6 +1,103 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>En on knrdlog</title><link>https://knrdl.github.io/lang/en/</link><description>Recent content in En on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
 &lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 20 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p>The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p>
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sun, 26 Jan 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/lang/en/index.xml" rel="self" type="application/rss+xml"/><item><title>The poor man's WAF</title><link>https://knrdl.github.io/posts/poor-mans-waf/</link><pubDate>Sun, 26 Jan 2025 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/poor-mans-waf/</guid><description>&lt;p>Every internet connected server is subject to automated scans and probes from various parties. On web servers they typically try to find exploitable installations by calling e.g. &lt;code>///wordpress/wp-admin/setup-config.php?step=1&lt;/code>. Another annoyance are web scrapers farming content for AI bot training and often enough ignoring therefore the robots.txt. These requests form a constant background noise which we don&amp;rsquo;t have to listen to. If you run a small home server only for friends and family you can configure the internet-facing reverse proxy to just drop these requests. I will use the excellent
+&lt;a href="https://caddyserver.com/" target="_blank" rel="noopener noreferrer">Caddy&lt;/a> reverse proxy to build a poor man&amp;rsquo;s &lt;abbr title="Web Application Firewall">WAF&lt;/abbr>.&lt;/p>
+&lt;h2 id="ip-filter" class="paragraph-header">IP filter &lt;a
+href="#ip-filter">&lt;/a>&lt;/h2>
+&lt;p>Some companies publish theirs IP address ranges used by their products, e.g.
+&lt;a href="https://ip-ranges.amazonaws.com/ip-ranges.json" target="_blank" rel="noopener noreferrer">AWS&lt;/a>,
+&lt;a href="https://api.cloudflare.com/client/v4/ips" target="_blank" rel="noopener noreferrer">Cloudflare&lt;/a>,
+&lt;a href="https://api.github.com/meta" target="_blank" rel="noopener noreferrer">GitHub&lt;/a>,
+&lt;a href="https://developers.google.com/search/apis/ipranges/googlebot.json" target="_blank" rel="noopener noreferrer">Googlebot&lt;/a>,
+&lt;a href="https://www.gstatic.com/ipranges/cloud.json" target="_blank" rel="noopener noreferrer">Google Cloud&lt;/a> or OpenAI
+&lt;a href="https://openai.com/searchbot.json" target="_blank" rel="noopener noreferrer">1&lt;/a>
+&lt;a href="https://openai.com/chatgpt-user.json" target="_blank" rel="noopener noreferrer">2&lt;/a>
+&lt;a href="https://openai.com/gptbot.json" target="_blank" rel="noopener noreferrer">3&lt;/a>. However, we only need to allow connections from residential or mobile IP addresses so we can block requests from these companies at all. Instead of relying on them to publish relevant IP ranges, we can block all their IPs. This in turn also includes cloud instances which might be used by AI companies for their scraping.&lt;/p>
+&lt;p>Every big internet company acts as an AS (autonomous system) and has an ASN (autonomous system number) assigned. Every AS manages their assigned IP ranges. So we can block IP ranges based on their AS. The assignment database can be grabbed from
+&lt;a href="https://ip.guide/bulk/networks.csv" target="_blank" rel="noopener noreferrer">here&lt;/a> among other places. This python script extracts the IP ranges for relevant companies:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> csv&lt;span style="color:#ff79c6">,&lt;/span> fnmatch
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">from&lt;/span> ipaddress &lt;span style="color:#ff79c6">import&lt;/span> ip_network, IPv4Network, IPv6Network, collapse_addresses
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>block_filters &lt;span style="color:#ff79c6">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;DigitalOcean*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Amazon.com*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Google*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Cloudflare*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Facebook*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Microsoft*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;GitHub*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Twitter*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Hetzner*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;IBM*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Akamai*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Fly.io*&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Apple Inc.&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;SAP *&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Oracle Corporation&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Yahoo Inc.&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Yahoo-UK Limited&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Opera Norway AS&amp;#39;&lt;/span>, &lt;span style="color:#6272a4"># Opera VPN&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;Clouvider *&amp;#39;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39;PacketHub *&amp;#39;&lt;/span> &lt;span style="color:#6272a4"># NordVPN&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>output: &lt;span style="color:#8be9fd;font-style:italic">set&lt;/span>[IPv4Network &lt;span style="color:#ff79c6">|&lt;/span> IPv6Network] &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">set&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># https://ip.guide/bulk/networks.csv&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">with&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">open&lt;/span>(&lt;span style="color:#f1fa8c">&amp;#39;networks.csv&amp;#39;&lt;/span>) &lt;span style="color:#ff79c6">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> reader &lt;span style="color:#ff79c6">=&lt;/span> csv&lt;span style="color:#ff79c6">.&lt;/span>reader(f)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">next&lt;/span>(reader, &lt;span style="color:#ff79c6">None&lt;/span>) &lt;span style="color:#6272a4"># skip the headers&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">for&lt;/span> network, asn, organization, country &lt;span style="color:#ff79c6">in&lt;/span> reader:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">if&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">any&lt;/span>((fnmatch&lt;span style="color:#ff79c6">.&lt;/span>fnmatchcase(organization, bf) &lt;span style="color:#ff79c6">for&lt;/span> bf &lt;span style="color:#ff79c6">in&lt;/span> block_filters)):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> output&lt;span style="color:#ff79c6">.&lt;/span>add(ip_network(network))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">with&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">open&lt;/span>(&lt;span style="color:#f1fa8c">&amp;#39;blocklist.txt&amp;#39;&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#39;w&amp;#39;&lt;/span>) &lt;span style="color:#ff79c6">as&lt;/span> f:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> f&lt;span style="color:#ff79c6">.&lt;/span>write(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#39; &amp;#39;&lt;/span>&lt;span style="color:#ff79c6">.&lt;/span>join(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [n&lt;span style="color:#ff79c6">.&lt;/span>with_prefixlen &lt;span style="color:#ff79c6">for&lt;/span> n &lt;span style="color:#ff79c6">in&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">sorted&lt;/span>(collapse_addresses([n &lt;span style="color:#ff79c6">for&lt;/span> n &lt;span style="color:#ff79c6">in&lt;/span> output &lt;span style="color:#ff79c6">if&lt;/span> n&lt;span style="color:#ff79c6">.&lt;/span>version &lt;span style="color:#ff79c6">==&lt;/span> &lt;span style="color:#bd93f9">4&lt;/span>]))] &lt;span style="color:#ff79c6">+&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [n&lt;span style="color:#ff79c6">.&lt;/span>with_prefixlen &lt;span style="color:#ff79c6">for&lt;/span> n &lt;span style="color:#ff79c6">in&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">sorted&lt;/span>(collapse_addresses([n &lt;span style="color:#ff79c6">for&lt;/span> n &lt;span style="color:#ff79c6">in&lt;/span> output &lt;span style="color:#ff79c6">if&lt;/span> n&lt;span style="color:#ff79c6">.&lt;/span>version &lt;span style="color:#ff79c6">==&lt;/span> &lt;span style="color:#bd93f9">6&lt;/span>]))]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>There are round about 54 000 matching IP ranges in the database. By using &lt;code>collapse_addresses&lt;/code> these are unified into less than 11 000 IP ranges which can be added to the Caddy config:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">@ipfilter remote_ip 1.0.0.0/24 1.1.1.0/24 1.44.96.0/24 ...&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">handle @ipfilter {&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">abort # the request will be dropped by closing the connection&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="user-agent-filter" class="paragraph-header">User Agent filter &lt;a
+href="#user-agent-filter">&lt;/a>&lt;/h2>
+&lt;p>UA filtering is kind of snake oil as real attackers and stealthy crawlers won&amp;rsquo;t bring their own UA. But at least we can release Internet Explorer users from their suffering:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">@uafilter `&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">header_regexp(&amp;#39;User-Agent&amp;#39;, &amp;#39;MSIE&amp;#39;) ||&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">header_regexp(&amp;#39;User-Agent&amp;#39;, &amp;#39;Trident&amp;#39;)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">handle @uafilter {&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">abort&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>You should never block UAs of tools like &lt;code>curl&lt;/code> because at some point you might need them for debugging.&lt;/p>
+&lt;h2 id="path-filter" class="paragraph-header">Path filter &lt;a
+href="#path-filter">&lt;/a>&lt;/h2>
+&lt;p>As long as you don&amp;rsquo;t run a PHP server (which you shouldn&amp;rsquo;t) there is no need in answering PHP related requests:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">@pathfilter `&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">path_regexp(&amp;#39;(?i)\\.php$&amp;#39;)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">handle @pathfilter {&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">abort&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="method-filter" class="paragraph-header">Method filter &lt;a
+href="#method-filter">&lt;/a>&lt;/h2>
+&lt;p>Modern web applications and REST APIs use a standard set of HTTP methods. Requests with deviant methods can be blocked by returning HTTP status code 405.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">@methodfilter `&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">!method(&amp;#39;GET&amp;#39;, &amp;#39;HEAD&amp;#39;, &amp;#39;OPTIONS&amp;#39;, &amp;#39;POST&amp;#39;, &amp;#39;PUT&amp;#39;, &amp;#39;PATCH&amp;#39;, &amp;#39;DELETE&amp;#39;)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">`&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">handle @methodfilter {&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">respond 405 {&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">body &amp;#34;method not allowed&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#50fa7b">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p class="warning">Keep in mind that some protocols built on top of HTTP might use different methods. Especially CardDAV, CalDAV and WebDAV bring in a bunch of custom HTTP methods!&lt;/p>
+&lt;/blockquote></description></item><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p>The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p>
 &lt;ol>
 &lt;li>&lt;strong>Wireguard&lt;/strong> for the VPN tunnel&lt;/li>
 &lt;li>&lt;strong>SSH&lt;/strong> server&lt;/li>
