@@ -1,113 +1,170 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ubuntu on knrdlog</title><link>https://knrdl.github.io/tags/ubuntu/</link><description>Recent content in Ubuntu on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/ubuntu/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu: configure custom dns resolver</title><link>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</link><pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</guid><description>&lt;p>DNS provisioning mostly works out of the box. But once for a cloud instance the DNS resolver had terrible response times. So I added another resolver.&lt;/p>
-&lt;p>Ubuntu uses &lt;code>netplan&lt;/code> as abstraction layer for network config.&lt;/p>
-&lt;p>&lt;code>sudo nano /etc/netplan/01-netcfg.yaml&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>...
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">nameservers&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">search&lt;/span>: [ invalid ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">addresses&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">127.0.0.1&lt;/span> &lt;span style="color:#6272a4"># the new resolver&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">123.123.123.1&lt;/span> &lt;span style="color:#6272a4"># provided dns resolver &lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">223.123.123.2&lt;/span> &lt;span style="color:#6272a4"># provided dns resolver&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>For a containerized DNS resolver see
-&lt;a href="https://github.com/knrdl/unbound-dns-server" target="_blank" rel="noopener noreferrer">here&lt;/a>.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">DNS resolvers should NOT be exposed to public networks (dns amplification attacks etc.)! So make sure to bind the dns server socket to localhost or the local network.&lt;/p>
-&lt;/blockquote>
-&lt;p>Finally, run: &lt;code>sudo netplan apply&lt;/code>&lt;/p>
-&lt;p>Check which DNS resolver is currently in use: &lt;code>sudo resolvectl status eth0&lt;/code> (filter for network interface &lt;code>eth0&lt;/code> is optional)&lt;/p></description></item><item><title>Minimal setup for a docker host</title><link>https://knrdl.github.io/posts/minimal-docker-host-setup/</link><pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-host-setup/</guid><description>&lt;h2 id="install-docker" class="paragraph-header">Install docker &lt;a
-href="#install-docker">&lt;/a>&lt;/h2>
-&lt;p>Comes with Docker Compose as &lt;code>$ docker compose&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get update
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install ca-certificates curl gnupg lsb-release
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;deb [arch=&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> &lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>lsb_release -cs&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> stable&amp;#34;&lt;/span> | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check docker is running: &lt;code>$ docker version&lt;/code>&lt;/p>
-&lt;h2 id="enable-swap" class="paragraph-header">Enable swap &lt;a
-href="#enable-swap">&lt;/a>&lt;/h2>
-&lt;p>If not enabled yet&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>fallocate -l 8G /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chmod &lt;span style="color:#bd93f9">600&lt;/span> /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkswap /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon --show
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add to &lt;code>/etc/fstab&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/swapfile swap swap defaults &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Optional reboot to check if it worked&lt;/p>
-&lt;h2 id="enable-fail2ban" class="paragraph-header">Enable fail2ban &lt;a
-href="#enable-fail2ban">&lt;/a>&lt;/h2>
-&lt;p>Necessary if ssh is accessible over the internet&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt install fail2ban
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> --now fail2ban
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Statistics of failed attempts:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>awk &lt;span style="color:#f1fa8c">&amp;#39;($(NF-1) = /Ban/){print $NF}&amp;#39;&lt;/span> /var/log/fail2ban.log | sort | uniq -c | sort -n
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>try to log in with wrong passwords to check banning is working!&lt;/p>
-&lt;h2 id="useful-shortcuts" class="paragraph-header">Useful shortcuts &lt;a
-href="#useful-shortcuts">&lt;/a>&lt;/h2>
-&lt;p>Add to &lt;code>~/.bashrc&lt;/code>:&lt;/p>
-&lt;pre tabindex="0">&lt;code>alias dc=&amp;#39;docker compose&amp;#39;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ubuntu on knrdlog</title><link>https://knrdl.github.io/tags/ubuntu/</link><description>Recent content in Ubuntu on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Thu, 25 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/ubuntu/index.xml" rel="self" type="application/rss+xml"/><item><title>Minimal setup for a rootless Podman host</title><link>https://knrdl.github.io/posts/minimal-podman-setup/</link><pubDate>Thu, 25 Dec 2025 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-podman-setup/</guid><description>&lt;h2 id="install-podman" class="paragraph-header"&gt;Install Podman &lt;a
+href="#install-podman"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt install podman podman-compose
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Compose can be called as &lt;code&gt;podman-compose&lt;/code&gt; with autocomplete.&lt;/p&gt;
+&lt;h3 id="allow-binding-to-privileged-ports-1024" class="paragraph-header"&gt;Allow binding to privileged ports (&amp;lt;1024) &lt;a
+href="#allow-binding-to-privileged-ports-1024"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;net.ipv4.ip_unprivileged_port_start=1&amp;#34;&lt;/span&gt; &amp;gt; /etc/sysctl.d/100-podman.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/usr/sbin/sysctl --system &lt;span style="color:#6272a4"&gt;# apply setting&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="start-containers-after-reboot-without-user-login" class="paragraph-header"&gt;Start containers after reboot without user login &lt;a
+href="#start-containers-after-reboot-without-user-login"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;loginctl enable-linger &lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="pull-images-from-docker-hub-without-explicit-dockerio-prefix" class="paragraph-header"&gt;Pull images from Docker Hub without explicit &lt;code&gt;docker.io&lt;/code&gt; prefix &lt;a
+href="#pull-images-from-docker-hub-without-explicit-dockerio-prefix"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.config/containers/registries.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;unqualified-search-registries = [&amp;#34;docker.io&amp;#34;]
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="useful-shortcuts" class="paragraph-header"&gt;Useful shortcuts &lt;a
+href="#useful-shortcuts"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.bashrc&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;deploy&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose --podman-run-args=--replace up -d --pull --build --remove-orphans&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;undeploy&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose down --remove-orphans&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;logs&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose logs --follow --names&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;stack&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test in a new terminal or run &lt;code&gt;source ~/.bashrc&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="housekeeping" class="paragraph-header"&gt;Housekeeping &lt;a
+href="#housekeeping"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;/etc/crontab:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 1 * * * root apt-get -y update &amp;amp;&amp;amp; apt-get autoremove --purge -y
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;User-specific &lt;code&gt;crontab -e&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 3 * * * /home/container/update_all.sh
+0 5 * * * podman system prune --force
+*/3 * * * * podman ps --filter health=unhealthy --format &amp;#34;podman restart {{.ID}}&amp;#34; | bash
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="stack-updater-script-homecontainerupdate_allsh" class="paragraph-header"&gt;Stack updater script &lt;code&gt;/home/container/update_all.sh&lt;/code&gt;: &lt;a
+href="#stack-updater-script-homecontainerupdate_allsh"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; /home/container
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;for&lt;/span&gt; d in */; &lt;span style="color:#ff79c6"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; podman-compose --podman-run-args&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;--replace up -d --pull --build --remove-orphans
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="auto-updater" class="paragraph-header"&gt;Auto-Updater &lt;a
+href="#auto-updater"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Alternatively, Podman&amp;rsquo;s built-in auto-updater can be enabled with:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now podman-auto-update.timer
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman auto-update --dry-run &lt;span style="color:#6272a4"&gt;# test&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Containers needs to be marked as updatable via label.
+However, it might not be sufficient to rebuild compose stacks that use &lt;code&gt;build:&lt;/code&gt; instead of &lt;code&gt;image:&lt;/code&gt; for services.&lt;/p&gt;
+&lt;h2 id="test" class="paragraph-header"&gt;Test &lt;a
+href="#test"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run -it --rm -p80:80 nginx:alpine
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="portainer" class="paragraph-header"&gt;Portainer &lt;a
+href="#portainer"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;systemctl --user &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now podman.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run -it --rm -p 9443:9443 --name portainer -v /run/user/1000/podman/podman.sock:/var/run/docker.sock portainer/portainer-ce
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Ubuntu: configure custom dns resolver</title><link>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</link><pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</guid><description>&lt;p&gt;DNS provisioning mostly works out of the box. But once for a cloud instance the DNS resolver had terrible response times. So I added another resolver.&lt;/p&gt;
+&lt;p&gt;Ubuntu uses &lt;code&gt;netplan&lt;/code&gt; as abstraction layer for network config.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo nano /etc/netplan/01-netcfg.yaml&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;nameservers&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;search&lt;/span&gt;: [ invalid ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;addresses&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;127.0.0.1&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# the new resolver&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;123.123.123.1&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# provided dns resolver &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;223.123.123.2&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# provided dns resolver&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For a containerized DNS resolver see
+&lt;a href="https://github.com/knrdl/unbound-dns-server" target="_blank" rel="noopener noreferrer"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;DNS resolvers should NOT be exposed to public networks (dns amplification attacks etc.)! So make sure to bind the dns server socket to localhost or the local network.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Finally, run: &lt;code&gt;sudo netplan apply&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Check which DNS resolver is currently in use: &lt;code&gt;sudo resolvectl status eth0&lt;/code&gt; (filter for network interface &lt;code&gt;eth0&lt;/code&gt; is optional)&lt;/p&gt;</description></item><item><title>Minimal setup for a docker host</title><link>https://knrdl.github.io/posts/minimal-docker-host-setup/</link><pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-host-setup/</guid><description>&lt;h2 id="install-docker" class="paragraph-header"&gt;Install docker &lt;a
+href="#install-docker"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Comes with Docker Compose as &lt;code&gt;$ docker compose&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install ca-certificates curl gnupg lsb-release
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;deb [arch=&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;dpkg --print-architecture&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt; signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; &lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;lsb_release -cs&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt; stable&amp;#34;&lt;/span&gt; | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Check docker is running: &lt;code&gt;$ docker version&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="enable-swap" class="paragraph-header"&gt;Enable swap &lt;a
+href="#enable-swap"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;If not enabled yet&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;fallocate -l 8G /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chmod &lt;span style="color:#bd93f9"&gt;600&lt;/span&gt; /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkswap /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo swapon /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo swapon --show
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add to &lt;code&gt;/etc/fstab&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/swapfile swap swap defaults &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Optional reboot to check if it worked&lt;/p&gt;
+&lt;h2 id="enable-fail2ban" class="paragraph-header"&gt;Enable fail2ban &lt;a
+href="#enable-fail2ban"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Necessary if ssh is accessible over the internet&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt install fail2ban
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now fail2ban
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Statistics of failed attempts:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;awk &lt;span style="color:#f1fa8c"&gt;&amp;#39;($(NF-1) = /Ban/){print $NF}&amp;#39;&lt;/span&gt; /var/log/fail2ban.log | sort | uniq -c | sort -n
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;try to log in with wrong passwords to check banning is working!&lt;/p&gt;
+&lt;h2 id="useful-shortcuts" class="paragraph-header"&gt;Useful shortcuts &lt;a
+href="#useful-shortcuts"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.bashrc&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;alias dc=&amp;#39;docker compose&amp;#39;
 alias dclf=&amp;#39;docker compose logs --follow&amp;#39;
 alias dcup=&amp;#39;docker compose up --detach --remove-orphans --build&amp;#39;
-&lt;/code>&lt;/pre>&lt;p>Test in new terminal or run &lt;code>source ~/.bashrc&lt;/code>&lt;/p>
-&lt;h2 id="docker-hardening" class="paragraph-header">Docker Hardening &lt;a
-href="#docker-hardening">&lt;/a>&lt;/h2>
-&lt;p>Disable inter container communication (ICC) via &lt;code>/etc/docker/daemon.json&lt;/code>, add:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;icc&amp;#34;&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Might also want to justify address pool, see
-&lt;a href="./minimal-docker-networks">other post&lt;/a>.&lt;/p>
-&lt;p>Don&amp;rsquo;t forget to apply changes: &lt;code>$ sudo systemctl restart docker.service&lt;/code>&lt;/p>
-&lt;h2 id="docker-housekeeping" class="paragraph-header">Docker Housekeeping &lt;a
-href="#docker-housekeeping">&lt;/a>&lt;/h2>
-&lt;p>/etc/crontab:&lt;/p>
-&lt;pre tabindex="0">&lt;code>0 1 * * * root apt-get -y update
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Test in new terminal or run &lt;code&gt;source ~/.bashrc&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="docker-hardening" class="paragraph-header"&gt;Docker Hardening &lt;a
+href="#docker-hardening"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Disable inter container communication (ICC) via &lt;code&gt;/etc/docker/daemon.json&lt;/code&gt;, add:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;&amp;#34;icc&amp;#34;&lt;/span&gt;: &lt;span style="color:#ff79c6"&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Might also want to justify address pool, see
+&lt;a href="./minimal-docker-networks"&gt;other post&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Don&amp;rsquo;t forget to apply changes: &lt;code&gt;$ sudo systemctl restart docker.service&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="docker-housekeeping" class="paragraph-header"&gt;Docker Housekeeping &lt;a
+href="#docker-housekeeping"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;/etc/crontab:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 1 * * * root apt-get -y update
 0 3 * * * root /apps/update_all.sh
 0 5 * * * root docker system prune --force
 */3 * * * * root /apps/restart_unhealthy.sh
-&lt;/code>&lt;/pre>&lt;p>Cronjob commands in detail:&lt;/p>
-&lt;h4 id="1-apt-get--y-update" class="paragraph-header">1. &lt;code>apt-get -y update&lt;/code> &lt;a
-href="#1-apt-get--y-update">&lt;/a>&lt;/h4>
-&lt;p>Will install safe package updates.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">Be aware that upgrades (&lt;code>apt-get upgrade&lt;/code>) must be still done manually from time to time.&lt;/p>
-&lt;/blockquote>
-&lt;h4 id="2-appsupdate_allsh" class="paragraph-header">2. &lt;code>/apps/update_all.sh&lt;/code> &lt;a
-href="#2-appsupdate_allsh">&lt;/a>&lt;/h4>
-&lt;p>Update all container images (might not be desired):&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> /apps
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">for&lt;/span> d in */; &lt;span style="color:#ff79c6">do&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose pull &lt;span style="color:#6272a4"># pull new images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose build --pull &lt;span style="color:#6272a4"># pull new base images and build new images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose up -d --remove-orphans &lt;span style="color:#6272a4"># start new containers from new images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> ..
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">done&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-docker-system-prune---force" class="paragraph-header">3. &lt;code>docker system prune --force&lt;/code> &lt;a
-href="#3-docker-system-prune---force">&lt;/a>&lt;/h4>
-&lt;p>Free disk space by cleaning up old docker entities, mostly stopped containers and images.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">&lt;code>docker system prune --force&lt;/code> might take some time. do not run container updates meanwhile as it could confuse docker (problems with port allocations)&lt;/p>
-&lt;/blockquote>
-&lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header">4. &lt;code>/apps/restart_unhealthy.sh&lt;/code> &lt;a
-href="#4-appsrestart_unhealthysh">&lt;/a>&lt;/h4>
-&lt;p>Docker detects failing health checks but will happily ignore them. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
-&lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer">extra container&lt;/a> or a really simple script:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>docker ps --filter &lt;span style="color:#8be9fd;font-style:italic">health&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>unhealthy --format &lt;span style="color:#f1fa8c">&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span> | bash
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="general-advice" class="paragraph-header">General advice &lt;a
-href="#general-advice">&lt;/a>&lt;/h2>
-&lt;ul>
-&lt;li>Add a &lt;code>mem_limit&lt;/code> for every container, don&amp;rsquo;t forget it!&lt;/li>
-&lt;li>If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li>
-&lt;li>If addressing a container in the network via it&amp;rsquo;s name fails then set the &lt;code>hostname&lt;/code> explicitly.&lt;/li>
-&lt;li>If volumes map to directories on the host (bind mounts) then create the folders before starting the containers. Otherwise docker will create the folders as user root which often causes permission problems.&lt;/li>
-&lt;/ul></description></item></channel></rss>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Cronjob commands in detail:&lt;/p&gt;
+&lt;h4 id="1-apt-get--y-update" class="paragraph-header"&gt;1. &lt;code&gt;apt-get -y update&lt;/code&gt; &lt;a
+href="#1-apt-get--y-update"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Will install safe package updates.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;Be aware that upgrades (&lt;code&gt;apt-get upgrade&lt;/code&gt;) must be still done manually from time to time.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="2-appsupdate_allsh" class="paragraph-header"&gt;2. &lt;code&gt;/apps/update_all.sh&lt;/code&gt; &lt;a
+href="#2-appsupdate_allsh"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Update all container images (might not be desired):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; /apps
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;for&lt;/span&gt; d in */; &lt;span style="color:#ff79c6"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker compose pull &lt;span style="color:#6272a4"&gt;# pull new images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker compose build --pull &lt;span style="color:#6272a4"&gt;# pull new base images and build new images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker compose up -d --remove-orphans &lt;span style="color:#6272a4"&gt;# start new containers from new images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="3-docker-system-prune---force" class="paragraph-header"&gt;3. &lt;code&gt;docker system prune --force&lt;/code&gt; &lt;a
+href="#3-docker-system-prune---force"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Free disk space by cleaning up old docker entities, mostly stopped containers and images.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;&lt;code&gt;docker system prune --force&lt;/code&gt; might take some time. do not run container updates meanwhile as it could confuse docker (problems with port allocations)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header"&gt;4. &lt;code&gt;/apps/restart_unhealthy.sh&lt;/code&gt; &lt;a
+href="#4-appsrestart_unhealthysh"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Docker detects failing health checks but will happily ignore them. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
+&lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer"&gt;extra container&lt;/a&gt; or a really simple script:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker ps --filter &lt;span style="color:#8be9fd;font-style:italic"&gt;health&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;unhealthy --format &lt;span style="color:#f1fa8c"&gt;&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span&gt; | bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="general-advice" class="paragraph-header"&gt;General advice &lt;a
+href="#general-advice"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Add a &lt;code&gt;mem_limit&lt;/code&gt; for every container, don&amp;rsquo;t forget it!&lt;/li&gt;
+&lt;li&gt;If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;If addressing a container in the network via it&amp;rsquo;s name fails then set the &lt;code&gt;hostname&lt;/code&gt; explicitly.&lt;/li&gt;
+&lt;li&gt;If volumes map to directories on the host (bind mounts) then create the folders before starting the containers. Otherwise docker will create the folders as user root which often causes permission problems.&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

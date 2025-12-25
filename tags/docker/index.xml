@@ -1,47 +1,104 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on knrdlog</title><link>https://knrdl.github.io/tags/docker/</link><description>Recent content in Docker on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 20 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p>The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p>
-&lt;ol>
-&lt;li>&lt;strong>Wireguard&lt;/strong> for the VPN tunnel&lt;/li>
-&lt;li>&lt;strong>SSH&lt;/strong> server&lt;/li>
-&lt;li>&lt;strong>Docker&lt;/strong> runtime, e.g. to run a time series database to collect sensor stats&lt;/li>
-&lt;/ol>
-&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
-href="#setup">&lt;/a>&lt;/h2>
-&lt;ol>
-&lt;li>flash PostmarketOS to a microSD card&lt;/li>
-&lt;li>run the wizard on the phone (to resize the root partition)&lt;/li>
-&lt;li>copy the PostmarketOS img-file to the microSD card&lt;/li>
-&lt;li>flash the img-file to the eMMC via &lt;code>dd&lt;/code>:
-&lt;a href="https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os" target="_blank" rel="noopener noreferrer">https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os&lt;/a>&lt;/li>
-&lt;li>remove the sd card and reboot&lt;/li>
-&lt;li>login (user:147147) and connect wifi&lt;/li>
-&lt;/ol>
-&lt;h3 id="ssh" class="paragraph-header">SSH &lt;a
-href="#ssh">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>start ssh server: &lt;code>sudo service sshd start&lt;/code>&lt;/li>
-&lt;li>enable ssh on boot: &lt;code>sudo rc-update add sshd&lt;/code>&lt;/li>
-&lt;li>connect to the phone: &lt;code>ssh user@pine64-pinephone&lt;/code>&lt;/li>
-&lt;li>in &lt;code>/etc/ssh/sshd_config&lt;/code>: set &lt;code>AllowTcpForwarding yes&lt;/code> to forward ports from the remote network to your local host&lt;/li>
-&lt;/ol>
-&lt;h3 id="system" class="paragraph-header">System &lt;a
-href="#system">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>check updates: &lt;code>sudo apk update&lt;/code> and &lt;code>sudo apk upgrade -a&lt;/code>&lt;/li>
-&lt;li>install some tools: &lt;code>sudo apk add htop curl nano&lt;/code>&lt;/li>
-&lt;li>remove unnecessary apps: &lt;code>sudo apk del gnome-maps gnome-calculator gnome-software gnome-clocks gnome-calendar gnome-text-editor gnome-contacts gnome-weather chatty portfolio lollypop firefox-esr evince calls megapixels postmarketos-default-camera postmarketos-welcome loupe flatpak&lt;/code>&lt;/li>
-&lt;li>list remaining packages: &lt;code>sudo apk list -I&lt;/code>&lt;/li>
-&lt;li>disable unnecessary services: &lt;code>sudo rc-update del bluetooth&lt;/code> and &lt;code>sudo rc-update del modemmanager&lt;/code>&lt;/li>
-&lt;li>list enabled services: &lt;code>sudo rc-update show&lt;/code>&lt;/li>
-&lt;/ol>
-&lt;h3 id="wireguard" class="paragraph-header">Wireguard &lt;a
-href="#wireguard">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>install: &lt;code>sudo apk add wireguard-tools-wg-quick wireguard-tools-openrc&lt;/code>&lt;/li>
-&lt;li>add wireguard config to &lt;code>/etc/wireguard/wg0.conf&lt;/code>, e.g.:&lt;/li>
-&lt;/ol>
-&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">[Interface]
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on knrdlog</title><link>https://knrdl.github.io/tags/docker/</link><description>Recent content in Docker on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Thu, 25 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Minimal setup for a rootless Podman host</title><link>https://knrdl.github.io/posts/minimal-podman-setup/</link><pubDate>Thu, 25 Dec 2025 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-podman-setup/</guid><description>&lt;h2 id="install-podman" class="paragraph-header"&gt;Install Podman &lt;a
+href="#install-podman"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt install podman podman-compose
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Compose can be called as &lt;code&gt;podman-compose&lt;/code&gt; with autocomplete.&lt;/p&gt;
+&lt;h3 id="allow-binding-to-privileged-ports-1024" class="paragraph-header"&gt;Allow binding to privileged ports (&amp;lt;1024) &lt;a
+href="#allow-binding-to-privileged-ports-1024"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;net.ipv4.ip_unprivileged_port_start=1&amp;#34;&lt;/span&gt; &amp;gt; /etc/sysctl.d/100-podman.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/usr/sbin/sysctl --system &lt;span style="color:#6272a4"&gt;# apply setting&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="start-containers-after-reboot-without-user-login" class="paragraph-header"&gt;Start containers after reboot without user login &lt;a
+href="#start-containers-after-reboot-without-user-login"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;loginctl enable-linger &lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="pull-images-from-docker-hub-without-explicit-dockerio-prefix" class="paragraph-header"&gt;Pull images from Docker Hub without explicit &lt;code&gt;docker.io&lt;/code&gt; prefix &lt;a
+href="#pull-images-from-docker-hub-without-explicit-dockerio-prefix"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.config/containers/registries.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;unqualified-search-registries = [&amp;#34;docker.io&amp;#34;]
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="useful-shortcuts" class="paragraph-header"&gt;Useful shortcuts &lt;a
+href="#useful-shortcuts"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.bashrc&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;deploy&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose --podman-run-args=--replace up -d --pull --build --remove-orphans&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;undeploy&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose down --remove-orphans&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;logs&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose logs --follow --names&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;stack&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test in a new terminal or run &lt;code&gt;source ~/.bashrc&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="housekeeping" class="paragraph-header"&gt;Housekeeping &lt;a
+href="#housekeeping"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;/etc/crontab:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 1 * * * root apt-get -y update &amp;amp;&amp;amp; apt-get autoremove --purge -y
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;User-specific &lt;code&gt;crontab -e&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 3 * * * /home/container/update_all.sh
+0 5 * * * podman system prune --force
+*/3 * * * * podman ps --filter health=unhealthy --format &amp;#34;podman restart {{.ID}}&amp;#34; | bash
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="stack-updater-script-homecontainerupdate_allsh" class="paragraph-header"&gt;Stack updater script &lt;code&gt;/home/container/update_all.sh&lt;/code&gt;: &lt;a
+href="#stack-updater-script-homecontainerupdate_allsh"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; /home/container
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;for&lt;/span&gt; d in */; &lt;span style="color:#ff79c6"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; podman-compose --podman-run-args&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;--replace up -d --pull --build --remove-orphans
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="auto-updater" class="paragraph-header"&gt;Auto-Updater &lt;a
+href="#auto-updater"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Alternatively, Podman&amp;rsquo;s built-in auto-updater can be enabled with:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now podman-auto-update.timer
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman auto-update --dry-run &lt;span style="color:#6272a4"&gt;# test&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Containers needs to be marked as updatable via label.
+However, it might not be sufficient to rebuild compose stacks that use &lt;code&gt;build:&lt;/code&gt; instead of &lt;code&gt;image:&lt;/code&gt; for services.&lt;/p&gt;
+&lt;h2 id="test" class="paragraph-header"&gt;Test &lt;a
+href="#test"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run -it --rm -p80:80 nginx:alpine
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="portainer" class="paragraph-header"&gt;Portainer &lt;a
+href="#portainer"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;systemctl --user &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now podman.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run -it --rm -p 9443:9443 --name portainer -v /run/user/1000/podman/podman.sock:/var/run/docker.sock portainer/portainer-ce
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p&gt;The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Wireguard&lt;/strong&gt; for the VPN tunnel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SSH&lt;/strong&gt; server&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Docker&lt;/strong&gt; runtime, e.g. to run a time series database to collect sensor stats&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="setup" class="paragraph-header"&gt;Setup &lt;a
+href="#setup"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;flash PostmarketOS to a microSD card&lt;/li&gt;
+&lt;li&gt;run the wizard on the phone (to resize the root partition)&lt;/li&gt;
+&lt;li&gt;copy the PostmarketOS img-file to the microSD card&lt;/li&gt;
+&lt;li&gt;flash the img-file to the eMMC via &lt;code&gt;dd&lt;/code&gt;:
+&lt;a href="https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os" target="_blank" rel="noopener noreferrer"&gt;https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;remove the sd card and reboot&lt;/li&gt;
+&lt;li&gt;login (user:147147) and connect wifi&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="ssh" class="paragraph-header"&gt;SSH &lt;a
+href="#ssh"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;start ssh server: &lt;code&gt;sudo service sshd start&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;enable ssh on boot: &lt;code&gt;sudo rc-update add sshd&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;connect to the phone: &lt;code&gt;ssh user@pine64-pinephone&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;in &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt;: set &lt;code&gt;AllowTcpForwarding yes&lt;/code&gt; to forward ports from the remote network to your local host&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="system" class="paragraph-header"&gt;System &lt;a
+href="#system"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;check updates: &lt;code&gt;sudo apk update&lt;/code&gt; and &lt;code&gt;sudo apk upgrade -a&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;install some tools: &lt;code&gt;sudo apk add htop curl nano&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;remove unnecessary apps: &lt;code&gt;sudo apk del gnome-maps gnome-calculator gnome-software gnome-clocks gnome-calendar gnome-text-editor gnome-contacts gnome-weather chatty portfolio lollypop firefox-esr evince calls megapixels postmarketos-default-camera postmarketos-welcome loupe flatpak&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;list remaining packages: &lt;code&gt;sudo apk list -I&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;disable unnecessary services: &lt;code&gt;sudo rc-update del bluetooth&lt;/code&gt; and &lt;code&gt;sudo rc-update del modemmanager&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;list enabled services: &lt;code&gt;sudo rc-update show&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="wireguard" class="paragraph-header"&gt;Wireguard &lt;a
+href="#wireguard"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;install: &lt;code&gt;sudo apk add wireguard-tools-wg-quick wireguard-tools-openrc&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;add wireguard config to &lt;code&gt;/etc/wireguard/wg0.conf&lt;/code&gt;, e.g.:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code class="language-conf" data-lang="conf"&gt;[Interface]
 PrivateKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 Address = 192.168.178.204/24
 DNS = 192.168.178.1
@@ -52,498 +109,498 @@ PresharedKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 AllowedIPs = 192.168.178.0/24,0.0.0.0/0
 Endpoint = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX.myfritz.net:12345
 PersistentKeepalive = 25
-&lt;/code>&lt;/pre>&lt;ol start="3">
-&lt;li>fix permissions: &lt;code>sudo chmod o-r /etc/wireguard/wg0.conf&lt;/code>&lt;/li>
-&lt;li>
-&lt;a href="https://wiki.alpinelinux.org/wiki/Configure_a_Wireguard_interface_%28wg%29" target="_blank" rel="noopener noreferrer">autostart&lt;/a>:&lt;/li>
-&lt;/ol>
-&lt;pre tabindex="0">&lt;code>sudo ln -s /etc/init.d/wg-quick /etc/init.d/wg-quick.wg0
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="3"&gt;
+&lt;li&gt;fix permissions: &lt;code&gt;sudo chmod o-r /etc/wireguard/wg0.conf&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href="https://wiki.alpinelinux.org/wiki/Configure_a_Wireguard_interface_%28wg%29" target="_blank" rel="noopener noreferrer"&gt;autostart&lt;/a&gt;:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;sudo ln -s /etc/init.d/wg-quick /etc/init.d/wg-quick.wg0
 sudo rc-update add wg-quick.wg0
 sudo service wg-quick.wg0 start
-&lt;/code>&lt;/pre>&lt;ol start="5">
-&lt;li>manual start: &lt;code>sudo wg-quick up wg0&lt;/code>&lt;/li>
-&lt;li>manual stop: &lt;code>sudo wg-quick down wg0&lt;/code>&lt;/li>
-&lt;/ol>
-&lt;h3 id="docker" class="paragraph-header">Docker &lt;a
-href="#docker">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>install: &lt;code>sudo apk add docker&lt;/code> (alpine sources typically provide an up-to-date version)&lt;/li>
-&lt;li>autostart: &lt;code>sudo rc-update add docker&lt;/code>&lt;/li>
-&lt;li>start: &lt;code>sudo service docker start&lt;/code>&lt;/li>
-&lt;li>the PinePhone can execute arm32v7 and also arm64v8 images&lt;/li>
-&lt;/ol></description></item><item><title>Scan all Docker images on a host for vulnerabilities</title><link>https://knrdl.github.io/posts/docker-trivy-scan/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-trivy-scan/</guid><description>&lt;p>Aquasec Trivy is an open-source vulnerability scanner for dependencies. It can be used to get a quick overview of all (tagged) Docker images on a host and their respective vulnerabilities. This can be done with the following Compose setup:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">services&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">secscan-reports&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: caddy:alpine
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">command&lt;/span>: caddy file-server --root /reports --browse --listen :8080
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">volumes&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - ./reports:/reports:ro
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">ports&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">127.0.0.1&lt;/span>:&lt;span style="color:#bd93f9">8080&lt;/span>:&lt;span style="color:#bd93f9">8080&lt;/span> &lt;span style="color:#6272a4"># exposed at http://localhost:8080/?sort=time&amp;amp;order=desc&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">trivy&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: aquasec/trivy
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">environment&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">DOCKER_HOST&lt;/span>: tcp://docker-socket-protector:2375
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">entrypoint&lt;/span>: [ &lt;span style="color:#f1fa8c">&amp;#34;/bin/sh&amp;#34;&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;-c&amp;#34;&lt;/span> ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">command&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - |&lt;span style="color:#f1fa8c">
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> sleep 10m
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> apk add docker-cli jq
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> while true; do
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> for imagename in $(docker ps -a --format=&amp;#34;{{.Image}}&amp;#34; | uniq); do
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> echo &amp;#34;Scanning image: $$imagename&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> filename=$(echo -n &amp;#34;$$imagename&amp;#34; | jq -sRr &amp;#39;@uri&amp;#39;)
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> rm &amp;#34;/reports/$$filename.html&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> nice -n 19 trivy image --no-progress --scanners vuln,secret,misconfig --severity MEDIUM,HIGH,CRITICAL --format template --template &amp;#34;@contrib/html.tpl&amp;#34; -o &amp;#34;/reports/$$filename.html&amp;#34; &amp;#34;$$imagename&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> done
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> sleep 24h
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> done&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">volumes&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - ./reports:/reports
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">cpus&lt;/span>: &lt;span style="color:#bd93f9">0.1&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">depends_on&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - docker-socket-protector
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">networks&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - internet
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - docker_socket
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">docker-socket-protector&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: knrdl/docker-socket-protector
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">hostname&lt;/span>: docker-socket-protector
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">restart&lt;/span>: always
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">read_only&lt;/span>: &lt;span style="color:#ff79c6">true&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">cap_drop&lt;/span>: [ all ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">environment&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">PROFILE&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;trivy&amp;#34;&lt;/span> &lt;span style="color:#6272a4"># read only access to only docker images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">LOG_REQUESTS&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;false&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">volumes&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - /var/run/docker.sock:/var/run/docker.sock
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">networks&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - docker_socket
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">mem_limit&lt;/span>: 100mb
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">networks&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">internet&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">internal&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">docker_socket&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">internal&lt;/span>: &lt;span style="color:#ff79c6">true&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">attachable&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Minimal setup for a docker host</title><link>https://knrdl.github.io/posts/minimal-docker-host-setup/</link><pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-host-setup/</guid><description>&lt;h2 id="install-docker" class="paragraph-header">Install docker &lt;a
-href="#install-docker">&lt;/a>&lt;/h2>
-&lt;p>Comes with Docker Compose as &lt;code>$ docker compose&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get update
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install ca-certificates curl gnupg lsb-release
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;deb [arch=&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c"> &lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>lsb_release -cs&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c"> stable&amp;#34;&lt;/span> | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get update
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check docker is running: &lt;code>$ docker version&lt;/code>&lt;/p>
-&lt;h2 id="enable-swap" class="paragraph-header">Enable swap &lt;a
-href="#enable-swap">&lt;/a>&lt;/h2>
-&lt;p>If not enabled yet&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>fallocate -l 8G /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chmod &lt;span style="color:#bd93f9">600&lt;/span> /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkswap /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon /swapfile
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo swapon --show
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Add to &lt;code>/etc/fstab&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/swapfile swap swap defaults &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Optional reboot to check if it worked&lt;/p>
-&lt;h2 id="enable-fail2ban" class="paragraph-header">Enable fail2ban &lt;a
-href="#enable-fail2ban">&lt;/a>&lt;/h2>
-&lt;p>Necessary if ssh is accessible over the internet&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt install fail2ban
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> --now fail2ban
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Statistics of failed attempts:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>awk &lt;span style="color:#f1fa8c">&amp;#39;($(NF-1) = /Ban/){print $NF}&amp;#39;&lt;/span> /var/log/fail2ban.log | sort | uniq -c | sort -n
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>try to log in with wrong passwords to check banning is working!&lt;/p>
-&lt;h2 id="useful-shortcuts" class="paragraph-header">Useful shortcuts &lt;a
-href="#useful-shortcuts">&lt;/a>&lt;/h2>
-&lt;p>Add to &lt;code>~/.bashrc&lt;/code>:&lt;/p>
-&lt;pre tabindex="0">&lt;code>alias dc=&amp;#39;docker compose&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="5"&gt;
+&lt;li&gt;manual start: &lt;code&gt;sudo wg-quick up wg0&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;manual stop: &lt;code&gt;sudo wg-quick down wg0&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="docker" class="paragraph-header"&gt;Docker &lt;a
+href="#docker"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;install: &lt;code&gt;sudo apk add docker&lt;/code&gt; (alpine sources typically provide an up-to-date version)&lt;/li&gt;
+&lt;li&gt;autostart: &lt;code&gt;sudo rc-update add docker&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;start: &lt;code&gt;sudo service docker start&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;the PinePhone can execute arm32v7 and also arm64v8 images&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>Scan all Docker images on a host for vulnerabilities</title><link>https://knrdl.github.io/posts/docker-trivy-scan/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-trivy-scan/</guid><description>&lt;p&gt;Aquasec Trivy is an open-source vulnerability scanner for dependencies. It can be used to get a quick overview of all (tagged) Docker images on a host and their respective vulnerabilities. This can be done with the following Compose setup:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;services&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;secscan-reports&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;image&lt;/span&gt;: caddy:alpine
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;command&lt;/span&gt;: caddy file-server --root /reports --browse --listen :8080
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;volumes&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - ./reports:/reports:ro
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;ports&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;127.0.0.1&lt;/span&gt;:&lt;span style="color:#bd93f9"&gt;8080&lt;/span&gt;:&lt;span style="color:#bd93f9"&gt;8080&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# exposed at http://localhost:8080/?sort=time&amp;amp;order=desc&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;trivy&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;image&lt;/span&gt;: aquasec/trivy
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;environment&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;DOCKER_HOST&lt;/span&gt;: tcp://docker-socket-protector:2375
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;entrypoint&lt;/span&gt;: [ &lt;span style="color:#f1fa8c"&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;, &lt;span style="color:#f1fa8c"&gt;&amp;#34;-c&amp;#34;&lt;/span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;command&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - |&lt;span style="color:#f1fa8c"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; sleep 10m
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; apk add docker-cli jq
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; while true; do
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; for imagename in $(docker ps -a --format=&amp;#34;{{.Image}}&amp;#34; | uniq); do
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; echo &amp;#34;Scanning image: $$imagename&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; filename=$(echo -n &amp;#34;$$imagename&amp;#34; | jq -sRr &amp;#39;@uri&amp;#39;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; rm &amp;#34;/reports/$$filename.html&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; nice -n 19 trivy image --no-progress --scanners vuln,secret,misconfig --severity MEDIUM,HIGH,CRITICAL --format template --template &amp;#34;@contrib/html.tpl&amp;#34; -o &amp;#34;/reports/$$filename.html&amp;#34; &amp;#34;$$imagename&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; done
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; sleep 24h
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;volumes&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - ./reports:/reports
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;cpus&lt;/span&gt;: &lt;span style="color:#bd93f9"&gt;0.1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;depends_on&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - docker-socket-protector
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;networks&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - internet
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - docker_socket
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;docker-socket-protector&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;image&lt;/span&gt;: knrdl/docker-socket-protector
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;hostname&lt;/span&gt;: docker-socket-protector
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;restart&lt;/span&gt;: always
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;read_only&lt;/span&gt;: &lt;span style="color:#ff79c6"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;cap_drop&lt;/span&gt;: [ all ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;environment&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;PROFILE&lt;/span&gt;: &lt;span style="color:#f1fa8c"&gt;&amp;#34;trivy&amp;#34;&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# read only access to only docker images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;LOG_REQUESTS&lt;/span&gt;: &lt;span style="color:#f1fa8c"&gt;&amp;#34;false&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;volumes&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - /var/run/docker.sock:/var/run/docker.sock
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;networks&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - docker_socket
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;mem_limit&lt;/span&gt;: 100mb
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;networks&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;internet&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;internal&lt;/span&gt;: &lt;span style="color:#ff79c6"&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;docker_socket&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;internal&lt;/span&gt;: &lt;span style="color:#ff79c6"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;attachable&lt;/span&gt;: &lt;span style="color:#ff79c6"&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Minimal setup for a docker host</title><link>https://knrdl.github.io/posts/minimal-docker-host-setup/</link><pubDate>Tue, 01 Nov 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-host-setup/</guid><description>&lt;h2 id="install-docker" class="paragraph-header"&gt;Install docker &lt;a
+href="#install-docker"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Comes with Docker Compose as &lt;code&gt;$ docker compose&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install ca-certificates curl gnupg lsb-release
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;deb [arch=&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;dpkg --print-architecture&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt; signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f1fa8c"&gt; &lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;lsb_release -cs&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt; stable&amp;#34;&lt;/span&gt; | sudo tee /etc/apt/sources.list.d/docker.list &amp;gt; /dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get update
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Check docker is running: &lt;code&gt;$ docker version&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="enable-swap" class="paragraph-header"&gt;Enable swap &lt;a
+href="#enable-swap"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;If not enabled yet&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;fallocate -l 8G /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chmod &lt;span style="color:#bd93f9"&gt;600&lt;/span&gt; /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkswap /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo swapon /swapfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo swapon --show
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add to &lt;code&gt;/etc/fstab&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/swapfile swap swap defaults &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Optional reboot to check if it worked&lt;/p&gt;
+&lt;h2 id="enable-fail2ban" class="paragraph-header"&gt;Enable fail2ban &lt;a
+href="#enable-fail2ban"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Necessary if ssh is accessible over the internet&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt install fail2ban
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now fail2ban
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Statistics of failed attempts:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;awk &lt;span style="color:#f1fa8c"&gt;&amp;#39;($(NF-1) = /Ban/){print $NF}&amp;#39;&lt;/span&gt; /var/log/fail2ban.log | sort | uniq -c | sort -n
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;try to log in with wrong passwords to check banning is working!&lt;/p&gt;
+&lt;h2 id="useful-shortcuts" class="paragraph-header"&gt;Useful shortcuts &lt;a
+href="#useful-shortcuts"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.bashrc&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;alias dc=&amp;#39;docker compose&amp;#39;
 alias dclf=&amp;#39;docker compose logs --follow&amp;#39;
 alias dcup=&amp;#39;docker compose up --detach --remove-orphans --build&amp;#39;
-&lt;/code>&lt;/pre>&lt;p>Test in new terminal or run &lt;code>source ~/.bashrc&lt;/code>&lt;/p>
-&lt;h2 id="docker-hardening" class="paragraph-header">Docker Hardening &lt;a
-href="#docker-hardening">&lt;/a>&lt;/h2>
-&lt;p>Disable inter container communication (ICC) via &lt;code>/etc/docker/daemon.json&lt;/code>, add:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;icc&amp;#34;&lt;/span>: &lt;span style="color:#ff79c6">false&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Might also want to justify address pool, see
-&lt;a href="./minimal-docker-networks">other post&lt;/a>.&lt;/p>
-&lt;p>Don&amp;rsquo;t forget to apply changes: &lt;code>$ sudo systemctl restart docker.service&lt;/code>&lt;/p>
-&lt;h2 id="docker-housekeeping" class="paragraph-header">Docker Housekeeping &lt;a
-href="#docker-housekeeping">&lt;/a>&lt;/h2>
-&lt;p>/etc/crontab:&lt;/p>
-&lt;pre tabindex="0">&lt;code>0 1 * * * root apt-get -y update
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Test in new terminal or run &lt;code&gt;source ~/.bashrc&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="docker-hardening" class="paragraph-header"&gt;Docker Hardening &lt;a
+href="#docker-hardening"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Disable inter container communication (ICC) via &lt;code&gt;/etc/docker/daemon.json&lt;/code&gt;, add:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;&amp;#34;icc&amp;#34;&lt;/span&gt;: &lt;span style="color:#ff79c6"&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Might also want to justify address pool, see
+&lt;a href="./minimal-docker-networks"&gt;other post&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Don&amp;rsquo;t forget to apply changes: &lt;code&gt;$ sudo systemctl restart docker.service&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="docker-housekeeping" class="paragraph-header"&gt;Docker Housekeeping &lt;a
+href="#docker-housekeeping"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;/etc/crontab:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 1 * * * root apt-get -y update
 0 3 * * * root /apps/update_all.sh
 0 5 * * * root docker system prune --force
 */3 * * * * root /apps/restart_unhealthy.sh
-&lt;/code>&lt;/pre>&lt;p>Cronjob commands in detail:&lt;/p>
-&lt;h4 id="1-apt-get--y-update" class="paragraph-header">1. &lt;code>apt-get -y update&lt;/code> &lt;a
-href="#1-apt-get--y-update">&lt;/a>&lt;/h4>
-&lt;p>Will install safe package updates.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">Be aware that upgrades (&lt;code>apt-get upgrade&lt;/code>) must be still done manually from time to time.&lt;/p>
-&lt;/blockquote>
-&lt;h4 id="2-appsupdate_allsh" class="paragraph-header">2. &lt;code>/apps/update_all.sh&lt;/code> &lt;a
-href="#2-appsupdate_allsh">&lt;/a>&lt;/h4>
-&lt;p>Update all container images (might not be desired):&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> /apps
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">for&lt;/span> d in */; &lt;span style="color:#ff79c6">do&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">echo&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$d&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose pull &lt;span style="color:#6272a4"># pull new images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose build --pull &lt;span style="color:#6272a4"># pull new base images and build new images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> docker compose up -d --remove-orphans &lt;span style="color:#6272a4"># start new containers from new images&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">cd&lt;/span> ..
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">done&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="3-docker-system-prune---force" class="paragraph-header">3. &lt;code>docker system prune --force&lt;/code> &lt;a
-href="#3-docker-system-prune---force">&lt;/a>&lt;/h4>
-&lt;p>Free disk space by cleaning up old docker entities, mostly stopped containers and images.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">&lt;code>docker system prune --force&lt;/code> might take some time. do not run container updates meanwhile as it could confuse docker (problems with port allocations)&lt;/p>
-&lt;/blockquote>
-&lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header">4. &lt;code>/apps/restart_unhealthy.sh&lt;/code> &lt;a
-href="#4-appsrestart_unhealthysh">&lt;/a>&lt;/h4>
-&lt;p>Docker detects failing health checks but will happily ignore them. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
-&lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer">extra container&lt;/a> or a really simple script:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/bin/bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>docker ps --filter &lt;span style="color:#8be9fd;font-style:italic">health&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>unhealthy --format &lt;span style="color:#f1fa8c">&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span> | bash
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="general-advice" class="paragraph-header">General advice &lt;a
-href="#general-advice">&lt;/a>&lt;/h2>
-&lt;ul>
-&lt;li>Add a &lt;code>mem_limit&lt;/code> for every container, don&amp;rsquo;t forget it!&lt;/li>
-&lt;li>If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li>
-&lt;li>If addressing a container in the network via it&amp;rsquo;s name fails then set the &lt;code>hostname&lt;/code> explicitly.&lt;/li>
-&lt;li>If volumes map to directories on the host (bind mounts) then create the folders before starting the containers. Otherwise docker will create the folders as user root which often causes permission problems.&lt;/li>
-&lt;/ul></description></item><item><title>Docker Registry Mirror</title><link>https://knrdl.github.io/posts/docker-registry-mirror/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-registry-mirror/</guid><description>&lt;h2 id="concept" class="paragraph-header">Concept &lt;a
-href="#concept">&lt;/a>&lt;/h2>
-&lt;p>A docker-registry stores docker-images, composed of:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>metadata&lt;/strong>: image names and tags&lt;/li>
-&lt;li>&lt;strong>blobs&lt;/strong>: actual image contents&lt;/li>
-&lt;/ul>
-&lt;p>The most famous public docker-registry is
-&lt;a href="https://hub.docker.com" target="_blank" rel="noopener noreferrer">DockerHub&lt;/a>. DockerHub applies a rate-limiting for downloading blobs. The fetching of metadata is not sanctioned. Therefore, a local docker-registry mirror can be used to circumvent DockerHub&amp;rsquo;s rate-limiting. This might also reduce the bandwidth usage of your ISP connection.&lt;/p>
-&lt;p>For metadata retrieval the docker-registry mirror will serve as a simple proxy server to the upstream (e.g. DockerHub). If you retrieve a docker-image via the mirror the blobs are stored locally by the mirror. That way the mirror can serve as a cache for further requests. For example, when multiple servers deploy the same docker-image, only the first request will be a cache-miss. As the metadata records are always fetched from upstream, there is no risk of serving outdated docker-images.&lt;/p>
-&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
-href="#setup">&lt;/a>&lt;/h2>
-&lt;h3 id="server" class="paragraph-header">Server &lt;a
-href="#server">&lt;/a>&lt;/h3>
-&lt;p>The registry mirror is a simple docker container:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">version&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#39;3.9&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">services&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">registry-mirror&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">image&lt;/span>: registry:2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">hostname&lt;/span>: registry-mirror
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">environment&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">REGISTRY_PROXY_REMOTEURL&lt;/span>: https://registry-1.docker.io &lt;span style="color:#6272a4"># Mirror DockerHub&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">networks&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - reverse_proxy_net &lt;span style="color:#6272a4"># just an example&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">deploy&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">resources&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">reservations&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">memory&lt;/span>: 16m
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">limits&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">memory&lt;/span>: 250m
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>It should always be exposed via HTTPS to the clients, by a tls-terminating reverse-proxy. The registry-mirror runs http on port 5000.&lt;/p>
-&lt;p>Cached images can be listed via &lt;code>curl https://registry-mirror.example.org/v2/_catalog&lt;/code>.&lt;/p>
-&lt;h3 id="clients" class="paragraph-header">Clients &lt;a
-href="#clients">&lt;/a>&lt;/h3>
-&lt;h4 id="docker" class="paragraph-header">Docker &lt;a
-href="#docker">&lt;/a>&lt;/h4>
-&lt;blockquote>
-&lt;p class="warning">On the server which should execute the registry-mirror run &lt;code>docker pull registry:2&lt;/code> first, to prevent the chicken or egg problem.&lt;/p>
-&lt;/blockquote>
-&lt;p>To make Docker use the registry mirror, add to &lt;code>/etc/docker/daemon.json&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;registry-mirrors&amp;#34;&lt;/span>: [
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;https://registry-mirror.example.org&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then restart the docker daemon: &lt;code>sudo systemctl restart docker.service&lt;/code>&lt;/p>
-&lt;h4 id="podman" class="paragraph-header">Podman &lt;a
-href="#podman">&lt;/a>&lt;/h4>
-&lt;p>Add to &lt;code>$HOME/.config/containers/registries.conf&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[[registry.mirror]]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">location&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;registry-mirror.example.org&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="kaniko" class="paragraph-header">Kaniko &lt;a
-href="#kaniko">&lt;/a>&lt;/h4>
-&lt;p>To make Kaniko use the mirror, run it with the flag:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>/kaniko/executor --registry-mirror&lt;span style="color:#ff79c6">=&lt;/span>registry-mirror.example.org ...
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="operations" class="paragraph-header">Operations &lt;a
-href="#operations">&lt;/a>&lt;/h2>
-&lt;p>The registry mirror might be part of the critical path for high availability. Make sure all hosts are provided with their docker-images before shutting it down for maintenance etc.&lt;/p>
-&lt;p>There is no authentication in place, anybody with access can download arbitrary images. Therefore, the registry mirror should only be exposed to the server&amp;rsquo;s network segment.&lt;/p>
-&lt;p>There is no storage limit per default and old blobs will not be pruned automatically. An attacker might crash the server by querying too many images. As countermeasure a storage quota should be applied. Also restarting the mirror container from time to time (e.g. patch-day server reboots) helps to reduce the storage usage.&lt;/p></description></item><item><title>Conceptualize Docker Networks to be minimal</title><link>https://knrdl.github.io/posts/minimal-docker-networks/</link><pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-networks/</guid><description>&lt;h2 id="introduction" class="paragraph-header">Introduction &lt;a
-href="#introduction">&lt;/a>&lt;/h2>
-&lt;p>There are three kinds of private ip ranges:&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>Class&lt;/th>
-&lt;th>CIDR&lt;/th>
-&lt;th>Last IP&lt;/th>
-&lt;th>IPs&lt;/th>
-&lt;th>Typical Usage&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>A&lt;/td>
-&lt;td>10.0.0.0/8&lt;/td>
-&lt;td>10.255.255.255&lt;/td>
-&lt;td>16,777,216&lt;/td>
-&lt;td>Big Company Network&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>B&lt;/td>
-&lt;td>172.16.0.0/12&lt;/td>
-&lt;td>172.31.255.255&lt;/td>
-&lt;td>1,048,576&lt;/td>
-&lt;td>&lt;em>&lt;strong>Docker Network!&lt;/strong>&lt;/em>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>C&lt;/td>
-&lt;td>192.168.0.0/16&lt;/td>
-&lt;td>192.168.255.255&lt;/td>
-&lt;td>65,536&lt;/td>
-&lt;td>Home Network&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>So there are about a million IPs available for docker containers in docker networks. However, docker per default splits them up as /24 CIDRs. Therefore, every docker network can include up to
-&lt;math>
-&lt;msup>
-&lt;mi>2&lt;/mi>
-&lt;mrow>
-(&lt;mn>32&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>24&lt;/mn>)
-&lt;/mrow>
-&lt;/msup>
-&lt;mo>-&lt;/mo>
-&lt;mn>2&lt;/mn>
-&lt;mo>=&lt;/mo>
-&lt;mn>254&lt;/mn>
-&lt;/math>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Cronjob commands in detail:&lt;/p&gt;
+&lt;h4 id="1-apt-get--y-update" class="paragraph-header"&gt;1. &lt;code&gt;apt-get -y update&lt;/code&gt; &lt;a
+href="#1-apt-get--y-update"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Will install safe package updates.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;Be aware that upgrades (&lt;code&gt;apt-get upgrade&lt;/code&gt;) must be still done manually from time to time.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="2-appsupdate_allsh" class="paragraph-header"&gt;2. &lt;code&gt;/apps/update_all.sh&lt;/code&gt; &lt;a
+href="#2-appsupdate_allsh"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Update all container images (might not be desired):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; /apps
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;for&lt;/span&gt; d in */; &lt;span style="color:#ff79c6"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker compose pull &lt;span style="color:#6272a4"&gt;# pull new images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker compose build --pull &lt;span style="color:#6272a4"&gt;# pull new base images and build new images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; docker compose up -d --remove-orphans &lt;span style="color:#6272a4"&gt;# start new containers from new images&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="3-docker-system-prune---force" class="paragraph-header"&gt;3. &lt;code&gt;docker system prune --force&lt;/code&gt; &lt;a
+href="#3-docker-system-prune---force"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Free disk space by cleaning up old docker entities, mostly stopped containers and images.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;&lt;code&gt;docker system prune --force&lt;/code&gt; might take some time. do not run container updates meanwhile as it could confuse docker (problems with port allocations)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="4-appsrestart_unhealthysh" class="paragraph-header"&gt;4. &lt;code&gt;/apps/restart_unhealthy.sh&lt;/code&gt; &lt;a
+href="#4-appsrestart_unhealthysh"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Docker detects failing health checks but will happily ignore them. Docker Swarm (or Kubernetes) on the other hand will restart unhealthy containers. That missing feature can be corrected with an
+&lt;a href="https://github.com/willfarrell/docker-autoheal" target="_blank" rel="noopener noreferrer"&gt;extra container&lt;/a&gt; or a really simple script:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker ps --filter &lt;span style="color:#8be9fd;font-style:italic"&gt;health&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;unhealthy --format &lt;span style="color:#f1fa8c"&gt;&amp;#34;docker restart {{.ID}}&amp;#34;&lt;/span&gt; | bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="general-advice" class="paragraph-header"&gt;General advice &lt;a
+href="#general-advice"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Add a &lt;code&gt;mem_limit&lt;/code&gt; for every container, don&amp;rsquo;t forget it!&lt;/li&gt;
+&lt;li&gt;If a container has no need to connect to the world (internet or local network) then make all attached Docker Networks &amp;ldquo;internal&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;If addressing a container in the network via it&amp;rsquo;s name fails then set the &lt;code&gt;hostname&lt;/code&gt; explicitly.&lt;/li&gt;
+&lt;li&gt;If volumes map to directories on the host (bind mounts) then create the folders before starting the containers. Otherwise docker will create the folders as user root which often causes permission problems.&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Docker Registry Mirror</title><link>https://knrdl.github.io/posts/docker-registry-mirror/</link><pubDate>Wed, 21 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-registry-mirror/</guid><description>&lt;h2 id="concept" class="paragraph-header"&gt;Concept &lt;a
+href="#concept"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;A docker-registry stores docker-images, composed of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;metadata&lt;/strong&gt;: image names and tags&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;blobs&lt;/strong&gt;: actual image contents&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The most famous public docker-registry is
+&lt;a href="https://hub.docker.com" target="_blank" rel="noopener noreferrer"&gt;DockerHub&lt;/a&gt;. DockerHub applies a rate-limiting for downloading blobs. The fetching of metadata is not sanctioned. Therefore, a local docker-registry mirror can be used to circumvent DockerHub&amp;rsquo;s rate-limiting. This might also reduce the bandwidth usage of your ISP connection.&lt;/p&gt;
+&lt;p&gt;For metadata retrieval the docker-registry mirror will serve as a simple proxy server to the upstream (e.g. DockerHub). If you retrieve a docker-image via the mirror the blobs are stored locally by the mirror. That way the mirror can serve as a cache for further requests. For example, when multiple servers deploy the same docker-image, only the first request will be a cache-miss. As the metadata records are always fetched from upstream, there is no risk of serving outdated docker-images.&lt;/p&gt;
+&lt;h2 id="setup" class="paragraph-header"&gt;Setup &lt;a
+href="#setup"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id="server" class="paragraph-header"&gt;Server &lt;a
+href="#server"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The registry mirror is a simple docker container:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;version&lt;/span&gt;: &lt;span style="color:#f1fa8c"&gt;&amp;#39;3.9&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;services&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;registry-mirror&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;image&lt;/span&gt;: registry:2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;hostname&lt;/span&gt;: registry-mirror
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;environment&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;REGISTRY_PROXY_REMOTEURL&lt;/span&gt;: https://registry-1.docker.io &lt;span style="color:#6272a4"&gt;# Mirror DockerHub&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;networks&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - reverse_proxy_net &lt;span style="color:#6272a4"&gt;# just an example&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;deploy&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;resources&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;reservations&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;memory&lt;/span&gt;: 16m
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;limits&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;memory&lt;/span&gt;: 250m
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It should always be exposed via HTTPS to the clients, by a tls-terminating reverse-proxy. The registry-mirror runs http on port 5000.&lt;/p&gt;
+&lt;p&gt;Cached images can be listed via &lt;code&gt;curl https://registry-mirror.example.org/v2/_catalog&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id="clients" class="paragraph-header"&gt;Clients &lt;a
+href="#clients"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;h4 id="docker" class="paragraph-header"&gt;Docker &lt;a
+href="#docker"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;On the server which should execute the registry-mirror run &lt;code&gt;docker pull registry:2&lt;/code&gt; first, to prevent the chicken or egg problem.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;To make Docker use the registry mirror, add to &lt;code&gt;/etc/docker/daemon.json&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;&amp;#34;registry-mirrors&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;https://registry-mirror.example.org&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then restart the docker daemon: &lt;code&gt;sudo systemctl restart docker.service&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id="podman" class="paragraph-header"&gt;Podman &lt;a
+href="#podman"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Add to &lt;code&gt;$HOME/.config/containers/registries.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[[registry.mirror]]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;location&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;registry-mirror.example.org&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="kaniko" class="paragraph-header"&gt;Kaniko &lt;a
+href="#kaniko"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;To make Kaniko use the mirror, run it with the flag:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/kaniko/executor --registry-mirror&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;registry-mirror.example.org ...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="operations" class="paragraph-header"&gt;Operations &lt;a
+href="#operations"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The registry mirror might be part of the critical path for high availability. Make sure all hosts are provided with their docker-images before shutting it down for maintenance etc.&lt;/p&gt;
+&lt;p&gt;There is no authentication in place, anybody with access can download arbitrary images. Therefore, the registry mirror should only be exposed to the server&amp;rsquo;s network segment.&lt;/p&gt;
+&lt;p&gt;There is no storage limit per default and old blobs will not be pruned automatically. An attacker might crash the server by querying too many images. As countermeasure a storage quota should be applied. Also restarting the mirror container from time to time (e.g. patch-day server reboots) helps to reduce the storage usage.&lt;/p&gt;</description></item><item><title>Conceptualize Docker Networks to be minimal</title><link>https://knrdl.github.io/posts/minimal-docker-networks/</link><pubDate>Sat, 10 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-docker-networks/</guid><description>&lt;h2 id="introduction" class="paragraph-header"&gt;Introduction &lt;a
+href="#introduction"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;There are three kinds of private ip ranges:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Class&lt;/th&gt;
+&lt;th&gt;CIDR&lt;/th&gt;
+&lt;th&gt;Last IP&lt;/th&gt;
+&lt;th&gt;IPs&lt;/th&gt;
+&lt;th&gt;Typical Usage&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;A&lt;/td&gt;
+&lt;td&gt;10.0.0.0/8&lt;/td&gt;
+&lt;td&gt;10.255.255.255&lt;/td&gt;
+&lt;td&gt;16,777,216&lt;/td&gt;
+&lt;td&gt;Big Company Network&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;B&lt;/td&gt;
+&lt;td&gt;172.16.0.0/12&lt;/td&gt;
+&lt;td&gt;172.31.255.255&lt;/td&gt;
+&lt;td&gt;1,048,576&lt;/td&gt;
+&lt;td&gt;&lt;em&gt;&lt;strong&gt;Docker Network!&lt;/strong&gt;&lt;/em&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;C&lt;/td&gt;
+&lt;td&gt;192.168.0.0/16&lt;/td&gt;
+&lt;td&gt;192.168.255.255&lt;/td&gt;
+&lt;td&gt;65,536&lt;/td&gt;
+&lt;td&gt;Home Network&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;So there are about a million IPs available for docker containers in docker networks. However, docker per default splits them up as /24 CIDRs. Therefore, every docker network can include up to
+&lt;math&gt;
+&lt;msup&gt;
+&lt;mi&gt;2&lt;/mi&gt;
+&lt;mrow&gt;
+(&lt;mn&gt;32&lt;/mn&gt;&lt;mo&gt;-&lt;/mo&gt;&lt;mn&gt;24&lt;/mn&gt;)
+&lt;/mrow&gt;
+&lt;/msup&gt;
+&lt;mo&gt;-&lt;/mo&gt;
+&lt;mn&gt;2&lt;/mn&gt;
+&lt;mo&gt;=&lt;/mo&gt;
+&lt;mn&gt;254&lt;/mn&gt;
+&lt;/math&gt;
 Container-IPs. The total number of docker networks is limited to
-&lt;math>
-&lt;msup>
-&lt;mi>2&lt;/mi>
-&lt;mrow>
-(&lt;mn>24&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>12&lt;/mn>)
-&lt;/mrow>
-&lt;/msup>
-&lt;mo>=&lt;/mo>
-&lt;mn>4096&lt;/mn>
-&lt;/math>.&lt;/p>
-&lt;p>While these defaults are okay, it&amp;rsquo;s possible to run out of address spaces, &lt;strong>especially if private Class B addresses are used elsewhere&lt;/strong> (by other applications/routing). Using more docker networks with fewer containers per network has two benefits: Security and Safety.&lt;/p>
-&lt;h2 id="security--safety" class="paragraph-header">Security &amp;amp; Safety &lt;a
-href="#security--safety">&lt;/a>&lt;/h2>
-&lt;ol>
-&lt;li>
-&lt;p>Scenario with three containers: gateway, appserver, database.&lt;/p>
-&lt;p>It&amp;rsquo;s easy to put all three of them in a single docker network. But this would allow the gateway to access the database, which is not required. Therefore, 2 docker networks should be utilized.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Scenario with three containers: gateway, appserver1, appserver2.&lt;/p>
-&lt;p>Using a single network to connect the appservers to the gateway, allows appserver1 to talk to appserver2. This might not be desired, if app1 and app2 are two distinct applications.&lt;/p>
-&lt;/li>
-&lt;/ol>
-&lt;p>The security gain is a better separation of trust levels, following the principle of least privilege. Anyway, an advanced attacker can still try OSI-Layer 2 (&amp;ldquo;MAC-Level&amp;rdquo;) sniffing attacks.&lt;/p>
-&lt;p>The bigger gain is the safety of the container environment. The impact of configuration mistakes is limited. The architecture is clearer: Confusion about what service the hostname &amp;ldquo;app&amp;rdquo; belongs to is hopefully prevented.&lt;/p>
-&lt;p>The cost of this approach is that there might be more docker networks needed than the 4096 possible ones. A config change allows to create more networks.&lt;/p>
-&lt;blockquote>
-&lt;p class="info">This is just an example! 4096 is a reasonable amount of networks. But if there is only a subspace of private class B addresses available or class C must be used, then things might look different. Per default max 256 docker networks can be produced in class C, which could be limiting.&lt;/p>
-&lt;/blockquote>
-&lt;h2 id="configuration" class="paragraph-header">Configuration &lt;a
-href="#configuration">&lt;/a>&lt;/h2>
-&lt;p>In &lt;code>/etc/docker/daemon.json&lt;/code> add:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-json" data-lang="json">&lt;span style="display:flex;">&lt;span>{
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;default-address-pools&amp;#34;&lt;/span>: [
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;base&amp;#34;&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;172.16.0.0/12&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">&amp;#34;size&amp;#34;&lt;/span>: &lt;span style="color:#bd93f9">27&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>This will use the complete Class B private namespace (&lt;code>172.16.0.0/12&lt;/code>). The CIDR per docker network is /27.&lt;/p>
-&lt;p>Max docker networks per host:
-&lt;math>
-&lt;msup>
-&lt;mi>2&lt;/mi>
-&lt;mrow>
-(&lt;mn>27&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>12&lt;/mn>)
-&lt;/mrow>
-&lt;/msup>
-&lt;mo>=&lt;/mo>
-&lt;mn>32,768&lt;/mn>
-&lt;/math>&lt;/p>
-&lt;p>Max containers per docker network:
-&lt;math>
-&lt;msup>
-&lt;mi>2&lt;/mi>
-&lt;mrow>
-(&lt;mn>32&lt;/mn>&lt;mo>-&lt;/mo>&lt;mn>27&lt;/mn>)
-&lt;/mrow>
-&lt;/msup>
-&lt;mo>-&lt;/mo>
-&lt;mn>2&lt;/mn>
-&lt;mo>=&lt;/mo>
-&lt;mn>30&lt;/mn>
-&lt;/math>&lt;/p></description></item><item><title>Strategies for Docker image tagging</title><link>https://knrdl.github.io/posts/docker-image-tagging/</link><pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-image-tagging/</guid><description>&lt;p>Each docker image has a URI-style name like &lt;code>domain.tld:port/directory/subdir:tag&lt;/code>. The image name &lt;code>ubuntu&lt;/code> is just a shortcut for &lt;code>docker.io/library/ubuntu:latest&lt;/code>. The default tag (if omitted) is &lt;code>latest&lt;/code>. Docker (or &lt;abbr title="Open Container Initiative">OCI&lt;/abbr>) images should be built automatically in &lt;abbr title="Continuous Integration">CI&lt;/abbr>-Pipelines. There are multiple strategies for tagging those images:&lt;/p>
-&lt;ol>
-&lt;li>
-&lt;p>&lt;strong>Docker Image Tagging via Git Commit Tags:&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>Relevant git commits are tagged as versions, e.g. &lt;code>v3.2.1&lt;/code>&lt;/li>
-&lt;li>The corresponding docker image gets tagged as &lt;code>3.2.1&lt;/code>. If there are multiple image flavours, maybe also &lt;code>3.2.1-alpine&lt;/code> or &lt;code>v3.2.1-slim&lt;/code>&lt;/li>
-&lt;li>
-&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">Semantic Versioning&lt;/a> is also applicable: In addition to the image tag &lt;code>3.2.1&lt;/code>, the tags &lt;code>3.2&lt;/code> and &lt;code>3&lt;/code> should also be assigned, if &lt;code>3.2.1&lt;/code> is the newest version for both version series.&lt;/li>
-&lt;li>The image created from the newest git commit tag (the newest version) must also be tagged as &lt;code>latest&lt;/code>&lt;/li>
-&lt;li>Docker images without associated git commit tag can be tagged as &lt;code>edge&lt;/code> (convention) or something like &lt;code>unstable&lt;/code>, &lt;code>nightly&lt;/code> etc.&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>Docker Image Tagging via Git Commit Hash:&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>If there are no distinguishable software versions, the first 6 letters of the git commit hash (SHA) can be used to tag an image.&lt;/li>
-&lt;li>The &lt;code>latest&lt;/code> tag gets assigned manually to a docker image.&lt;/li>
-&lt;li>Pro: It&amp;rsquo;s easy to find the belonging image for a git commit. So an old version can easily be deployed if the newer one fails. Therefore, you must know which commit introduced the problem.&lt;/li>
-&lt;li>Contra:
-&lt;ul>
-&lt;li>Produces many tagged images =&amp;gt; Docker Image Tag Deletion Policy must be enforced&lt;/li>
-&lt;li>Tags will only be sortable by their creation date (might be wrong in case of manual intervention)&lt;/li>
-&lt;li>It&amp;rsquo;s hard to know which tags bring in small or big changes (missing
-&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer">semantic versioning&lt;/a>)&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>Strategy is only useful if there is no software versioning scheme in place and also git push&amp;rsquo;s to the main branch are not too frequent.&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>Docker Image Tagging for the Bleeding Edge:&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>There is not dedicated tagging at all&lt;/li>
-&lt;li>The newest commit gets tagged as &lt;code>latest&lt;/code>&lt;/li>
-&lt;li>Move fast and break things&lt;/li>
-&lt;li>To reproduce old versions the old image must be built again (make sure to pin the versions of all dependencies your software needs). Alternatively important old versions can be tagged manually.&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>Docker Image Tagging with Timestamps:&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>Each docker image tag is a timestamp of the build date.&lt;/li>
-&lt;li>The last run build is tagged as &lt;code>latest&lt;/code>&lt;/li>
-&lt;li>Problematic if old versions are built via CI-Pipelines at a later time&lt;/li>
-&lt;li>Useful for nightly builds only. Produce tags like &lt;code>nightly-YYYYMMDD&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ol>
-&lt;p>Which strategy is right for me? It depends! Maybe a combination &amp;hellip;&lt;/p>
-&lt;hr>
-&lt;h3 id="tldr--opinion" class="paragraph-header">TL;DR / Opinion &lt;a
-href="#tldr--opinion">&lt;/a>&lt;/h3>
-&lt;ul>
-&lt;li>&lt;strong>Use git tags for software versioning&lt;/strong>
-&lt;ul>
-&lt;li>If the newest git tag is &lt;code>v3.2.1&lt;/code>, the built docker image should be tagged as &lt;code>3.2.1&lt;/code>, &lt;code>3.2&lt;/code> and &lt;code>3&lt;/code>.&lt;/li>
-&lt;li>The newest software version (by git tag) additionally gets tagged as &lt;code>latest&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>Building a docker image from a git commit without tag, the resulting docker image should be tagged as &lt;code>edge&lt;/code>&lt;/li>
-&lt;/ul></description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
-user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p>
-&lt;p>But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
-the host is still unproblematic, e.g. &lt;code>docker run -p 80:8080 ...&lt;/code> will bind port 8080 of the container to port 80 on the
-host.&lt;/p>
-&lt;p>But what if two services share a Docker Network to reach each other? Then requests have to be made to
-e.g. &lt;strong>http://service2:8080/api&lt;/strong> (includes the port 8080). This is a bit ugly because &lt;strong>service1&lt;/strong> now needs to contain
-runtime information about &lt;strong>service2&lt;/strong> (contradicts goal of loose coupling). An endpoint like &lt;strong>http://service2/api&lt;/strong> (defaults to port 80) is preferable.&lt;/p>
-&lt;p>The following Dockerfile achieves that goal:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">FROM&lt;/span>&lt;span style="color:#f1fa8c"> python:3-alpine&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># allow non privileged user to run server on port 80&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> apk add --no-cache libcap &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f1fa8c">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c">&lt;/span> setcap &lt;span style="color:#f1fa8c">&amp;#39;cap_net_bind_service=+ep&amp;#39;&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>readlink -f &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>which python3&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f1fa8c">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c">&lt;/span> apk del libcap
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">EXPOSE&lt;/span>&lt;span style="color:#f1fa8c"> 80/tcp&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> adduser --home /home/appname --disabled-password --shell /bin/false --uid &lt;span style="color:#bd93f9">1000&lt;/span> appname
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># all commands after the USER-command will be executed as user `appname`&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">USER&lt;/span>&lt;span style="color:#f1fa8c"> appname&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> whoami
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># now the app can run on port 80 as non root user&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">CMD&lt;/span> python3 myapp.py
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The program &lt;code>setcap&lt;/code> is used to give the executable (e.g. &lt;code>/usr/bin/python3&lt;/code> or &lt;code>/bin/myapp&lt;/code>) the necessary capability (permission). It&amp;rsquo;s not needed afterwards, so it might be deleted to keep the image small.&lt;/p>
-&lt;blockquote>
-&lt;p class="info">If you work with &lt;abbr title="Advanced Packaging Tool">APT&lt;/abbr> (Ubuntu/Debian images) just use the
-package &lt;code>libcap2-bin&lt;/code> instead of &lt;code>libcap&lt;/code>.&lt;/p>
-&lt;/blockquote></description></item><item><title>Docker Swarm: `error creating vxlan interface: file exists`</title><link>https://knrdl.github.io/posts/docker-swarm-error-create-vxlan/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-swarm-error-create-vxlan/</guid><description>&lt;p>If docker swarm rejects to deploy a service because network interface already exists:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ docker service ps stackname_appname --no-trunc
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Rejected &lt;span style="color:#bd93f9">34&lt;/span> seconds ago &lt;span style="color:#f1fa8c">&amp;#34;network sandbox join failed: subnet sandbox join failed for &amp;#34;&lt;/span>10.0.14.0/24&lt;span style="color:#f1fa8c">&amp;#34;: error creating vxlan interface: file exists
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Then find all problematic interfaces on the host and delete them:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ ip -d link show | grep vx | grep DOWN
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo ip link delete vx-001095-owhr8 &lt;span style="color:#6272a4"># for each entry&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now redeploying should work!&lt;/p></description></item><item><title>Svelte without node.js installation</title><link>https://knrdl.github.io/posts/svelte-without-node-installation/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-without-node-installation/</guid><description>&lt;p>Docker (or podman) to the rescue!&lt;/p>
-&lt;p>Each first line shown is the Docker command. And the second line is the corresponding command for Podman.&lt;/p>
-&lt;h2 id="setup-project" class="paragraph-header">Setup project &lt;a
-href="#setup-project">&lt;/a>&lt;/h2>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run --pull always -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> node:alpine npm init
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>podman run --pull always -it --rm -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> node:alpine npm init
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="development" class="paragraph-header">Development &lt;a
-href="#development">&lt;/a>&lt;/h2>
-&lt;p>Svelte has replaced rollup with vite as build tool of choice.&lt;/p>
-&lt;h3 id="vite-new" class="paragraph-header">Vite (new) &lt;a
-href="#vite-new">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run --pull always -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p5173:5173 node:alpine npm run dev -- --host
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>podman run --pull always -it --rm -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p5173:5173 node:alpine npm run dev -- --host
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open
-&lt;a href="http://localhost:5173" target="_blank" rel="noopener noreferrer">localhost:5173&lt;/a>&lt;/p>
-&lt;p>To omit the &lt;code>-- --host&lt;/code> in the command above, add to your &lt;code>vite.config.js&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> config &lt;span style="color:#ff79c6">=&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server&lt;span style="color:#ff79c6">:&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> host&lt;span style="color:#ff79c6">:&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;0.0.0.0&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="rollup-old" class="paragraph-header">Rollup (old) &lt;a
-href="#rollup-old">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>sudo docker run --pull always -it --rm --user &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$UID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic">HOST&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>0.0.0.0 node:alpine npm run dev
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>podman run --pull always -it --rm -v &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">:&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -w &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$PWD&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic">HOST&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>0.0.0.0 node:alpine npm run dev
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Open
-&lt;a href="http://localhost:8080" target="_blank" rel="noopener noreferrer">localhost:8080&lt;/a>&lt;/p>
-&lt;blockquote>
-&lt;p class="info">Port 8080 is for the web server (http). Everything is handled by this port, except hot reloading (optional feature). Therefore, port 35729 is additionally used (websocket).&lt;/p>
-&lt;/blockquote>
-&lt;h2 id="custom-bashrc-shortcut" class="paragraph-header">Custom &lt;code>.bashrc&lt;/code> shortcut &lt;a
-href="#custom-bashrc-shortcut">&lt;/a>&lt;/h2>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> svelte-npm&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run --pull always -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; -p5173:5173 --env HOST=0.0.0.0 node:alpine npm&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> svelte-npm&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;podman run --pull always -it --rm -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; -p5173:5173 --env HOST=0.0.0.0 node:alpine npm&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Usage: &lt;code>$ svelte-npm run dev&lt;/code>&lt;/p>
-&lt;h3 id="more-general-approach" class="paragraph-header">More general approach &lt;a
-href="#more-general-approach">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> docker-dir&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;sudo docker run --pull always -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">alias&lt;/span> podman-dir&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;podman run --pull always -it --rm -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Example: &lt;code>$ docker-dir node:alpine -v&lt;/code>&lt;/p></description></item><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p>The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
-image layer blobs will be kept as orphans. To clean those up run:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="automation" class="paragraph-header">Automation &lt;a
-href="#automation">&lt;/a>&lt;/h2>
-&lt;ul>
-&lt;li>run the command via Cron (the gitlab image contains &lt;code>go-crond&lt;/code>)&lt;/li>
-&lt;li>set command in env var &lt;code>GITLAB_POST_RECONFIGURE_SCRIPT&lt;/code> (executed at least on each container start)&lt;/li>
-&lt;/ul>
-&lt;h2 id="conclusion" class="paragraph-header">Conclusion &lt;a
-href="#conclusion">&lt;/a>&lt;/h2>
-&lt;p>170GiB server disk storage freed&lt;/p></description></item></channel></rss>
+&lt;math&gt;
+&lt;msup&gt;
+&lt;mi&gt;2&lt;/mi&gt;
+&lt;mrow&gt;
+(&lt;mn&gt;24&lt;/mn&gt;&lt;mo&gt;-&lt;/mo&gt;&lt;mn&gt;12&lt;/mn&gt;)
+&lt;/mrow&gt;
+&lt;/msup&gt;
+&lt;mo&gt;=&lt;/mo&gt;
+&lt;mn&gt;4096&lt;/mn&gt;
+&lt;/math&gt;.&lt;/p&gt;
+&lt;p&gt;While these defaults are okay, it&amp;rsquo;s possible to run out of address spaces, &lt;strong&gt;especially if private Class B addresses are used elsewhere&lt;/strong&gt; (by other applications/routing). Using more docker networks with fewer containers per network has two benefits: Security and Safety.&lt;/p&gt;
+&lt;h2 id="security--safety" class="paragraph-header"&gt;Security &amp;amp; Safety &lt;a
+href="#security--safety"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Scenario with three containers: gateway, appserver, database.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s easy to put all three of them in a single docker network. But this would allow the gateway to access the database, which is not required. Therefore, 2 docker networks should be utilized.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Scenario with three containers: gateway, appserver1, appserver2.&lt;/p&gt;
+&lt;p&gt;Using a single network to connect the appservers to the gateway, allows appserver1 to talk to appserver2. This might not be desired, if app1 and app2 are two distinct applications.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The security gain is a better separation of trust levels, following the principle of least privilege. Anyway, an advanced attacker can still try OSI-Layer 2 (&amp;ldquo;MAC-Level&amp;rdquo;) sniffing attacks.&lt;/p&gt;
+&lt;p&gt;The bigger gain is the safety of the container environment. The impact of configuration mistakes is limited. The architecture is clearer: Confusion about what service the hostname &amp;ldquo;app&amp;rdquo; belongs to is hopefully prevented.&lt;/p&gt;
+&lt;p&gt;The cost of this approach is that there might be more docker networks needed than the 4096 possible ones. A config change allows to create more networks.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="info"&gt;This is just an example! 4096 is a reasonable amount of networks. But if there is only a subspace of private class B addresses available or class C must be used, then things might look different. Per default max 256 docker networks can be produced in class C, which could be limiting.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="configuration" class="paragraph-header"&gt;Configuration &lt;a
+href="#configuration"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In &lt;code&gt;/etc/docker/daemon.json&lt;/code&gt; add:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;&amp;#34;default-address-pools&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;&amp;#34;base&amp;#34;&lt;/span&gt;: &lt;span style="color:#f1fa8c"&gt;&amp;#34;172.16.0.0/12&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style="color:#bd93f9"&gt;27&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will use the complete Class B private namespace (&lt;code&gt;172.16.0.0/12&lt;/code&gt;). The CIDR per docker network is /27.&lt;/p&gt;
+&lt;p&gt;Max docker networks per host:
+&lt;math&gt;
+&lt;msup&gt;
+&lt;mi&gt;2&lt;/mi&gt;
+&lt;mrow&gt;
+(&lt;mn&gt;27&lt;/mn&gt;&lt;mo&gt;-&lt;/mo&gt;&lt;mn&gt;12&lt;/mn&gt;)
+&lt;/mrow&gt;
+&lt;/msup&gt;
+&lt;mo&gt;=&lt;/mo&gt;
+&lt;mn&gt;32,768&lt;/mn&gt;
+&lt;/math&gt;&lt;/p&gt;
+&lt;p&gt;Max containers per docker network:
+&lt;math&gt;
+&lt;msup&gt;
+&lt;mi&gt;2&lt;/mi&gt;
+&lt;mrow&gt;
+(&lt;mn&gt;32&lt;/mn&gt;&lt;mo&gt;-&lt;/mo&gt;&lt;mn&gt;27&lt;/mn&gt;)
+&lt;/mrow&gt;
+&lt;/msup&gt;
+&lt;mo&gt;-&lt;/mo&gt;
+&lt;mn&gt;2&lt;/mn&gt;
+&lt;mo&gt;=&lt;/mo&gt;
+&lt;mn&gt;30&lt;/mn&gt;
+&lt;/math&gt;&lt;/p&gt;</description></item><item><title>Strategies for Docker image tagging</title><link>https://knrdl.github.io/posts/docker-image-tagging/</link><pubDate>Mon, 27 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-image-tagging/</guid><description>&lt;p&gt;Each docker image has a URI-style name like &lt;code&gt;domain.tld:port/directory/subdir:tag&lt;/code&gt;. The image name &lt;code&gt;ubuntu&lt;/code&gt; is just a shortcut for &lt;code&gt;docker.io/library/ubuntu:latest&lt;/code&gt;. The default tag (if omitted) is &lt;code&gt;latest&lt;/code&gt;. Docker (or &lt;abbr title="Open Container Initiative"&gt;OCI&lt;/abbr&gt;) images should be built automatically in &lt;abbr title="Continuous Integration"&gt;CI&lt;/abbr&gt;-Pipelines. There are multiple strategies for tagging those images:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Docker Image Tagging via Git Commit Tags:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Relevant git commits are tagged as versions, e.g. &lt;code&gt;v3.2.1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The corresponding docker image gets tagged as &lt;code&gt;3.2.1&lt;/code&gt;. If there are multiple image flavours, maybe also &lt;code&gt;3.2.1-alpine&lt;/code&gt; or &lt;code&gt;v3.2.1-slim&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer"&gt;Semantic Versioning&lt;/a&gt; is also applicable: In addition to the image tag &lt;code&gt;3.2.1&lt;/code&gt;, the tags &lt;code&gt;3.2&lt;/code&gt; and &lt;code&gt;3&lt;/code&gt; should also be assigned, if &lt;code&gt;3.2.1&lt;/code&gt; is the newest version for both version series.&lt;/li&gt;
+&lt;li&gt;The image created from the newest git commit tag (the newest version) must also be tagged as &lt;code&gt;latest&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Docker images without associated git commit tag can be tagged as &lt;code&gt;edge&lt;/code&gt; (convention) or something like &lt;code&gt;unstable&lt;/code&gt;, &lt;code&gt;nightly&lt;/code&gt; etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Docker Image Tagging via Git Commit Hash:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If there are no distinguishable software versions, the first 6 letters of the git commit hash (SHA) can be used to tag an image.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;latest&lt;/code&gt; tag gets assigned manually to a docker image.&lt;/li&gt;
+&lt;li&gt;Pro: It&amp;rsquo;s easy to find the belonging image for a git commit. So an old version can easily be deployed if the newer one fails. Therefore, you must know which commit introduced the problem.&lt;/li&gt;
+&lt;li&gt;Contra:
+&lt;ul&gt;
+&lt;li&gt;Produces many tagged images =&amp;gt; Docker Image Tag Deletion Policy must be enforced&lt;/li&gt;
+&lt;li&gt;Tags will only be sortable by their creation date (might be wrong in case of manual intervention)&lt;/li&gt;
+&lt;li&gt;It&amp;rsquo;s hard to know which tags bring in small or big changes (missing
+&lt;a href="https://semver.org/" target="_blank" rel="noopener noreferrer"&gt;semantic versioning&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Strategy is only useful if there is no software versioning scheme in place and also git push&amp;rsquo;s to the main branch are not too frequent.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Docker Image Tagging for the Bleeding Edge:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;There is not dedicated tagging at all&lt;/li&gt;
+&lt;li&gt;The newest commit gets tagged as &lt;code&gt;latest&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Move fast and break things&lt;/li&gt;
+&lt;li&gt;To reproduce old versions the old image must be built again (make sure to pin the versions of all dependencies your software needs). Alternatively important old versions can be tagged manually.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Docker Image Tagging with Timestamps:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Each docker image tag is a timestamp of the build date.&lt;/li&gt;
+&lt;li&gt;The last run build is tagged as &lt;code&gt;latest&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Problematic if old versions are built via CI-Pipelines at a later time&lt;/li&gt;
+&lt;li&gt;Useful for nightly builds only. Produce tags like &lt;code&gt;nightly-YYYYMMDD&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Which strategy is right for me? It depends! Maybe a combination &amp;hellip;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id="tldr--opinion" class="paragraph-header"&gt;TL;DR / Opinion &lt;a
+href="#tldr--opinion"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Use git tags for software versioning&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;If the newest git tag is &lt;code&gt;v3.2.1&lt;/code&gt;, the built docker image should be tagged as &lt;code&gt;3.2.1&lt;/code&gt;, &lt;code&gt;3.2&lt;/code&gt; and &lt;code&gt;3&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;The newest software version (by git tag) additionally gets tagged as &lt;code&gt;latest&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Building a docker image from a git commit without tag, the resulting docker image should be tagged as &lt;code&gt;edge&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p&gt;The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
+user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p&gt;
+&lt;p&gt;But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
+the host is still unproblematic, e.g. &lt;code&gt;docker run -p 80:8080 ...&lt;/code&gt; will bind port 8080 of the container to port 80 on the
+host.&lt;/p&gt;
+&lt;p&gt;But what if two services share a Docker Network to reach each other? Then requests have to be made to
+e.g. &lt;strong&gt;http://service2:8080/api&lt;/strong&gt; (includes the port 8080). This is a bit ugly because &lt;strong&gt;service1&lt;/strong&gt; now needs to contain
+runtime information about &lt;strong&gt;service2&lt;/strong&gt; (contradicts goal of loose coupling). An endpoint like &lt;strong&gt;http://service2/api&lt;/strong&gt; (defaults to port 80) is preferable.&lt;/p&gt;
+&lt;p&gt;The following Dockerfile achieves that goal:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-dockerfile" data-lang="dockerfile"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;FROM&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;python:3-alpine&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# allow non privileged user to run server on port 80&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;RUN&lt;/span&gt; apk add --no-cache libcap &lt;span style="color:#ff79c6"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; setcap &lt;span style="color:#f1fa8c"&gt;&amp;#39;cap_net_bind_service=+ep&amp;#39;&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;readlink -f &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;which python3&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; apk del libcap
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;EXPOSE&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;80/tcp&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;RUN&lt;/span&gt; adduser --home /home/appname --disabled-password --shell /bin/false --uid &lt;span style="color:#bd93f9"&gt;1000&lt;/span&gt; appname
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# all commands after the USER-command will be executed as user `appname`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;USER&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;appname&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;RUN&lt;/span&gt; whoami
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# now the app can run on port 80 as non root user&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;CMD&lt;/span&gt; python3 myapp.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The program &lt;code&gt;setcap&lt;/code&gt; is used to give the executable (e.g. &lt;code&gt;/usr/bin/python3&lt;/code&gt; or &lt;code&gt;/bin/myapp&lt;/code&gt;) the necessary capability (permission). It&amp;rsquo;s not needed afterwards, so it might be deleted to keep the image small.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="info"&gt;If you work with &lt;abbr title="Advanced Packaging Tool"&gt;APT&lt;/abbr&gt; (Ubuntu/Debian images) just use the
+package &lt;code&gt;libcap2-bin&lt;/code&gt; instead of &lt;code&gt;libcap&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>Docker Swarm: `error creating vxlan interface: file exists`</title><link>https://knrdl.github.io/posts/docker-swarm-error-create-vxlan/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-swarm-error-create-vxlan/</guid><description>&lt;p&gt;If docker swarm rejects to deploy a service because network interface already exists:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ docker service ps stackname_appname --no-trunc
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Rejected &lt;span style="color:#bd93f9"&gt;34&lt;/span&gt; seconds ago &lt;span style="color:#f1fa8c"&gt;&amp;#34;network sandbox join failed: subnet sandbox join failed for &amp;#34;&lt;/span&gt;10.0.14.0/24&lt;span style="color:#f1fa8c"&gt;&amp;#34;: error creating vxlan interface: file exists
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then find all problematic interfaces on the host and delete them:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ ip -d link show | grep vx | grep DOWN
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sudo ip link delete vx-001095-owhr8 &lt;span style="color:#6272a4"&gt;# for each entry&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now redeploying should work!&lt;/p&gt;</description></item><item><title>Svelte without node.js installation</title><link>https://knrdl.github.io/posts/svelte-without-node-installation/</link><pubDate>Sun, 10 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/svelte-without-node-installation/</guid><description>&lt;p&gt;Docker (or podman) to the rescue!&lt;/p&gt;
+&lt;p&gt;Each first line shown is the Docker command. And the second line is the corresponding command for Podman.&lt;/p&gt;
+&lt;h2 id="setup-project" class="paragraph-header"&gt;Setup project &lt;a
+href="#setup-project"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker run --pull always -it --rm --user &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$UID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$UID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -v &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -w &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; node:alpine npm init
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run --pull always -it --rm -v &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -w &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; node:alpine npm init
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="development" class="paragraph-header"&gt;Development &lt;a
+href="#development"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Svelte has replaced rollup with vite as build tool of choice.&lt;/p&gt;
+&lt;h3 id="vite-new" class="paragraph-header"&gt;Vite (new) &lt;a
+href="#vite-new"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker run --pull always -it --rm --user &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$UID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$UID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -v &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -w &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -p5173:5173 node:alpine npm run dev -- --host
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run --pull always -it --rm -v &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -w &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -p5173:5173 node:alpine npm run dev -- --host
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Open
+&lt;a href="http://localhost:5173" target="_blank" rel="noopener noreferrer"&gt;localhost:5173&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;To omit the &lt;code&gt;-- --host&lt;/code&gt; in the command above, add to your &lt;code&gt;vite.config.js&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; config &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; server&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; host&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;0.0.0.0&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="rollup-old" class="paragraph-header"&gt;Rollup (old) &lt;a
+href="#rollup-old"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker run --pull always -it --rm --user &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$UID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$UID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -v &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -w &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic"&gt;HOST&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;0.0.0.0 node:alpine npm run dev
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run --pull always -it --rm -v &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;:&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -w &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$PWD&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; -p8080:8080 -p35729:35729 --env &lt;span style="color:#8be9fd;font-style:italic"&gt;HOST&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;0.0.0.0 node:alpine npm run dev
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Open
+&lt;a href="http://localhost:8080" target="_blank" rel="noopener noreferrer"&gt;localhost:8080&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="info"&gt;Port 8080 is for the web server (http). Everything is handled by this port, except hot reloading (optional feature). Therefore, port 35729 is additionally used (websocket).&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="custom-bashrc-shortcut" class="paragraph-header"&gt;Custom &lt;code&gt;.bashrc&lt;/code&gt; shortcut &lt;a
+href="#custom-bashrc-shortcut"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; svelte-npm&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;sudo docker run --pull always -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; -p5173:5173 --env HOST=0.0.0.0 node:alpine npm&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; svelte-npm&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman run --pull always -it --rm -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; -p5173:5173 --env HOST=0.0.0.0 node:alpine npm&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Usage: &lt;code&gt;$ svelte-npm run dev&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id="more-general-approach" class="paragraph-header"&gt;More general approach &lt;a
+href="#more-general-approach"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; docker-dir&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;sudo docker run --pull always -it --rm --user &amp;#34;$UID:$UID&amp;#34; -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; podman-dir&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman run --pull always -it --rm -v &amp;#34;$PWD:$PWD&amp;#34; -w &amp;#34;$PWD&amp;#34; --env HOST=0.0.0.0&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Example: &lt;code&gt;$ docker-dir node:alpine -v&lt;/code&gt;&lt;/p&gt;</description></item><item><title>Fix gitlab immense disk usage</title><link>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</link><pubDate>Mon, 28 Feb 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/gitlab-immense-disk-usage/</guid><description>&lt;p&gt;The gitlab docker registry has no cleanup job per default. If an image tag gets overwritten (updated) then the original
+image layer blobs will be kept as orphans. To clean those up run:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;gitlab-ctl registry-garbage-collect --delete-untagged --delete-manifest
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="automation" class="paragraph-header"&gt;Automation &lt;a
+href="#automation"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;run the command via Cron (the gitlab image contains &lt;code&gt;go-crond&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;set command in env var &lt;code&gt;GITLAB_POST_RECONFIGURE_SCRIPT&lt;/code&gt; (executed at least on each container start)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="conclusion" class="paragraph-header"&gt;Conclusion &lt;a
+href="#conclusion"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;170GiB server disk storage freed&lt;/p&gt;</description></item></channel></rss>

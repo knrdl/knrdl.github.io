@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Netplan on knrdlog</title><link>https://knrdl.github.io/tags/netplan/</link><description>Recent content in Netplan on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/netplan/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu: configure custom dns resolver</title><link>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</link><pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</guid><description>&lt;p>DNS provisioning mostly works out of the box. But once for a cloud instance the DNS resolver had terrible response times. So I added another resolver.&lt;/p>
-&lt;p>Ubuntu uses &lt;code>netplan&lt;/code> as abstraction layer for network config.&lt;/p>
-&lt;p>&lt;code>sudo nano /etc/netplan/01-netcfg.yaml&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="display:flex;">&lt;span>...
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">nameservers&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">search&lt;/span>: [ invalid ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">addresses&lt;/span>:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">127.0.0.1&lt;/span> &lt;span style="color:#6272a4"># the new resolver&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">123.123.123.1&lt;/span> &lt;span style="color:#6272a4"># provided dns resolver &lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> - &lt;span style="color:#bd93f9">223.123.123.2&lt;/span> &lt;span style="color:#6272a4"># provided dns resolver&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>For a containerized DNS resolver see
-&lt;a href="https://github.com/knrdl/unbound-dns-server" target="_blank" rel="noopener noreferrer">here&lt;/a>.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">DNS resolvers should NOT be exposed to public networks (dns amplification attacks etc.)! So make sure to bind the dns server socket to localhost or the local network.&lt;/p>
-&lt;/blockquote>
-&lt;p>Finally, run: &lt;code>sudo netplan apply&lt;/code>&lt;/p>
-&lt;p>Check which DNS resolver is currently in use: &lt;code>sudo resolvectl status eth0&lt;/code> (filter for network interface &lt;code>eth0&lt;/code> is optional)&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Netplan on knrdlog</title><link>https://knrdl.github.io/tags/netplan/</link><description>Recent content in Netplan on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Thu, 22 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/netplan/index.xml" rel="self" type="application/rss+xml"/><item><title>Ubuntu: configure custom dns resolver</title><link>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</link><pubDate>Thu, 22 Dec 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ubuntu-custom-dns-resolver/</guid><description>&lt;p&gt;DNS provisioning mostly works out of the box. But once for a cloud instance the DNS resolver had terrible response times. So I added another resolver.&lt;/p&gt;
+&lt;p&gt;Ubuntu uses &lt;code&gt;netplan&lt;/code&gt; as abstraction layer for network config.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo nano /etc/netplan/01-netcfg.yaml&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;nameservers&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;search&lt;/span&gt;: [ invalid ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;addresses&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;127.0.0.1&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# the new resolver&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;123.123.123.1&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# provided dns resolver &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#bd93f9"&gt;223.123.123.2&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# provided dns resolver&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For a containerized DNS resolver see
+&lt;a href="https://github.com/knrdl/unbound-dns-server" target="_blank" rel="noopener noreferrer"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;DNS resolvers should NOT be exposed to public networks (dns amplification attacks etc.)! So make sure to bind the dns server socket to localhost or the local network.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Finally, run: &lt;code&gt;sudo netplan apply&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Check which DNS resolver is currently in use: &lt;code&gt;sudo resolvectl status eth0&lt;/code&gt; (filter for network interface &lt;code&gt;eth0&lt;/code&gt; is optional)&lt;/p&gt;</description></item></channel></rss>

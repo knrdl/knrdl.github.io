@@ -1,119 +1,119 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Databases on knrdlog</title><link>https://knrdl.github.io/tags/databases/</link><description>Recent content in Databases on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 06 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/databases/index.xml" rel="self" type="application/rss+xml"/><item><title>How to use IBM DB2 with async python</title><link>https://knrdl.github.io/posts/db2-async-python/</link><pubDate>Fri, 06 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db2-async-python/</guid><description>&lt;h2 id="async-python" class="paragraph-header">Async Python &lt;a
-href="#async-python">&lt;/a>&lt;/h2>
-&lt;p>Async frameworks are nowadays the standard for web development with python.
-&lt;a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">FastAPI&lt;/a> didn&amp;rsquo;t invent it, but is currently the most successful and popular web framework offering it. With the increasing popularity of async, the need for async libraries grew over time. Python&amp;rsquo;s standard library is sync only for historic reasons. So
-&lt;a href="https://github.com/aio-libs" target="_blank" rel="noopener noreferrer">async packages filled the gap&lt;/a> and sometimes replaced the old sync libraries, e.g.:&lt;/p>
-&lt;ul>
-&lt;li>DNS:
-&lt;a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener noreferrer">std socket&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/aiodns/" target="_blank" rel="noopener noreferrer">aiodns&lt;/a>&lt;/li>
-&lt;li>Docker Client:
-&lt;a href="https://pypi.org/project/docker/" target="_blank" rel="noopener noreferrer">docker&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/aiodocker/" target="_blank" rel="noopener noreferrer">aiodocker&lt;/a>&lt;/li>
-&lt;li>File IO:
-&lt;a href="https://docs.python.org/3/library/functions.html#open" target="_blank" rel="noopener noreferrer">std open&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/aiofiles/" target="_blank" rel="noopener noreferrer">aiofiles&lt;/a>&lt;/li>
-&lt;li>HTTP Client:
-&lt;a href="https://pypi.org/project/requests/" target="_blank" rel="noopener noreferrer">requests&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/aiohttp/" target="_blank" rel="noopener noreferrer">aiohttp&lt;/a>,
-&lt;a href="https://pypi.org/project/httpx/" target="_blank" rel="noopener noreferrer">httpx&lt;/a>&lt;/li>
-&lt;li>Postgres:
-&lt;a href="https://pypi.org/project/psycopg2/" target="_blank" rel="noopener noreferrer">psycopg2&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/psycopg/" target="_blank" rel="noopener noreferrer">psycopg3&lt;/a>,
-&lt;a href="https://pypi.org/project/asyncpg/" target="_blank" rel="noopener noreferrer">asyncpg&lt;/a>&lt;/li>
-&lt;li>SMTP Client:
-&lt;a href="https://docs.python.org/3/library/smtplib.html" target="_blank" rel="noopener noreferrer">std smtplib&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/aiosmtplib/" target="_blank" rel="noopener noreferrer">aiosmtplib&lt;/a>&lt;/li>
-&lt;li>Webserver:
-&lt;a href="https://pypi.org/project/Flask/" target="_blank" rel="noopener noreferrer">flask 1&lt;/a> &lt;strong>→&lt;/strong>
-&lt;a href="https://pypi.org/project/Flask/" target="_blank" rel="noopener noreferrer">flask 2&lt;/a>,
-&lt;a href="https://pypi.org/project/fastapi/" target="_blank" rel="noopener noreferrer">fastapi&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="ibm-db2" class="paragraph-header">IBM DB2 &lt;a
-href="#ibm-db2">&lt;/a>&lt;/h2>
-&lt;p>However, some old-fashioned libraries haven&amp;rsquo;t adapted yet and maybe never will, like the clunky
-&lt;a href="https://pypi.org/project/ibm-db/" target="_blank" rel="noopener noreferrer">ibm-db&lt;/a> package to connect to an IBM DB2 database. The package consists of a
-&lt;a href="https://github.com/ibmdb/python-ibmdb/blob/master/ibm_db.c" target="_blank" rel="noopener noreferrer">C driver&lt;/a> and
-&lt;a href="https://github.com/ibmdb/python-ibmdb/blob/master/ibm_db_dbi.py" target="_blank" rel="noopener noreferrer">python interface&lt;/a> (IMHO, the latter looks like it was poorly written by absolute python beginners together with naysayers to the idea that python code could be pythonic at all).&lt;/p>
-&lt;p>So the problem is to run the sync lib
-&lt;a href="https://pypi.org/project/ibm-db/" target="_blank" rel="noopener noreferrer">&lt;em>ibm-db&lt;/em>&lt;/a> in an async context, like a FastAPI webserver. The standard approach is to use &lt;code>asyncio.to_thread()&lt;/code> to delegate the sync tasks (db access operations) into additional threads to free the event loop on the main thread. As &lt;em>ibm-db&lt;/em> is not subject to the
-&lt;a href="https://wiki.python.org/moin/GlobalInterpreterLock" target="_blank" rel="noopener noreferrer">GIL&lt;/a> there should be no disadvantage except the overhead of spawning threads. But &lt;em>ibm-db&lt;/em> is also not thread-safe. Multiple threads interact with a DB2 instance result in race conditions, connection abortions and incomplete result set responses. So &lt;em>ibm-db&lt;/em> cannot be used in async nor multithreaded environments. So the workaround is to run &lt;em>ibm-db&lt;/em> in (at most) one dedicated thread, but never in the main thread to keep the event loop free. This can be achieved with Python&amp;rsquo;s
-&lt;a href="https://docs.python.org/3/library/concurrent.futures.html#threadpoolexecutor" target="_blank" rel="noopener noreferrer">&lt;code>ThreadPoolExecutor&lt;/code>&lt;/a> and the constraint &lt;code>max_workers=1&lt;/code>. See code below.&lt;/p>
-&lt;h3 id="old-code-blocks-the-async-loop" class="paragraph-header">Old code (blocks the async loop) &lt;a
-href="#old-code-blocks-the-async-loop">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> ibm_db_dbi &lt;span style="color:#ff79c6">as&lt;/span> db2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">def&lt;/span> &lt;span style="color:#50fa7b">run_query&lt;/span>():
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn: db2&lt;span style="color:#ff79c6">.&lt;/span>Connection &lt;span style="color:#ff79c6">=&lt;/span> db2&lt;span style="color:#ff79c6">.&lt;/span>pconnect(dsn&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;...&amp;#39;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">with&lt;/span> conn&lt;span style="color:#ff79c6">.&lt;/span>cursor() &lt;span style="color:#ff79c6">as&lt;/span> cursor:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cursor&lt;span style="color:#ff79c6">.&lt;/span>execute(&lt;span style="color:#f1fa8c">&amp;#39;select 1+1 from SYSIBM.SYSDUMMY1&amp;#39;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff79c6">=&lt;/span> cursor&lt;span style="color:#ff79c6">.&lt;/span>fetchone()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn&lt;span style="color:#ff79c6">.&lt;/span>close()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> result
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(run_query()) &lt;span style="color:#6272a4"># blocks event loop&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(run_query()) &lt;span style="color:#6272a4"># blocks event loop&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(run_query()) &lt;span style="color:#6272a4"># blocks event loop&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="new-code-frees-the-async-loop" class="paragraph-header">New code (frees the async loop) &lt;a
-href="#new-code-frees-the-async-loop">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> asyncio
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">from&lt;/span> concurrent.futures &lt;span style="color:#ff79c6">import&lt;/span> ThreadPoolExecutor
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">import&lt;/span> ibm_db_dbi &lt;span style="color:#ff79c6">as&lt;/span> db2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>_executor &lt;span style="color:#ff79c6">=&lt;/span> ThreadPoolExecutor(max_workers&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#bd93f9">1&lt;/span>, thread_name_prefix&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;db2&amp;#39;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">async&lt;/span> &lt;span style="color:#ff79c6">def&lt;/span> &lt;span style="color:#50fa7b">run_query&lt;/span>(): &lt;span style="color:#6272a4"># can be invoked concurrently&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">def&lt;/span> &lt;span style="color:#50fa7b">do&lt;/span>():
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn: db2&lt;span style="color:#ff79c6">.&lt;/span>Connection &lt;span style="color:#ff79c6">=&lt;/span> db2&lt;span style="color:#ff79c6">.&lt;/span>pconnect(dsn&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#39;...&amp;#39;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">with&lt;/span> conn&lt;span style="color:#ff79c6">.&lt;/span>cursor() &lt;span style="color:#ff79c6">as&lt;/span> cursor:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> cursor&lt;span style="color:#ff79c6">.&lt;/span>execute(&lt;span style="color:#f1fa8c">&amp;#39;select 1+1 from SYSIBM.SYSDUMMY1&amp;#39;&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#ff79c6">=&lt;/span> cursor&lt;span style="color:#ff79c6">.&lt;/span>fetchone()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> conn&lt;span style="color:#ff79c6">.&lt;/span>close()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> result
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> &lt;span style="color:#ff79c6">await&lt;/span> asyncio&lt;span style="color:#ff79c6">.&lt;/span>get_event_loop()&lt;span style="color:#ff79c6">.&lt;/span>run_in_executor(_executor, do)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> run_query()) &lt;span style="color:#6272a4"># does not block the event loop&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> run_query()) &lt;span style="color:#6272a4"># does not block the event loop&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">print&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> run_query()) &lt;span style="color:#6272a4"># does not block the event loop&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Explaining Database Connection Pooling</title><link>https://knrdl.github.io/posts/db-connection-pooling/</link><pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db-connection-pooling/</guid><description>&lt;h2 id="the-problem" class="paragraph-header">the problem &lt;a
-href="#the-problem">&lt;/a>&lt;/h2>
-&lt;p>Connection Pooling is an often overlooked concept when it comes to databases. An inexperienced developer might implement an API backend like this:&lt;/p>
-&lt;ol>
-&lt;li>HTTP Request comes in&lt;/li>
-&lt;li>Open connection to the database&lt;/li>
-&lt;li>Execute SQL command and read response&lt;/li>
-&lt;li>Close connection to the database (also often forgotten)&lt;/li>
-&lt;li>Send HTTP response&lt;/li>
-&lt;/ol>
-&lt;p>Opening and closing a connection (step 2 &amp;amp; 4) produces load on the database server instance. Beside the number of parallel open connections is limited. That way forgetting to close connections might even make the database unavailable in the long run. Connection pooling solves these issues by keeping a sufficient number of durable connections to the database open.&lt;/p>
-&lt;h2 id="the-metaphor" class="paragraph-header">the metaphor &lt;a
-href="#the-metaphor">&lt;/a>&lt;/h2>
-&lt;figure>
-&lt;img src="metaphor.png" alt="metaphor visualization" style="max-height: 375px;">
-&lt;/figure>
-&lt;p>Metaphor: Between Server and Database exists a tunnel, called network link. In the tunnel is a single track of rails, known as connection. As said, reusing the rails is easier than building new ones everytime. The track of rails carries a single wagon. The wagon transports a SQL command from the Server to the Database and returns the execution result (e.g. selected rows) back. If the wagon is in transit the railway is blocked. No other wagon can use the railway at the same time. Therefore, the tunnel doesn&amp;rsquo;t contain a single railway but a pool of railways. To execute a SQL statement you just need to acquire a free wagon. When the wagon returned from the Database with the SQL response the wagon is put back (into the pool). Now it is usable for another SQL statement. If all wagons are in transit, you need to enlarge the tunnel and add an addition railway (increase pool size).&lt;/p>
-&lt;p>Metaphor goes on: Transactions contain multiple SQL commands. Meaning, a transaction is a chain of wagons. Instead of a single wagon a whole train is on the railway. When it arrives at the Database, it gets processed wagon by wagon (SQL statement by statement). If there is a problem with a wagon the previous wagons are discarded and the whole train is sent back (transaction rollback). But if all wagons are processed successfully the train will return all wagons filled with their results (transaction commit). As a transaction is a train of wagons it is always handled on a single railway. That&amp;rsquo;s why SQL transactions are connection bound.&lt;/p>
-&lt;h2 id="the-realization" class="paragraph-header">the realization &lt;a
-href="#the-realization">&lt;/a>&lt;/h2>
-&lt;p>In practice a connection pool has the following parameter:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>&lt;abbr title="Data Source Name">dsn&lt;/abbr>&lt;/strong>: Connection parameter (host, port, user, password, dbname, encryption)&lt;/li>
-&lt;li>&lt;strong>min_pool_size&lt;/strong>: the minimum number of opened, parallel connections in the connection pool (e.g. 5)&lt;/li>
-&lt;li>&lt;strong>max_pool_size&lt;/strong>: the maximum number of opened, parallel connections in the connection pool (e.g. 25)&lt;/li>
-&lt;/ul>
-&lt;p>It&amp;rsquo;s highly recommendable to set a &lt;em>max_pool_size&lt;/em> for safety reasons. Otherwise, accidental long-running SQL statements might block all connection capacities of the database. In this situation the connection pooler will open up more and more connections until the database can&amp;rsquo;t handle anymore. Now the problem is the same as described above. With a &lt;em>max_pool_size&lt;/em> set, the application will crash before with an error message like &amp;ldquo;connection pool exhausted&amp;rdquo;.&lt;/p>
-&lt;p>A good implementation might work as follows:&lt;/p>
-&lt;ol>
-&lt;li>The Server is starting.&lt;/li>
-&lt;li>The connection pooler opens the &lt;em>min_pool_size&lt;/em> number of connections to the Database.&lt;/li>
-&lt;li>When the pooler is done the Server is ready to accept requests.&lt;/li>
-&lt;li>When an HTTP request comes in a connection is acquired from the connection pool.&lt;/li>
-&lt;li>The SQL statement gets executed.&lt;/li>
-&lt;li>Afterwards the connection is put back into the connection pool.&lt;/li>
-&lt;li>The HTTP request gets a response.&lt;/li>
-&lt;/ol>
-&lt;p>Most modern database drivers should include a connection pooling mechanism. Otherwise, there are separate tools like PgBouncer to get the job done.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Databases on knrdlog</title><link>https://knrdl.github.io/tags/databases/</link><description>Recent content in Databases on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Fri, 06 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/databases/index.xml" rel="self" type="application/rss+xml"/><item><title>How to use IBM DB2 with async python</title><link>https://knrdl.github.io/posts/db2-async-python/</link><pubDate>Fri, 06 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db2-async-python/</guid><description>&lt;h2 id="async-python" class="paragraph-header"&gt;Async Python &lt;a
+href="#async-python"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Async frameworks are nowadays the standard for web development with python.
+&lt;a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer"&gt;FastAPI&lt;/a&gt; didn&amp;rsquo;t invent it, but is currently the most successful and popular web framework offering it. With the increasing popularity of async, the need for async libraries grew over time. Python&amp;rsquo;s standard library is sync only for historic reasons. So
+&lt;a href="https://github.com/aio-libs" target="_blank" rel="noopener noreferrer"&gt;async packages filled the gap&lt;/a&gt; and sometimes replaced the old sync libraries, e.g.:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DNS:
+&lt;a href="https://docs.python.org/3/library/socket.html" target="_blank" rel="noopener noreferrer"&gt;std socket&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/aiodns/" target="_blank" rel="noopener noreferrer"&gt;aiodns&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Docker Client:
+&lt;a href="https://pypi.org/project/docker/" target="_blank" rel="noopener noreferrer"&gt;docker&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/aiodocker/" target="_blank" rel="noopener noreferrer"&gt;aiodocker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;File IO:
+&lt;a href="https://docs.python.org/3/library/functions.html#open" target="_blank" rel="noopener noreferrer"&gt;std open&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/aiofiles/" target="_blank" rel="noopener noreferrer"&gt;aiofiles&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;HTTP Client:
+&lt;a href="https://pypi.org/project/requests/" target="_blank" rel="noopener noreferrer"&gt;requests&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/aiohttp/" target="_blank" rel="noopener noreferrer"&gt;aiohttp&lt;/a&gt;,
+&lt;a href="https://pypi.org/project/httpx/" target="_blank" rel="noopener noreferrer"&gt;httpx&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Postgres:
+&lt;a href="https://pypi.org/project/psycopg2/" target="_blank" rel="noopener noreferrer"&gt;psycopg2&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/psycopg/" target="_blank" rel="noopener noreferrer"&gt;psycopg3&lt;/a&gt;,
+&lt;a href="https://pypi.org/project/asyncpg/" target="_blank" rel="noopener noreferrer"&gt;asyncpg&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SMTP Client:
+&lt;a href="https://docs.python.org/3/library/smtplib.html" target="_blank" rel="noopener noreferrer"&gt;std smtplib&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/aiosmtplib/" target="_blank" rel="noopener noreferrer"&gt;aiosmtplib&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Webserver:
+&lt;a href="https://pypi.org/project/Flask/" target="_blank" rel="noopener noreferrer"&gt;flask 1&lt;/a&gt; &lt;strong&gt;→&lt;/strong&gt;
+&lt;a href="https://pypi.org/project/Flask/" target="_blank" rel="noopener noreferrer"&gt;flask 2&lt;/a&gt;,
+&lt;a href="https://pypi.org/project/fastapi/" target="_blank" rel="noopener noreferrer"&gt;fastapi&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="ibm-db2" class="paragraph-header"&gt;IBM DB2 &lt;a
+href="#ibm-db2"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;However, some old-fashioned libraries haven&amp;rsquo;t adapted yet and maybe never will, like the clunky
+&lt;a href="https://pypi.org/project/ibm-db/" target="_blank" rel="noopener noreferrer"&gt;ibm-db&lt;/a&gt; package to connect to an IBM DB2 database. The package consists of a
+&lt;a href="https://github.com/ibmdb/python-ibmdb/blob/master/ibm_db.c" target="_blank" rel="noopener noreferrer"&gt;C driver&lt;/a&gt; and
+&lt;a href="https://github.com/ibmdb/python-ibmdb/blob/master/ibm_db_dbi.py" target="_blank" rel="noopener noreferrer"&gt;python interface&lt;/a&gt; (IMHO, the latter looks like it was poorly written by absolute python beginners together with naysayers to the idea that python code could be pythonic at all).&lt;/p&gt;
+&lt;p&gt;So the problem is to run the sync lib
+&lt;a href="https://pypi.org/project/ibm-db/" target="_blank" rel="noopener noreferrer"&gt;&lt;em&gt;ibm-db&lt;/em&gt;&lt;/a&gt; in an async context, like a FastAPI webserver. The standard approach is to use &lt;code&gt;asyncio.to_thread()&lt;/code&gt; to delegate the sync tasks (db access operations) into additional threads to free the event loop on the main thread. As &lt;em&gt;ibm-db&lt;/em&gt; is not subject to the
+&lt;a href="https://wiki.python.org/moin/GlobalInterpreterLock" target="_blank" rel="noopener noreferrer"&gt;GIL&lt;/a&gt; there should be no disadvantage except the overhead of spawning threads. But &lt;em&gt;ibm-db&lt;/em&gt; is also not thread-safe. Multiple threads interact with a DB2 instance result in race conditions, connection abortions and incomplete result set responses. So &lt;em&gt;ibm-db&lt;/em&gt; cannot be used in async nor multithreaded environments. So the workaround is to run &lt;em&gt;ibm-db&lt;/em&gt; in (at most) one dedicated thread, but never in the main thread to keep the event loop free. This can be achieved with Python&amp;rsquo;s
+&lt;a href="https://docs.python.org/3/library/concurrent.futures.html#threadpoolexecutor" target="_blank" rel="noopener noreferrer"&gt;&lt;code&gt;ThreadPoolExecutor&lt;/code&gt;&lt;/a&gt; and the constraint &lt;code&gt;max_workers=1&lt;/code&gt;. See code below.&lt;/p&gt;
+&lt;h3 id="old-code-blocks-the-async-loop" class="paragraph-header"&gt;Old code (blocks the async loop) &lt;a
+href="#old-code-blocks-the-async-loop"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;import&lt;/span&gt; ibm_db_dbi &lt;span style="color:#ff79c6"&gt;as&lt;/span&gt; db2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;def&lt;/span&gt; &lt;span style="color:#50fa7b"&gt;run_query&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; conn: db2&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;Connection &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; db2&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;pconnect(dsn&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;...&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;with&lt;/span&gt; conn&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;cursor() &lt;span style="color:#ff79c6"&gt;as&lt;/span&gt; cursor:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; cursor&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;execute(&lt;span style="color:#f1fa8c"&gt;&amp;#39;select 1+1 from SYSIBM.SYSDUMMY1&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; result &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; cursor&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;fetchone()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; conn&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;close()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;return&lt;/span&gt; result
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;print&lt;/span&gt;(run_query()) &lt;span style="color:#6272a4"&gt;# blocks event loop&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;print&lt;/span&gt;(run_query()) &lt;span style="color:#6272a4"&gt;# blocks event loop&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;print&lt;/span&gt;(run_query()) &lt;span style="color:#6272a4"&gt;# blocks event loop&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="new-code-frees-the-async-loop" class="paragraph-header"&gt;New code (frees the async loop) &lt;a
+href="#new-code-frees-the-async-loop"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;import&lt;/span&gt; asyncio
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;from&lt;/span&gt; concurrent.futures &lt;span style="color:#ff79c6"&gt;import&lt;/span&gt; ThreadPoolExecutor
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;import&lt;/span&gt; ibm_db_dbi &lt;span style="color:#ff79c6"&gt;as&lt;/span&gt; db2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;_executor &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; ThreadPoolExecutor(max_workers&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#bd93f9"&gt;1&lt;/span&gt;, thread_name_prefix&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;db2&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;async&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;def&lt;/span&gt; &lt;span style="color:#50fa7b"&gt;run_query&lt;/span&gt;(): &lt;span style="color:#6272a4"&gt;# can be invoked concurrently&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;def&lt;/span&gt; &lt;span style="color:#50fa7b"&gt;do&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; conn: db2&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;Connection &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; db2&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;pconnect(dsn&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;...&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;with&lt;/span&gt; conn&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;cursor() &lt;span style="color:#ff79c6"&gt;as&lt;/span&gt; cursor:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; cursor&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;execute(&lt;span style="color:#f1fa8c"&gt;&amp;#39;select 1+1 from SYSIBM.SYSDUMMY1&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; result &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; cursor&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;fetchone()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; conn&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;close()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;return&lt;/span&gt; result
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;return&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; asyncio&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;get_event_loop()&lt;span style="color:#ff79c6"&gt;.&lt;/span&gt;run_in_executor(_executor, do)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;print&lt;/span&gt;(&lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; run_query()) &lt;span style="color:#6272a4"&gt;# does not block the event loop&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;print&lt;/span&gt;(&lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; run_query()) &lt;span style="color:#6272a4"&gt;# does not block the event loop&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;print&lt;/span&gt;(&lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; run_query()) &lt;span style="color:#6272a4"&gt;# does not block the event loop&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Explaining Database Connection Pooling</title><link>https://knrdl.github.io/posts/db-connection-pooling/</link><pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/db-connection-pooling/</guid><description>&lt;h2 id="the-problem" class="paragraph-header"&gt;the problem &lt;a
+href="#the-problem"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Connection Pooling is an often overlooked concept when it comes to databases. An inexperienced developer might implement an API backend like this:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;HTTP Request comes in&lt;/li&gt;
+&lt;li&gt;Open connection to the database&lt;/li&gt;
+&lt;li&gt;Execute SQL command and read response&lt;/li&gt;
+&lt;li&gt;Close connection to the database (also often forgotten)&lt;/li&gt;
+&lt;li&gt;Send HTTP response&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Opening and closing a connection (step 2 &amp;amp; 4) produces load on the database server instance. Beside the number of parallel open connections is limited. That way forgetting to close connections might even make the database unavailable in the long run. Connection pooling solves these issues by keeping a sufficient number of durable connections to the database open.&lt;/p&gt;
+&lt;h2 id="the-metaphor" class="paragraph-header"&gt;the metaphor &lt;a
+href="#the-metaphor"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;figure&gt;
+&lt;img src="metaphor.png" alt="metaphor visualization" style="max-height: 375px;"&gt;
+&lt;/figure&gt;
+&lt;p&gt;Metaphor: Between Server and Database exists a tunnel, called network link. In the tunnel is a single track of rails, known as connection. As said, reusing the rails is easier than building new ones everytime. The track of rails carries a single wagon. The wagon transports a SQL command from the Server to the Database and returns the execution result (e.g. selected rows) back. If the wagon is in transit the railway is blocked. No other wagon can use the railway at the same time. Therefore, the tunnel doesn&amp;rsquo;t contain a single railway but a pool of railways. To execute a SQL statement you just need to acquire a free wagon. When the wagon returned from the Database with the SQL response the wagon is put back (into the pool). Now it is usable for another SQL statement. If all wagons are in transit, you need to enlarge the tunnel and add an addition railway (increase pool size).&lt;/p&gt;
+&lt;p&gt;Metaphor goes on: Transactions contain multiple SQL commands. Meaning, a transaction is a chain of wagons. Instead of a single wagon a whole train is on the railway. When it arrives at the Database, it gets processed wagon by wagon (SQL statement by statement). If there is a problem with a wagon the previous wagons are discarded and the whole train is sent back (transaction rollback). But if all wagons are processed successfully the train will return all wagons filled with their results (transaction commit). As a transaction is a train of wagons it is always handled on a single railway. That&amp;rsquo;s why SQL transactions are connection bound.&lt;/p&gt;
+&lt;h2 id="the-realization" class="paragraph-header"&gt;the realization &lt;a
+href="#the-realization"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In practice a connection pool has the following parameter:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;abbr title="Data Source Name"&gt;dsn&lt;/abbr&gt;&lt;/strong&gt;: Connection parameter (host, port, user, password, dbname, encryption)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;min_pool_size&lt;/strong&gt;: the minimum number of opened, parallel connections in the connection pool (e.g. 5)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;max_pool_size&lt;/strong&gt;: the maximum number of opened, parallel connections in the connection pool (e.g. 25)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It&amp;rsquo;s highly recommendable to set a &lt;em&gt;max_pool_size&lt;/em&gt; for safety reasons. Otherwise, accidental long-running SQL statements might block all connection capacities of the database. In this situation the connection pooler will open up more and more connections until the database can&amp;rsquo;t handle anymore. Now the problem is the same as described above. With a &lt;em&gt;max_pool_size&lt;/em&gt; set, the application will crash before with an error message like &amp;ldquo;connection pool exhausted&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;A good implementation might work as follows:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The Server is starting.&lt;/li&gt;
+&lt;li&gt;The connection pooler opens the &lt;em&gt;min_pool_size&lt;/em&gt; number of connections to the Database.&lt;/li&gt;
+&lt;li&gt;When the pooler is done the Server is ready to accept requests.&lt;/li&gt;
+&lt;li&gt;When an HTTP request comes in a connection is acquired from the connection pool.&lt;/li&gt;
+&lt;li&gt;The SQL statement gets executed.&lt;/li&gt;
+&lt;li&gt;Afterwards the connection is put back into the connection pool.&lt;/li&gt;
+&lt;li&gt;The HTTP request gets a response.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Most modern database drivers should include a connection pooling mechanism. Otherwise, there are separate tools like PgBouncer to get the job done.&lt;/p&gt;</description></item></channel></rss>

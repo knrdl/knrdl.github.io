@@ -1,5 +1,4 @@
-<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta http-equiv=Content-Security-Policy content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; font-src 'self'; script-src 'unsafe-inline'"><link rel="shortcut icon" type=image/png href=/favicon.png><link rel=sitemap type=application/xml href=/sitemap.xml title=knrdlog><title>Arduino: ESP as static webserver</title>
-<meta name=description content="notes to self"><meta property="og:url" content="https://knrdl.github.io/posts/arduino-esp-static-webserver/"><meta property="og:site_name" content="knrdlog"><meta property="og:title" content="Arduino: ESP as static webserver"><meta property="og:description" content='The ESP8266/ESP32/NodeMCU boards firmware has builtin support to run a http server. It’s possible to build a restful json api but also to serve static files.
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=X-UA-Compatible content="IE=edge"><meta http-equiv=Content-Security-Policy content="default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; font-src 'self'; script-src 'unsafe-inline'"><link rel="shortcut icon" type=image/png href=/favicon.png><link rel=sitemap type=application/xml href=/sitemap.xml title=knrdlog><title>Arduino: ESP as static webserver</title><meta name=description content="notes to self"><meta property="og:url" content="https://knrdl.github.io/posts/arduino-esp-static-webserver/"><meta property="og:site_name" content="knrdlog"><meta property="og:title" content="Arduino: ESP as static webserver"><meta property="og:description" content='The ESP8266/ESP32/NodeMCU boards firmware has builtin support to run a http server. It’s possible to build a restful json api but also to serve static files.
 Setup Arduino IDE → File → Preferences → Additional Board Manager URLs: http://arduino.esp8266.com/stable/package_esp8266com_index.json
 Connect to Wifi #include <ESP8266WiFi.h> #include <WiFiClient.h> const char *ssid = "YOUR_NETWORK_NAME"; const char *password = "YOUR_NETWORK_PASSWORD"; void setup(void) { WiFi.mode(WIFI_STA); // stationary mode WiFi.begin(ssid, password); // Wait for connection while (WiFi.status() != WL_CONNECTED) { delay(50); } } void loop(void) { } Basic API Server #include <ESP8266WiFi.h> #include <WiFiClient.h> #include <ESP8266WebServer.h> ESP8266WebServer server(80); inline void handleNotFound() { server.send(404, "text/plain", "404 not found"); } inline void serveInfo() { String json = "{"; json += "\"free_heap\":" + String(ESP.getFreeHeap()); json += ",\"heap_frag_perc\":" + String(ESP.getHeapFragmentation()); json += ",\"last_reset_reason\":\"" + String(ESP.getResetReason()) + "\""; json += ",\"uptime\":" + String(millis() / 1000); json += ",\"cpu_freq\":" + String(ESP.getCpuFreqMHz()); json += ",\"wifi_rssi\":" + String(WiFi.RSSI()); json += ",\"ip\":\"" + WiFi.localIP().toString() + "\""; json += ",\"mac\":\"" + WiFi.macAddress() + "\""; json += "}"; server.send(200, "application/json", json); } void setup(void) { server.on("/api/system", serveInfo); server.onNotFound(handleNotFound); server.begin(); } void loop(void) { server.handleClient(); } Static file server There a few more steps to take here:'><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-04-13T00:00:00+00:00"><meta property="article:modified_time" content="2022-04-13T23:43:58+02:00"><meta property="article:tag" content="Arduino"><meta property="article:tag" content="C++"><meta property="article:tag" content="Webserver"><meta name=author content="knrdl"><link rel=stylesheet href=https://knrdl.github.io/styles.min.b1eb305989f01c7be31a7a19d4ab34ca470eddd06327253c7bcf3d1c5a41d28c.css integrity="sha256-seswWYnwHHvjGnoZ1Ks0ykcO3dBjJyU8e889HFpB0ow="></head><body><header><div class=site-header><span><a href=https://knrdl.github.io/ class=site-title>knrdlog</a>
 </span><span><nav class=right-menu><span class=menu-item><a href=/tags/>tags</a></span>
@@ -12,16 +11,16 @@ json api but also to serve static files.</p><h2 id=setup class=paragraph-header>
 URLs:
 <a href=http://arduino.esp8266.com/stable/package_esp8266com_index.json target=_blank rel="noopener noreferrer">http://arduino.esp8266.com/stable/package_esp8266com_index.json</a></p><h2 id=connect-to-wifi class=paragraph-header>Connect to Wifi <a href=#connect-to-wifi></a></h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;ESP8266WiFi.h&gt;</span><span style=color:#ff79c6>
 </span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;WiFiClient.h&gt;</span><span style=color:#ff79c6>
-</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#ff79c6>const</span> <span style=color:#8be9fd>char</span> <span style=color:#ff79c6>*</span>ssid <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;YOUR_NETWORK_NAME&#34;</span>;
 </span></span><span style=display:flex><span><span style=color:#ff79c6>const</span> <span style=color:#8be9fd>char</span> <span style=color:#ff79c6>*</span>password <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;YOUR_NETWORK_PASSWORD&#34;</span>;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#8be9fd>void</span> <span style=color:#50fa7b>setup</span>(<span style=color:#8be9fd>void</span>) {
 </span></span><span style=display:flex><span>  WiFi.mode(WIFI_STA);  <span style=color:#6272a4>// stationary mode
-</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>  WiFi.begin(ssid, password);
+</span></span></span><span style=display:flex><span>  WiFi.begin(ssid, password);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>  <span style=color:#6272a4>// Wait for connection
-</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>  <span style=color:#ff79c6>while</span> (WiFi.status() <span style=color:#ff79c6>!=</span> WL_CONNECTED) {
+</span></span></span><span style=display:flex><span>  <span style=color:#ff79c6>while</span> (WiFi.status() <span style=color:#ff79c6>!=</span> WL_CONNECTED) {
 </span></span><span style=display:flex><span>    delay(<span style=color:#bd93f9>50</span>);
 </span></span><span style=display:flex><span>  }
 </span></span><span style=display:flex><span>}
@@ -31,7 +30,7 @@ URLs:
 </span></span></code></pre></div><h2 id=basic-api-server class=paragraph-header>Basic API Server <a href=#basic-api-server></a></h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;ESP8266WiFi.h&gt;</span><span style=color:#ff79c6>
 </span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;WiFiClient.h&gt;</span><span style=color:#ff79c6>
 </span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;ESP8266WebServer.h&gt;</span><span style=color:#ff79c6>
-</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>ESP8266WebServer <span style=color:#50fa7b>server</span>(<span style=color:#bd93f9>80</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#ff79c6>inline</span> <span style=color:#8be9fd>void</span> <span style=color:#50fa7b>handleNotFound</span>() {
@@ -62,7 +61,7 @@ URLs:
 </span></span><span style=display:flex><span>  server.handleClient();
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><h2 id=static-file-server class=paragraph-header>Static file server <a href=#static-file-server></a></h2><p>There a few more steps to take here:</p><ol><li>Aggregate files which should be served by the arduino</li><li>Flash files from computer to a filesystem on the arduino board</li><li>Serve files from the arduino filesystem via http.</li></ol><h3 id=littlefs class=paragraph-header>LittleFS <a href=#littlefs></a></h3><p>LittleFS is a filesystem for microcontrollers. It supports path-based read/write operations:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&#34;LittleFS.h&#34;</span><span style=color:#ff79c6>
-</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#ff79c6>inline</span> <span style=color:#8be9fd>void</span> <span style=color:#50fa7b>writeFile</span>(<span style=color:#ff79c6>const</span> String path, <span style=color:#ff79c6>const</span> String message) {
 </span></span><span style=display:flex><span>  File file <span style=color:#ff79c6>=</span> LittleFS.open(path, <span style=color:#f1fa8c>&#34;w&#34;</span>);
 </span></span><span style=display:flex><span>  file.print(message);
@@ -120,22 +119,22 @@ LittleFS would look like this:</p><div class=highlight><div style=color:#f8f8f2;
 </span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;ESP8266WebServer.h&gt;</span><span style=color:#ff79c6>
 </span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&#34;LittleFS.h&#34;</span><span style=color:#ff79c6>
 </span></span></span><span style=display:flex><span><span style=color:#ff79c6>#include</span> <span style=color:#ff79c6>&lt;uri/UriBraces.h&gt;</span><span style=color:#ff79c6>
-</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>ESP8266WebServer <span style=color:#50fa7b>server</span>(<span style=color:#bd93f9>80</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#ff79c6>inline</span> <span style=color:#8be9fd>void</span> <span style=color:#50fa7b>serveStaticFiles</span>() {
 </span></span><span style=display:flex><span>  String filename <span style=color:#ff79c6>=</span> server.pathArg(<span style=color:#bd93f9>0</span>);
 </span></span><span style=display:flex><span>  filename.replace(<span style=color:#f1fa8c>&#34;..&#34;</span>, <span style=color:#f1fa8c>&#34;&#34;</span>);  <span style=color:#6272a4>// mitigate path traversal attacks
-</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>  filename.replace(<span style=color:#f1fa8c>&#34;/&#34;</span>, <span style=color:#f1fa8c>&#34;&#34;</span>);  <span style=color:#6272a4>// serve from a single folder only
-</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>  filename.trim();
+</span></span></span><span style=display:flex><span>  filename.replace(<span style=color:#f1fa8c>&#34;/&#34;</span>, <span style=color:#f1fa8c>&#34;&#34;</span>);  <span style=color:#6272a4>// serve from a single folder only
+</span></span></span><span style=display:flex><span>  filename.trim();
 </span></span><span style=display:flex><span>  <span style=color:#ff79c6>if</span> (filename <span style=color:#ff79c6>==</span> <span style=color:#f1fa8c>&#34;&#34;</span>) {
 </span></span><span style=display:flex><span>    filename <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;index.html&#34;</span>;
 </span></span><span style=display:flex><span>  }
 </span></span><span style=display:flex><span>  String path <span style=color:#ff79c6>=</span> <span style=color:#f1fa8c>&#34;/www/&#34;</span> <span style=color:#ff79c6>+</span> filename;  <span style=color:#6272a4>// assuming files are served from /www/
-</span></span></span><span style=display:flex><span><span style=color:#6272a4></span>  <span style=color:#ff79c6>const</span> String contentType <span style=color:#ff79c6>=</span> mime<span style=color:#ff79c6>::</span>getContentType(path);
+</span></span></span><span style=display:flex><span>  <span style=color:#ff79c6>const</span> String contentType <span style=color:#ff79c6>=</span> mime<span style=color:#ff79c6>::</span>getContentType(path);
 </span></span><span style=display:flex;background-color:#3d3f4a><span>  <span style=color:#ff79c6>if</span> (<span style=color:#ff79c6>!</span>LittleFS.exists(path)) {
 </span></span><span style=display:flex;background-color:#3d3f4a><span>    path <span style=color:#ff79c6>=</span> path <span style=color:#ff79c6>+</span> <span style=color:#f1fa8c>&#34;.gz&#34;</span>;  <span style=color:#6272a4>// explained in compression section below
-</span></span></span><span style=display:flex;background-color:#3d3f4a><span><span style=color:#6272a4></span>  }
+</span></span></span><span style=display:flex;background-color:#3d3f4a><span>  }
 </span></span><span style=display:flex><span>  <span style=color:#ff79c6>if</span> (<span style=color:#ff79c6>!</span>LittleFS.exists(path)) {
 </span></span><span style=display:flex><span>    server.send(<span style=color:#bd93f9>404</span>, <span style=color:#f1fa8c>&#34;text/plain&#34;</span>, <span style=color:#f1fa8c>&#34;404 not found&#34;</span>);
 </span></span><span style=display:flex><span>  } <span style=color:#ff79c6>else</span> {
@@ -160,7 +159,7 @@ sketch (<code>.ino</code>
 file)</li></ol><h3 id=compression class=paragraph-header>Compression <a href=#compression></a></h3><p>The ESP8266 runs at 80MHz cpu frequency (can be changed to 160MHz). Transferring large files takes some time (e.g. more
 than a second for a couple of megabytes).</p><p>So pre-compressing files might improve performance. The following script gzips all files in the <code>www</code> dir and saves them
 to <code>data/www</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#ff79c6>#!/bin/bash
-</span></span></span><span style=display:flex><span><span style=color:#ff79c6></span>rm -rf data/www
+</span></span></span><span style=display:flex><span>rm -rf data/www
 </span></span><span style=display:flex><span>mkdir -p data/www
 </span></span><span style=display:flex><span><span style=color:#ff79c6>for</span> filename in ./www/*; <span style=color:#ff79c6>do</span>
 </span></span><span style=display:flex><span>   cat <span style=color:#f1fa8c>&#34;</span><span style=color:#8be9fd;font-style:italic>$filename</span><span style=color:#f1fa8c>&#34;</span> | gzip -9 &gt; <span style=color:#f1fa8c>&#34;data/</span><span style=color:#8be9fd;font-style:italic>$filename</span><span style=color:#f1fa8c>.gz&#34;</span>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Debian on knrdlog</title><link>https://knrdl.github.io/tags/debian/</link><description>Recent content in Debian on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Thu, 25 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/debian/index.xml" rel="self" type="application/rss+xml"/><item><title>Minimal setup for a rootless Podman host</title><link>https://knrdl.github.io/posts/minimal-podman-setup/</link><pubDate>Thu, 25 Dec 2025 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/minimal-podman-setup/</guid><description>&lt;h2 id="install-podman" class="paragraph-header"&gt;Install Podman &lt;a
+href="#install-podman"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt install podman podman-compose
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Compose can be called as &lt;code&gt;podman-compose&lt;/code&gt; with autocomplete.&lt;/p&gt;
+&lt;h3 id="allow-binding-to-privileged-ports-1024" class="paragraph-header"&gt;Allow binding to privileged ports (&amp;lt;1024) &lt;a
+href="#allow-binding-to-privileged-ports-1024"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;net.ipv4.ip_unprivileged_port_start=1&amp;#34;&lt;/span&gt; &amp;gt; /etc/sysctl.d/100-podman.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/usr/sbin/sysctl --system &lt;span style="color:#6272a4"&gt;# apply setting&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="start-containers-after-reboot-without-user-login" class="paragraph-header"&gt;Start containers after reboot without user login &lt;a
+href="#start-containers-after-reboot-without-user-login"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;loginctl enable-linger &lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="pull-images-from-docker-hub-without-explicit-dockerio-prefix" class="paragraph-header"&gt;Pull images from Docker Hub without explicit &lt;code&gt;docker.io&lt;/code&gt; prefix &lt;a
+href="#pull-images-from-docker-hub-without-explicit-dockerio-prefix"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.config/containers/registries.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;unqualified-search-registries = [&amp;#34;docker.io&amp;#34;]
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="useful-shortcuts" class="paragraph-header"&gt;Useful shortcuts &lt;a
+href="#useful-shortcuts"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Add to &lt;code&gt;~/.bashrc&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;deploy&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose --podman-run-args=--replace up -d --pull --build --remove-orphans&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;undeploy&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose down --remove-orphans&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;logs&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose logs --follow --names&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;alias&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;stack&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#39;podman-compose&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test in a new terminal or run &lt;code&gt;source ~/.bashrc&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="housekeeping" class="paragraph-header"&gt;Housekeeping &lt;a
+href="#housekeeping"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;/etc/crontab:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 1 * * * root apt-get -y update &amp;amp;&amp;amp; apt-get autoremove --purge -y
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;User-specific &lt;code&gt;crontab -e&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;0 3 * * * /home/container/update_all.sh
+0 5 * * * podman system prune --force
+*/3 * * * * podman ps --filter health=unhealthy --format &amp;#34;podman restart {{.ID}}&amp;#34; | bash
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="stack-updater-script-homecontainerupdate_allsh" class="paragraph-header"&gt;Stack updater script &lt;code&gt;/home/container/update_all.sh&lt;/code&gt;: &lt;a
+href="#stack-updater-script-homecontainerupdate_allsh"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; /home/container
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;for&lt;/span&gt; d in */; &lt;span style="color:#ff79c6"&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;echo&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$d&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; podman-compose --podman-run-args&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;--replace up -d --pull --build --remove-orphans
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="auto-updater" class="paragraph-header"&gt;Auto-Updater &lt;a
+href="#auto-updater"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Alternatively, Podman&amp;rsquo;s built-in auto-updater can be enabled with:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now podman-auto-update.timer
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman auto-update --dry-run &lt;span style="color:#6272a4"&gt;# test&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Containers needs to be marked as updatable via label.
+However, it might not be sufficient to rebuild compose stacks that use &lt;code&gt;build:&lt;/code&gt; instead of &lt;code&gt;image:&lt;/code&gt; for services.&lt;/p&gt;
+&lt;h2 id="test" class="paragraph-header"&gt;Test &lt;a
+href="#test"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run -it --rm -p80:80 nginx:alpine
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="portainer" class="paragraph-header"&gt;Portainer &lt;a
+href="#portainer"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;systemctl --user &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now podman.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;podman run -it --rm -p 9443:9443 --name portainer -v /run/user/1000/podman/podman.sock:/var/run/docker.sock portainer/portainer-ce
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item></channel></rss>

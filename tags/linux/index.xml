@@ -1,201 +1,201 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Linux on knrdlog</title><link>https://knrdl.github.io/tags/linux/</link><description>Recent content in Linux on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 03 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
-href="#problem">&lt;/a>&lt;/h2>
-&lt;p>SD (or MicroSD) Cards are cheap flash storage. Their lifetime is limited by the performable write operations. If their end of life is reached, they don&amp;rsquo;t work at all or read data unreliably.&lt;/p>
-&lt;p>A Raspberry Pi produces more IO operations than a typical digital camera (which SD Cards are conceptualized for). The load is mostly produced by writing:&lt;/p>
-&lt;ul>
-&lt;li>Temporary files in &lt;code>/tmp/&lt;/code>&lt;/li>
-&lt;li>Variable files in &lt;code>/var/&lt;/code>&lt;/li>
-&lt;li>The swap file in &lt;code>/var/swap&lt;/code>&lt;/li>
-&lt;li>Files in other application and user specific directories&lt;/li>
-&lt;/ul>
-&lt;p>It also depends on the usage of the Pi: e.g. compiling a big pile of software on the Pi is never a good idea in terms of SD Card lifetime.&lt;/p>
-&lt;p>It&amp;rsquo;s possible to run a Pi only with a SD Card for a long time. One of my Pi&amp;rsquo;s now runs successfully for more than 5 years that way. However, you can&amp;rsquo;t tell it beforehand.&lt;/p>
-&lt;h2 id="solution" class="paragraph-header">Solution &lt;a
-href="#solution">&lt;/a>&lt;/h2>
-&lt;p>So the solution is to reduce the IO operations performed against the SD Card. A simple attempt is to disable swapping: &lt;code>sudo systemctl disable --now dphys-swapfile&lt;/code>. A better alternative is moving write intense directories to an external drive. There are two options:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Option A&lt;/strong>: The Raspberry boots directly from a USB drive (e.g. USB thumb drive, SSD or HDD). No SD Card required.&lt;/li>
-&lt;li>&lt;strong>Option B&lt;/strong>: The Raspberry boots from the SD Card and mounts an external USB drive where the heavy disk IO is performed later on.&lt;/li>
-&lt;/ul>
-&lt;h3 id="option-a---fresh-installation" class="paragraph-header">Option A - Fresh installation &lt;a
-href="#option-a---fresh-installation">&lt;/a>&lt;/h3>
-&lt;p>This option is pretty easy to realize, just flash the OS image (e.g. Raspberry Pi OS, formerly known as Raspbian) to the USB drive. However, it might not work with all kinds of USB drives. Also, a cheap USB thumb drive might have the same problems as a SD Card. Therefore, a durable SSD should be used instead. An old HDD is also a valid alternative. But your Pi might crash if spinning up the HDD consumes more power than can be supplied.&lt;/p>
-&lt;h3 id="option-b---external-disk" class="paragraph-header">Option B - External disk &lt;a
-href="#option-b---external-disk">&lt;/a>&lt;/h3>
-&lt;p>This is useful if your Pi is already set up and running. The separation will split the filestorage into static files (stored on the SD Card) and dynamic files (stored on the USB drive).&lt;/p>
-&lt;p>You need to copy the dynamic files to the external drive. But first you should stop all running applications to prevent inconsistency when copying files.&lt;/p>
-&lt;p>Disable the swap:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo swapoff -a &lt;span style="color:#6272a4"># disable the swap&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cat /proc/swaps &lt;span style="color:#6272a4"># check that no swap is active&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Mount the external usb drive. In the example it has the Label &amp;ldquo;usb0&amp;rdquo;:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ls /dev/disk/by-label/usb0 &lt;span style="color:#6272a4"># check the device file exists&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/usb0 &lt;span style="color:#6272a4"># create the mountpoint&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount -o defaults /dev/disk/by-label/usb0 /media/usb0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy all directories with dynamic data (at least &lt;code>/tmp&lt;/code> and &lt;code>/var&lt;/code>):&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cp -ar /tmp/ /media/usb0/tmp
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cp -ar /var/ /media/usb0/var
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
-&lt;p class="info">It&amp;rsquo;s optional to copy &lt;code>/tmp&lt;/code> as it only contains ephemeral data. But the directory must exist and have the correct permissions set!&lt;/p>
-&lt;/blockquote>
-&lt;p>Add to &lt;code>/etc/fstab&lt;/code> the new mount records:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>/dev/disk/by-label/usb0 /media/usb0 ext4 defaults 0 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/media/usb0/var /var none bind 0 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/media/usb0/tmp /tmp none bind 0 0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The external drive will be mounted to &lt;code>/media/usb0&lt;/code>. The directories &lt;code>/tmp&lt;/code> and &lt;code>/var&lt;/code> (dynamic data) will be pointed to the corresponding directories on the external device.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">The external drive is mounted with option &lt;code>defaults&lt;/code>. If the disk is not connected or cannot be read, the raspi will not boot! As a countermeasure the options &lt;code>defaults,nofail&lt;/code> could be used. But then the data will be written to the SD card in case of a disk failure. Inconsistent data would be the result.&lt;/p>
-&lt;/blockquote>
-&lt;p>Now reboot the Pi: &lt;code>sudo reboot&lt;/code>.&lt;/p>
-&lt;p>Check that everything is working:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>touch /tmp/fs.test
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"># should output the filepath&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item><item><title>LUKS: Encrypted data volumes</title><link>https://knrdl.github.io/posts/luks-data-volumes/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/luks-data-volumes/</guid><description>&lt;p>To realize encrypted data volumes, there are various tools for different use cases:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Veracrypt&lt;/strong> works cross-platform, predefined volume sizes&lt;/li>
-&lt;li>&lt;strong>Gocryptfs&lt;/strong> encrypts transparent, dynamic storage usage&lt;/li>
-&lt;li>&lt;strong>Restic&lt;/strong> encrypts backups, network capable, can do versioning&lt;/li>
-&lt;li>&lt;strong>LUKS&lt;/strong> provides full disk encryption for linux systems&lt;/li>
-&lt;/ul>
-&lt;p>But LUKS can also be used for regular data volumes which behave a lot like Veracrypt volumes.&lt;/p>
-&lt;h3 id="1-create-a-volume" class="paragraph-header">1. Create a volume &lt;a
-href="#1-create-a-volume">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/ &lt;span style="color:#6272a4"># here the encrypted volume files will be stored&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install cryptsetup pv
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dd &lt;span style="color:#ff79c6">if&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>/dev/zero &lt;span style="color:#8be9fd;font-style:italic">bs&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>1M &lt;span style="color:#8be9fd;font-style:italic">count&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#bd93f9">10240&lt;/span> | pv | dd &lt;span style="color:#8be9fd;font-style:italic">of&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>~/volumes/vol1.luks &lt;span style="color:#6272a4"># will create a 1MiB * 10240 = 10GiB file, called &amp;#34;vol1.luks&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cryptsetup -y -v luksFormat ~/volumes/vol1.luks &lt;span style="color:#6272a4"># here you have to enter the passphrase to protect the new volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1 &lt;span style="color:#6272a4"># provide the volume as a device located at /dev/mapper/vol1&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup -v status vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkfs.ext4 /dev/mapper/vol1 &lt;span style="color:#6272a4"># create filesystem inside the volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/vol1/ &lt;span style="color:#6272a4"># the volume will also be mounted in the &amp;#34;volumes&amp;#34; directory&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown &lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span>:&lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span> -R ~/volumes/vol1/ &lt;span style="color:#6272a4"># give current user ownership to work with the volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>df -H &lt;span style="color:#6272a4"># shows disk usage inside the volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>pv&lt;/code> adds the progress bar for &lt;code>dd&lt;/code> and can be omitted.&lt;/p>
-&lt;p>The blocksize provided to &lt;code>dd&lt;/code> will be overwritten when creating a filesystem inside the container. So it has no impact on the performance later on.&lt;/p>
-&lt;p>The command &amp;ldquo;luksFormat&amp;rdquo; will figure out good encryption parameters per default. But this requires a decent up-to-date version.&lt;/p>
-&lt;h3 id="2-open-the-volume" class="paragraph-header">2. Open the volume &lt;a
-href="#2-open-the-volume">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-close-the-volume" class="paragraph-header">3. Close the volume &lt;a
-href="#3-close-the-volume">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p>The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
-user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p>
-&lt;p>But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
-the host is still unproblematic, e.g. &lt;code>docker run -p 80:8080 ...&lt;/code> will bind port 8080 of the container to port 80 on the
-host.&lt;/p>
-&lt;p>But what if two services share a Docker Network to reach each other? Then requests have to be made to
-e.g. &lt;strong>http://service2:8080/api&lt;/strong> (includes the port 8080). This is a bit ugly because &lt;strong>service1&lt;/strong> now needs to contain
-runtime information about &lt;strong>service2&lt;/strong> (contradicts goal of loose coupling). An endpoint like &lt;strong>http://service2/api&lt;/strong> (defaults to port 80) is preferable.&lt;/p>
-&lt;p>The following Dockerfile achieves that goal:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-dockerfile" data-lang="dockerfile">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">FROM&lt;/span>&lt;span style="color:#f1fa8c"> python:3-alpine&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># allow non privileged user to run server on port 80&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> apk add --no-cache libcap &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f1fa8c">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c">&lt;/span> setcap &lt;span style="color:#f1fa8c">&amp;#39;cap_net_bind_service=+ep&amp;#39;&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>readlink -f &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>which python3&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#f1fa8c">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f1fa8c">&lt;/span> apk del libcap
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">EXPOSE&lt;/span>&lt;span style="color:#f1fa8c"> 80/tcp&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> adduser --home /home/appname --disabled-password --shell /bin/false --uid &lt;span style="color:#bd93f9">1000&lt;/span> appname
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># all commands after the USER-command will be executed as user `appname`&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">USER&lt;/span>&lt;span style="color:#f1fa8c"> appname&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">RUN&lt;/span> whoami
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># now the app can run on port 80 as non root user&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">CMD&lt;/span> python3 myapp.py
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The program &lt;code>setcap&lt;/code> is used to give the executable (e.g. &lt;code>/usr/bin/python3&lt;/code> or &lt;code>/bin/myapp&lt;/code>) the necessary capability (permission). It&amp;rsquo;s not needed afterwards, so it might be deleted to keep the image small.&lt;/p>
-&lt;blockquote>
-&lt;p class="info">If you work with &lt;abbr title="Advanced Packaging Tool">APT&lt;/abbr> (Ubuntu/Debian images) just use the
-package &lt;code>libcap2-bin&lt;/code> instead of &lt;code>libcap&lt;/code>.&lt;/p>
-&lt;/blockquote></description></item><item><title>Linux Laptop: Wifi dependent profiles</title><link>https://knrdl.github.io/posts/linux-laptop-wifi-profiles/</link><pubDate>Thu, 05 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/linux-laptop-wifi-profiles/</guid><description>&lt;p>A notebook as mobile device may should behave differently depending on the location. Examples:&lt;/p>
-&lt;ul>
-&lt;li>at home:
-&lt;ul>
-&lt;li>sound output should be turned on&lt;/li>
-&lt;li>a backup script can run from time to time&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>in a foreign network / without connection:
-&lt;ul>
-&lt;li>speakers should be muted&lt;/li>
-&lt;li>a vpn connection should be established in public networks&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>at work:
-&lt;ul>
-&lt;li>speakers should be muted&lt;/li>
-&lt;li>time tracking software should be active&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;p>Evaluating the ssid (name) of the currently connected Wi-Fi on connection change is a cheap solution. This can be done
-by using a hook of the network manager.&lt;/p>
-&lt;ol>
-&lt;li>Create file &lt;code>/etc/NetworkManager/dispatcher.d/90-wifi-profiles&lt;/code> (replace 3x &lt;code>yourname&lt;/code>)&lt;/li>
-&lt;/ol>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/usr/bin/env bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">interface&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$1&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">event&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$2&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># only listen to connect/disconnect events&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[[&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$event&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">==&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;connectivity-change&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">]]&lt;/span> &lt;span style="color:#ff79c6">||&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">exit&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># check user is logged in&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>who | awk &lt;span style="color:#f1fa8c">&amp;#39;{print $1}&amp;#39;&lt;/span> | grep -q &lt;span style="color:#f1fa8c">&amp;#39;^yourname$&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">||&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">exit&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo -u yourname /home/yourname/.wifi-profile &amp;gt;&amp;gt; /var/log/wifi-profiles 2&amp;gt;&amp;amp;&lt;span style="color:#bd93f9">1&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>and run&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ sudo chown root:root /etc/NetworkManager/dispatcher.d/90-wifi-profiles
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ sudo chmod o+x /etc/NetworkManager/dispatcher.d/90-wifi-profiles
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="2">
-&lt;li>Create &lt;code>~/.wifi-profile&lt;/code>&lt;/li>
-&lt;/ol>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">#!/usr/bin/env bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># user specific env vars need to be set manually!&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">export&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">XDG_RUNTIME_DIR&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>/run/user/1000
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">export&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">DISPLAY&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>:0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">function&lt;/span> soundOff&lt;span style="color:#ff79c6">()&lt;/span> &lt;span style="color:#ff79c6">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> amixer -D pulse sset Master mute
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">function&lt;/span> soundOn&lt;span style="color:#ff79c6">()&lt;/span> &lt;span style="color:#ff79c6">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> amixer -D pulse sset Master 40%
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> amixer -D pulse sset Master unmute
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">function&lt;/span> askConnectVpn&lt;span style="color:#ff79c6">()&lt;/span> &lt;span style="color:#ff79c6">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> zenity --question --title &lt;span style="color:#f1fa8c">&amp;#34;Foreign Wifi&amp;#34;&lt;/span> --text &lt;span style="color:#f1fa8c">&amp;#34;Connect to home VPN?&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">&amp;amp;&amp;amp;&lt;/span> nmcli con up id yourvpn
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">SSID&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">$(&lt;/span>iwgetid -r&lt;span style="color:#ff79c6">)&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">if&lt;/span> &lt;span style="color:#ff79c6">[[&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$SSID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;home_network1&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">||&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$SSID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;home_network2&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">]]&lt;/span>; &lt;span style="color:#ff79c6">then&lt;/span> &lt;span style="color:#6272a4"># at home&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> soundOn &lt;span style="color:#6272a4"># use carefully, might not be wanted&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#6272a4"># run backup&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">elif&lt;/span> &lt;span style="color:#ff79c6">[[&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$SSID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;work_network1&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">||&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$SSID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;work_network2&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">]]&lt;/span>; &lt;span style="color:#ff79c6">then&lt;/span> &lt;span style="color:#6272a4"># at work&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> soundOff
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">elif&lt;/span> &lt;span style="color:#ff79c6">[[&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$SSID&lt;/span>&lt;span style="color:#f1fa8c">&amp;#34;&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">]]&lt;/span>; &lt;span style="color:#ff79c6">then&lt;/span> &lt;span style="color:#6272a4"># not connected&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> soundOff
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">else&lt;/span> &lt;span style="color:#6272a4"># foreign network&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> soundOff
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> askConnectVpn
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">fi&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>and run&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ chmod o+x ~/.wifi-profile
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ol start="3">
-&lt;li>Test&lt;/li>
-&lt;/ol>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>$ sudo /etc/NetworkManager/dispatcher.d/90-wifi-profiles wlan0 connectivity-change
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cat /var/log/wifi-profiles
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Linux on knrdlog</title><link>https://knrdl.github.io/tags/linux/</link><description>Recent content in Linux on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Mon, 03 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml"/><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header"&gt;Problem &lt;a
+href="#problem"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;SD (or MicroSD) Cards are cheap flash storage. Their lifetime is limited by the performable write operations. If their end of life is reached, they don&amp;rsquo;t work at all or read data unreliably.&lt;/p&gt;
+&lt;p&gt;A Raspberry Pi produces more IO operations than a typical digital camera (which SD Cards are conceptualized for). The load is mostly produced by writing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Temporary files in &lt;code&gt;/tmp/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Variable files in &lt;code&gt;/var/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The swap file in &lt;code&gt;/var/swap&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Files in other application and user specific directories&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It also depends on the usage of the Pi: e.g. compiling a big pile of software on the Pi is never a good idea in terms of SD Card lifetime.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s possible to run a Pi only with a SD Card for a long time. One of my Pi&amp;rsquo;s now runs successfully for more than 5 years that way. However, you can&amp;rsquo;t tell it beforehand.&lt;/p&gt;
+&lt;h2 id="solution" class="paragraph-header"&gt;Solution &lt;a
+href="#solution"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So the solution is to reduce the IO operations performed against the SD Card. A simple attempt is to disable swapping: &lt;code&gt;sudo systemctl disable --now dphys-swapfile&lt;/code&gt;. A better alternative is moving write intense directories to an external drive. There are two options:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Option A&lt;/strong&gt;: The Raspberry boots directly from a USB drive (e.g. USB thumb drive, SSD or HDD). No SD Card required.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Option B&lt;/strong&gt;: The Raspberry boots from the SD Card and mounts an external USB drive where the heavy disk IO is performed later on.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="option-a---fresh-installation" class="paragraph-header"&gt;Option A - Fresh installation &lt;a
+href="#option-a---fresh-installation"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;This option is pretty easy to realize, just flash the OS image (e.g. Raspberry Pi OS, formerly known as Raspbian) to the USB drive. However, it might not work with all kinds of USB drives. Also, a cheap USB thumb drive might have the same problems as a SD Card. Therefore, a durable SSD should be used instead. An old HDD is also a valid alternative. But your Pi might crash if spinning up the HDD consumes more power than can be supplied.&lt;/p&gt;
+&lt;h3 id="option-b---external-disk" class="paragraph-header"&gt;Option B - External disk &lt;a
+href="#option-b---external-disk"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;This is useful if your Pi is already set up and running. The separation will split the filestorage into static files (stored on the SD Card) and dynamic files (stored on the USB drive).&lt;/p&gt;
+&lt;p&gt;You need to copy the dynamic files to the external drive. But first you should stop all running applications to prevent inconsistency when copying files.&lt;/p&gt;
+&lt;p&gt;Disable the swap:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo swapoff -a &lt;span style="color:#6272a4"&gt;# disable the swap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cat /proc/swaps &lt;span style="color:#6272a4"&gt;# check that no swap is active&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Mount the external usb drive. In the example it has the Label &amp;ldquo;usb0&amp;rdquo;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls /dev/disk/by-label/usb0 &lt;span style="color:#6272a4"&gt;# check the device file exists&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkdir -p /media/usb0 &lt;span style="color:#6272a4"&gt;# create the mountpoint&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mount -o defaults /dev/disk/by-label/usb0 /media/usb0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Copy all directories with dynamic data (at least &lt;code&gt;/tmp&lt;/code&gt; and &lt;code&gt;/var&lt;/code&gt;):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cp -ar /tmp/ /media/usb0/tmp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cp -ar /var/ /media/usb0/var
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p class="info"&gt;It&amp;rsquo;s optional to copy &lt;code&gt;/tmp&lt;/code&gt; as it only contains ephemeral data. But the directory must exist and have the correct permissions set!&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Add to &lt;code&gt;/etc/fstab&lt;/code&gt; the new mount records:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/dev/disk/by-label/usb0 /media/usb0 ext4 defaults 0 0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/media/usb0/var /var none bind 0 0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/media/usb0/tmp /tmp none bind 0 0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The external drive will be mounted to &lt;code&gt;/media/usb0&lt;/code&gt;. The directories &lt;code&gt;/tmp&lt;/code&gt; and &lt;code&gt;/var&lt;/code&gt; (dynamic data) will be pointed to the corresponding directories on the external device.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;The external drive is mounted with option &lt;code&gt;defaults&lt;/code&gt;. If the disk is not connected or cannot be read, the raspi will not boot! As a countermeasure the options &lt;code&gt;defaults,nofail&lt;/code&gt; could be used. But then the data will be written to the SD card in case of a disk failure. Inconsistent data would be the result.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Now reboot the Pi: &lt;code&gt;sudo reboot&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Check that everything is working:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;touch /tmp/fs.test
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"&gt;# should output the filepath&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If the swap is not reactivated yet, run &lt;code&gt;sudo swapon /var/swap&lt;/code&gt;.&lt;/p&gt;</description></item><item><title>LUKS: Encrypted data volumes</title><link>https://knrdl.github.io/posts/luks-data-volumes/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/luks-data-volumes/</guid><description>&lt;p&gt;To realize encrypted data volumes, there are various tools for different use cases:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Veracrypt&lt;/strong&gt; works cross-platform, predefined volume sizes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Gocryptfs&lt;/strong&gt; encrypts transparent, dynamic storage usage&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Restic&lt;/strong&gt; encrypts backups, network capable, can do versioning&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LUKS&lt;/strong&gt; provides full disk encryption for linux systems&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But LUKS can also be used for regular data volumes which behave a lot like Veracrypt volumes.&lt;/p&gt;
+&lt;h3 id="1-create-a-volume" class="paragraph-header"&gt;1. Create a volume &lt;a
+href="#1-create-a-volume"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p ~/volumes/ &lt;span style="color:#6272a4"&gt;# here the encrypted volume files will be stored&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install cryptsetup pv
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dd &lt;span style="color:#ff79c6"&gt;if&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;/dev/zero &lt;span style="color:#8be9fd;font-style:italic"&gt;bs&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;1M &lt;span style="color:#8be9fd;font-style:italic"&gt;count&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#bd93f9"&gt;10240&lt;/span&gt; | pv | dd &lt;span style="color:#8be9fd;font-style:italic"&gt;of&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;~/volumes/vol1.luks &lt;span style="color:#6272a4"&gt;# will create a 1MiB * 10240 = 10GiB file, called &amp;#34;vol1.luks&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cryptsetup -y -v luksFormat ~/volumes/vol1.luks &lt;span style="color:#6272a4"&gt;# here you have to enter the passphrase to protect the new volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1 &lt;span style="color:#6272a4"&gt;# provide the volume as a device located at /dev/mapper/vol1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup -v status vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkfs.ext4 /dev/mapper/vol1 &lt;span style="color:#6272a4"&gt;# create filesystem inside the volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p ~/volumes/vol1/ &lt;span style="color:#6272a4"&gt;# the volume will also be mounted in the &amp;#34;volumes&amp;#34; directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chown &lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt;:&lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt; -R ~/volumes/vol1/ &lt;span style="color:#6272a4"&gt;# give current user ownership to work with the volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;df -H &lt;span style="color:#6272a4"&gt;# shows disk usage inside the volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo umount /dev/mapper/vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksClose vol1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;pv&lt;/code&gt; adds the progress bar for &lt;code&gt;dd&lt;/code&gt; and can be omitted.&lt;/p&gt;
+&lt;p&gt;The blocksize provided to &lt;code&gt;dd&lt;/code&gt; will be overwritten when creating a filesystem inside the container. So it has no impact on the performance later on.&lt;/p&gt;
+&lt;p&gt;The command &amp;ldquo;luksFormat&amp;rdquo; will figure out good encryption parameters per default. But this requires a decent up-to-date version.&lt;/p&gt;
+&lt;h3 id="2-open-the-volume" class="paragraph-header"&gt;2. Open the volume &lt;a
+href="#2-open-the-volume"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="3-close-the-volume" class="paragraph-header"&gt;3. Close the volume &lt;a
+href="#3-close-the-volume"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo umount /dev/mapper/vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksClose vol1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Bind non-root process to privileged port inside a Docker container</title><link>https://knrdl.github.io/posts/docker-non-root-privileged-port/</link><pubDate>Wed, 15 Jun 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/docker-non-root-privileged-port/</guid><description>&lt;p&gt;The Principle of Least Privilege (PoLP) should also be applied to applications inside a container! Running stuff as root
+user is never a good idea. A custom user profile with fewer privileges should be created and used instead.&lt;/p&gt;
+&lt;p&gt;But such a user cannot bind a privileged port (&amp;lt;1024), e.g. start a webserver on port 80. Exposure via port binding to
+the host is still unproblematic, e.g. &lt;code&gt;docker run -p 80:8080 ...&lt;/code&gt; will bind port 8080 of the container to port 80 on the
+host.&lt;/p&gt;
+&lt;p&gt;But what if two services share a Docker Network to reach each other? Then requests have to be made to
+e.g. &lt;strong&gt;http://service2:8080/api&lt;/strong&gt; (includes the port 8080). This is a bit ugly because &lt;strong&gt;service1&lt;/strong&gt; now needs to contain
+runtime information about &lt;strong&gt;service2&lt;/strong&gt; (contradicts goal of loose coupling). An endpoint like &lt;strong&gt;http://service2/api&lt;/strong&gt; (defaults to port 80) is preferable.&lt;/p&gt;
+&lt;p&gt;The following Dockerfile achieves that goal:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-dockerfile" data-lang="dockerfile"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;FROM&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;python:3-alpine&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# allow non privileged user to run server on port 80&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;RUN&lt;/span&gt; apk add --no-cache libcap &lt;span style="color:#ff79c6"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; setcap &lt;span style="color:#f1fa8c"&gt;&amp;#39;cap_net_bind_service=+ep&amp;#39;&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;readlink -f &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;which python3&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; apk del libcap
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;EXPOSE&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;80/tcp&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;RUN&lt;/span&gt; adduser --home /home/appname --disabled-password --shell /bin/false --uid &lt;span style="color:#bd93f9"&gt;1000&lt;/span&gt; appname
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# all commands after the USER-command will be executed as user `appname`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;USER&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;appname&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;RUN&lt;/span&gt; whoami
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# now the app can run on port 80 as non root user&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;CMD&lt;/span&gt; python3 myapp.py
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The program &lt;code&gt;setcap&lt;/code&gt; is used to give the executable (e.g. &lt;code&gt;/usr/bin/python3&lt;/code&gt; or &lt;code&gt;/bin/myapp&lt;/code&gt;) the necessary capability (permission). It&amp;rsquo;s not needed afterwards, so it might be deleted to keep the image small.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="info"&gt;If you work with &lt;abbr title="Advanced Packaging Tool"&gt;APT&lt;/abbr&gt; (Ubuntu/Debian images) just use the
+package &lt;code&gt;libcap2-bin&lt;/code&gt; instead of &lt;code&gt;libcap&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>Linux Laptop: Wifi dependent profiles</title><link>https://knrdl.github.io/posts/linux-laptop-wifi-profiles/</link><pubDate>Thu, 05 May 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/linux-laptop-wifi-profiles/</guid><description>&lt;p&gt;A notebook as mobile device may should behave differently depending on the location. Examples:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;at home:
+&lt;ul&gt;
+&lt;li&gt;sound output should be turned on&lt;/li&gt;
+&lt;li&gt;a backup script can run from time to time&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;in a foreign network / without connection:
+&lt;ul&gt;
+&lt;li&gt;speakers should be muted&lt;/li&gt;
+&lt;li&gt;a vpn connection should be established in public networks&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;at work:
+&lt;ul&gt;
+&lt;li&gt;speakers should be muted&lt;/li&gt;
+&lt;li&gt;time tracking software should be active&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Evaluating the ssid (name) of the currently connected Wi-Fi on connection change is a cheap solution. This can be done
+by using a hook of the network manager.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Create file &lt;code&gt;/etc/NetworkManager/dispatcher.d/90-wifi-profiles&lt;/code&gt; (replace 3x &lt;code&gt;yourname&lt;/code&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/usr/bin/env bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;interface&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;event&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# only listen to connect/disconnect events&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[[&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$event&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;==&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;connectivity-change&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;]]&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;||&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;exit&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# check user is logged in&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;who | awk &lt;span style="color:#f1fa8c"&gt;&amp;#39;{print $1}&amp;#39;&lt;/span&gt; | grep -q &lt;span style="color:#f1fa8c"&gt;&amp;#39;^yourname$&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;||&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;exit&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo -u yourname /home/yourname/.wifi-profile &amp;gt;&amp;gt; /var/log/wifi-profiles 2&amp;gt;&amp;amp;&lt;span style="color:#bd93f9"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and run&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sudo chown root:root /etc/NetworkManager/dispatcher.d/90-wifi-profiles
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sudo chmod o+x /etc/NetworkManager/dispatcher.d/90-wifi-profiles
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;Create &lt;code&gt;~/.wifi-profile&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;#!/usr/bin/env bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# user specific env vars need to be set manually!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;export&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;XDG_RUNTIME_DIR&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;/run/user/1000
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;export&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;DISPLAY&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;:0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;function&lt;/span&gt; soundOff&lt;span style="color:#ff79c6"&gt;()&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; amixer -D pulse sset Master mute
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;function&lt;/span&gt; soundOn&lt;span style="color:#ff79c6"&gt;()&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; amixer -D pulse sset Master 40%
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; amixer -D pulse sset Master unmute
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;function&lt;/span&gt; askConnectVpn&lt;span style="color:#ff79c6"&gt;()&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; zenity --question --title &lt;span style="color:#f1fa8c"&gt;&amp;#34;Foreign Wifi&amp;#34;&lt;/span&gt; --text &lt;span style="color:#f1fa8c"&gt;&amp;#34;Connect to home VPN?&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;&amp;amp;&amp;amp;&lt;/span&gt; nmcli con up id yourvpn
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;SSID&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;$(&lt;/span&gt;iwgetid -r&lt;span style="color:#ff79c6"&gt;)&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;if&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;[[&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$SSID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;home_network1&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;||&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$SSID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;home_network2&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;]]&lt;/span&gt;; &lt;span style="color:#ff79c6"&gt;then&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# at home&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; soundOn &lt;span style="color:#6272a4"&gt;# use carefully, might not be wanted&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#6272a4"&gt;# run backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;elif&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;[[&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$SSID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;work_network1&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;||&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$SSID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;work_network2&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;]]&lt;/span&gt;; &lt;span style="color:#ff79c6"&gt;then&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# at work&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; soundOff
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;elif&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;[[&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$SSID&lt;/span&gt;&lt;span style="color:#f1fa8c"&gt;&amp;#34;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;]]&lt;/span&gt;; &lt;span style="color:#ff79c6"&gt;then&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# not connected&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; soundOff
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;else&lt;/span&gt; &lt;span style="color:#6272a4"&gt;# foreign network&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; soundOff
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; askConnectVpn
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;fi&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and run&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ chmod o+x ~/.wifi-profile
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;Test&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sudo /etc/NetworkManager/dispatcher.d/90-wifi-profiles wlan0 connectivity-change
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ cat /var/log/wifi-profiles
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item></channel></rss>

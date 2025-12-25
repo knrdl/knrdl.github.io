@@ -1,47 +1,47 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Wireguard on knrdlog</title><link>https://knrdl.github.io/tags/wireguard/</link><description>Recent content in Wireguard on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Fri, 20 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/wireguard/index.xml" rel="self" type="application/rss+xml"/><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p>The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p>
-&lt;ol>
-&lt;li>&lt;strong>Wireguard&lt;/strong> for the VPN tunnel&lt;/li>
-&lt;li>&lt;strong>SSH&lt;/strong> server&lt;/li>
-&lt;li>&lt;strong>Docker&lt;/strong> runtime, e.g. to run a time series database to collect sensor stats&lt;/li>
-&lt;/ol>
-&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
-href="#setup">&lt;/a>&lt;/h2>
-&lt;ol>
-&lt;li>flash PostmarketOS to a microSD card&lt;/li>
-&lt;li>run the wizard on the phone (to resize the root partition)&lt;/li>
-&lt;li>copy the PostmarketOS img-file to the microSD card&lt;/li>
-&lt;li>flash the img-file to the eMMC via &lt;code>dd&lt;/code>:
-&lt;a href="https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os" target="_blank" rel="noopener noreferrer">https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os&lt;/a>&lt;/li>
-&lt;li>remove the sd card and reboot&lt;/li>
-&lt;li>login (user:147147) and connect wifi&lt;/li>
-&lt;/ol>
-&lt;h3 id="ssh" class="paragraph-header">SSH &lt;a
-href="#ssh">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>start ssh server: &lt;code>sudo service sshd start&lt;/code>&lt;/li>
-&lt;li>enable ssh on boot: &lt;code>sudo rc-update add sshd&lt;/code>&lt;/li>
-&lt;li>connect to the phone: &lt;code>ssh user@pine64-pinephone&lt;/code>&lt;/li>
-&lt;li>in &lt;code>/etc/ssh/sshd_config&lt;/code>: set &lt;code>AllowTcpForwarding yes&lt;/code> to forward ports from the remote network to your local host&lt;/li>
-&lt;/ol>
-&lt;h3 id="system" class="paragraph-header">System &lt;a
-href="#system">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>check updates: &lt;code>sudo apk update&lt;/code> and &lt;code>sudo apk upgrade -a&lt;/code>&lt;/li>
-&lt;li>install some tools: &lt;code>sudo apk add htop curl nano&lt;/code>&lt;/li>
-&lt;li>remove unnecessary apps: &lt;code>sudo apk del gnome-maps gnome-calculator gnome-software gnome-clocks gnome-calendar gnome-text-editor gnome-contacts gnome-weather chatty portfolio lollypop firefox-esr evince calls megapixels postmarketos-default-camera postmarketos-welcome loupe flatpak&lt;/code>&lt;/li>
-&lt;li>list remaining packages: &lt;code>sudo apk list -I&lt;/code>&lt;/li>
-&lt;li>disable unnecessary services: &lt;code>sudo rc-update del bluetooth&lt;/code> and &lt;code>sudo rc-update del modemmanager&lt;/code>&lt;/li>
-&lt;li>list enabled services: &lt;code>sudo rc-update show&lt;/code>&lt;/li>
-&lt;/ol>
-&lt;h3 id="wireguard" class="paragraph-header">Wireguard &lt;a
-href="#wireguard">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>install: &lt;code>sudo apk add wireguard-tools-wg-quick wireguard-tools-openrc&lt;/code>&lt;/li>
-&lt;li>add wireguard config to &lt;code>/etc/wireguard/wg0.conf&lt;/code>, e.g.:&lt;/li>
-&lt;/ol>
-&lt;pre tabindex="0">&lt;code class="language-conf" data-lang="conf">[Interface]
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Wireguard on knrdlog</title><link>https://knrdl.github.io/tags/wireguard/</link><description>Recent content in Wireguard on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Fri, 20 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/wireguard/index.xml" rel="self" type="application/rss+xml"/><item><title>PinePhone as edge server in a remote network</title><link>https://knrdl.github.io/posts/pinephone-edge-server/</link><pubDate>Fri, 20 Dec 2024 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/pinephone-edge-server/</guid><description>&lt;p&gt;The straight forward way to access a remote network is to setup a VPN connection with the router. If that&amp;rsquo;s not possible, a separate device is required to act as VPN client. A smartphone is particularly suitable for this as it is always on, small, has a low power consumption and makes it easy to configure a wifi connection with the network. The PinePhone is especially suitable for the job as it can host a standard Linux environment which is not messed up like Android. On the PinePhone we need very few tools to work in the remote network:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Wireguard&lt;/strong&gt; for the VPN tunnel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SSH&lt;/strong&gt; server&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Docker&lt;/strong&gt; runtime, e.g. to run a time series database to collect sensor stats&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="setup" class="paragraph-header"&gt;Setup &lt;a
+href="#setup"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;flash PostmarketOS to a microSD card&lt;/li&gt;
+&lt;li&gt;run the wizard on the phone (to resize the root partition)&lt;/li&gt;
+&lt;li&gt;copy the PostmarketOS img-file to the microSD card&lt;/li&gt;
+&lt;li&gt;flash the img-file to the eMMC via &lt;code&gt;dd&lt;/code&gt;:
+&lt;a href="https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os" target="_blank" rel="noopener noreferrer"&gt;https://pine64.org/documentation/PinePhone/Installation/Installation_to_the_eMMC/#from-the-booted-microsd-os&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;remove the sd card and reboot&lt;/li&gt;
+&lt;li&gt;login (user:147147) and connect wifi&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="ssh" class="paragraph-header"&gt;SSH &lt;a
+href="#ssh"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;start ssh server: &lt;code&gt;sudo service sshd start&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;enable ssh on boot: &lt;code&gt;sudo rc-update add sshd&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;connect to the phone: &lt;code&gt;ssh user@pine64-pinephone&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;in &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt;: set &lt;code&gt;AllowTcpForwarding yes&lt;/code&gt; to forward ports from the remote network to your local host&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="system" class="paragraph-header"&gt;System &lt;a
+href="#system"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;check updates: &lt;code&gt;sudo apk update&lt;/code&gt; and &lt;code&gt;sudo apk upgrade -a&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;install some tools: &lt;code&gt;sudo apk add htop curl nano&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;remove unnecessary apps: &lt;code&gt;sudo apk del gnome-maps gnome-calculator gnome-software gnome-clocks gnome-calendar gnome-text-editor gnome-contacts gnome-weather chatty portfolio lollypop firefox-esr evince calls megapixels postmarketos-default-camera postmarketos-welcome loupe flatpak&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;list remaining packages: &lt;code&gt;sudo apk list -I&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;disable unnecessary services: &lt;code&gt;sudo rc-update del bluetooth&lt;/code&gt; and &lt;code&gt;sudo rc-update del modemmanager&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;list enabled services: &lt;code&gt;sudo rc-update show&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="wireguard" class="paragraph-header"&gt;Wireguard &lt;a
+href="#wireguard"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;install: &lt;code&gt;sudo apk add wireguard-tools-wg-quick wireguard-tools-openrc&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;add wireguard config to &lt;code&gt;/etc/wireguard/wg0.conf&lt;/code&gt;, e.g.:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code class="language-conf" data-lang="conf"&gt;[Interface]
 PrivateKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 Address = 192.168.178.204/24
 DNS = 192.168.178.1
@@ -52,94 +52,94 @@ PresharedKey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 AllowedIPs = 192.168.178.0/24,0.0.0.0/0
 Endpoint = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX.myfritz.net:12345
 PersistentKeepalive = 25
-&lt;/code>&lt;/pre>&lt;ol start="3">
-&lt;li>fix permissions: &lt;code>sudo chmod o-r /etc/wireguard/wg0.conf&lt;/code>&lt;/li>
-&lt;li>
-&lt;a href="https://wiki.alpinelinux.org/wiki/Configure_a_Wireguard_interface_%28wg%29" target="_blank" rel="noopener noreferrer">autostart&lt;/a>:&lt;/li>
-&lt;/ol>
-&lt;pre tabindex="0">&lt;code>sudo ln -s /etc/init.d/wg-quick /etc/init.d/wg-quick.wg0
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="3"&gt;
+&lt;li&gt;fix permissions: &lt;code&gt;sudo chmod o-r /etc/wireguard/wg0.conf&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href="https://wiki.alpinelinux.org/wiki/Configure_a_Wireguard_interface_%28wg%29" target="_blank" rel="noopener noreferrer"&gt;autostart&lt;/a&gt;:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;sudo ln -s /etc/init.d/wg-quick /etc/init.d/wg-quick.wg0
 sudo rc-update add wg-quick.wg0
 sudo service wg-quick.wg0 start
-&lt;/code>&lt;/pre>&lt;ol start="5">
-&lt;li>manual start: &lt;code>sudo wg-quick up wg0&lt;/code>&lt;/li>
-&lt;li>manual stop: &lt;code>sudo wg-quick down wg0&lt;/code>&lt;/li>
-&lt;/ol>
-&lt;h3 id="docker" class="paragraph-header">Docker &lt;a
-href="#docker">&lt;/a>&lt;/h3>
-&lt;ol>
-&lt;li>install: &lt;code>sudo apk add docker&lt;/code> (alpine sources typically provide an up-to-date version)&lt;/li>
-&lt;li>autostart: &lt;code>sudo rc-update add docker&lt;/code>&lt;/li>
-&lt;li>start: &lt;code>sudo service docker start&lt;/code>&lt;/li>
-&lt;li>the PinePhone can execute arm32v7 and also arm64v8 images&lt;/li>
-&lt;/ol></description></item><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header">Approach &lt;a
-href="#approach">&lt;/a>&lt;/h2>
-&lt;p>Wireguard is a modern VPN protocol. Per default all nodes are treated equally, named peers. Let&amp;rsquo;s build a point-to-point connection:&lt;/p>
-&lt;ul>
-&lt;li>Client: Wireguard running, &lt;strong>no&lt;/strong> port opened&lt;/li>
-&lt;li>Server: Wireguard running, &lt;strong>one&lt;/strong> port opened&lt;/li>
-&lt;/ul>
-&lt;p>Wireguard uses UDP packets only. If an incoming request is invalid (wrong encryption key) then it will be dropped silently. Thereby additional security measures like fail2ban are not necessary.&lt;/p>
-&lt;h2 id="setup" class="paragraph-header">Setup &lt;a
-href="#setup">&lt;/a>&lt;/h2>
-&lt;h3 id="1-installation" class="paragraph-header">1. Installation &lt;a
-href="#1-installation">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt install wireguard
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>A docker based installation is
-&lt;a href="https://docs.linuxserver.io/images/docker-wireguard" target="_blank" rel="noopener noreferrer">possible&lt;/a>. But as wireguard requires a separate kernel module, there are no isolation benefits.&lt;/p>
-&lt;h3 id="2-generate-keys" class="paragraph-header">2. Generate keys &lt;a
-href="#2-generate-keys">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Client:&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wg genkey &amp;gt; client.key
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wg pubkey &amp;lt; client.key &amp;gt; client.pub
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Server:&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wg genkey &amp;gt; server.key
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ wg pubkey &amp;lt; server.key &amp;gt; server.pub
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-config-files" class="paragraph-header">3. Config files &lt;a
-href="#3-config-files">&lt;/a>&lt;/h3>
-&lt;p>On the client in &lt;code>/etc/wireguard/wg0.conf&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Interface]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PrivateKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # client.key&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">Address&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.2/32&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">ListenPort&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">51822&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Peer]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PublicKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # server.pub&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">Endpoint&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">fqdn:51821 # public fqdn (domain) or static ip addr of the server&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">AllowedIPs&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.1/32&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PersistentKeepalive&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">25&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>On the server in &lt;code>/etc/wireguard/wg0.conf&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-ini" data-lang="ini">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Interface]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PrivateKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # server.key&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">Address&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.1/32&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">ListenPort&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">51821&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[Peer]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PublicKey&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">XXXXX # client.pub&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">AllowedIPs&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">192.168.7.2/32&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#50fa7b">PersistentKeepalive&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">25&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Wireguard won&amp;rsquo;t send any messages per default if there is no traffic. If both peers provide an &lt;code>Endpoint&lt;/code> in the config (Server - Server Setup), this works well. But in the presented setup keepalives are required for the client to contact the server. &lt;code>PersistentKeepalive = 25&lt;/code> will send a ping every 25sec through the tunnel.&lt;/p>
-&lt;h3 id="4-up-and-running" class="paragraph-header">4. Up and running &lt;a
-href="#4-up-and-running">&lt;/a>&lt;/h3>
-&lt;p>&lt;code>wg-quick&lt;/code> is a convenient wrapper around the &lt;code>wireguard&lt;/code> and &lt;code>ip&lt;/code> commands. It allows to configure wireguard tunnels in a declarative fashion. Config files are stored as &lt;code>/etc/wireguard/IFNAME.conf&lt;/code>.&lt;/p>
-&lt;p>Setup autostart on both hosts and check logs after startup:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo systemctl &lt;span style="color:#8be9fd;font-style:italic">enable&lt;/span> --now wg-quick@wg0.service
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo journalctl -u wg-quick@wg0.service
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="5-test-connection" class="paragraph-header">5. Test connection &lt;a
-href="#5-test-connection">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ping 192.168.7.2 &lt;span style="color:#6272a4"># on the server&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ping 192.168.7.1 &lt;span style="color:#6272a4"># on the client&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="6-restart-a-tunnel" class="paragraph-header">6. Restart a tunnel &lt;a
-href="#6-restart-a-tunnel">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>wg-quick down wg0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wg-quick up wg0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="usage" class="paragraph-header">Usage &lt;a
-href="#usage">&lt;/a>&lt;/h2>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Server: bind a port to the wireguard tunnel address&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>docker run -it --rm -p 192.168.7.1:80:80 nginx:alpine
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># Client: query a connection&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl 192.168.7.1:80
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="limitations" class="paragraph-header">Limitations &lt;a
-href="#limitations">&lt;/a>&lt;/h2>
-&lt;p>This wireguard setup is fairly simple. A tunneled client/server relation is realized.&lt;/p>
-&lt;p>However, there is no routing of container traffic through the tunnel in place. This would require additional network config on the server host.&lt;/p></description></item></channel></rss>
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="5"&gt;
+&lt;li&gt;manual start: &lt;code&gt;sudo wg-quick up wg0&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;manual stop: &lt;code&gt;sudo wg-quick down wg0&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="docker" class="paragraph-header"&gt;Docker &lt;a
+href="#docker"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;install: &lt;code&gt;sudo apk add docker&lt;/code&gt; (alpine sources typically provide an up-to-date version)&lt;/li&gt;
+&lt;li&gt;autostart: &lt;code&gt;sudo rc-update add docker&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;start: &lt;code&gt;sudo service docker start&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;the PinePhone can execute arm32v7 and also arm64v8 images&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>Wireguard: Client/Server - Setup</title><link>https://knrdl.github.io/posts/wireguard-setup/</link><pubDate>Tue, 27 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/wireguard-setup/</guid><description>&lt;h2 id="approach" class="paragraph-header"&gt;Approach &lt;a
+href="#approach"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Wireguard is a modern VPN protocol. Per default all nodes are treated equally, named peers. Let&amp;rsquo;s build a point-to-point connection:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Client: Wireguard running, &lt;strong&gt;no&lt;/strong&gt; port opened&lt;/li&gt;
+&lt;li&gt;Server: Wireguard running, &lt;strong&gt;one&lt;/strong&gt; port opened&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Wireguard uses UDP packets only. If an incoming request is invalid (wrong encryption key) then it will be dropped silently. Thereby additional security measures like fail2ban are not necessary.&lt;/p&gt;
+&lt;h2 id="setup" class="paragraph-header"&gt;Setup &lt;a
+href="#setup"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id="1-installation" class="paragraph-header"&gt;1. Installation &lt;a
+href="#1-installation"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt install wireguard
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A docker based installation is
+&lt;a href="https://docs.linuxserver.io/images/docker-wireguard" target="_blank" rel="noopener noreferrer"&gt;possible&lt;/a&gt;. But as wireguard requires a separate kernel module, there are no isolation benefits.&lt;/p&gt;
+&lt;h3 id="2-generate-keys" class="paragraph-header"&gt;2. Generate keys &lt;a
+href="#2-generate-keys"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# Client:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;wg genkey &amp;gt; client.key
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;wg pubkey &amp;lt; client.key &amp;gt; client.pub
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# Server:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ wg genkey &amp;gt; server.key
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ wg pubkey &amp;lt; server.key &amp;gt; server.pub
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="3-config-files" class="paragraph-header"&gt;3. Config files &lt;a
+href="#3-config-files"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;On the client in &lt;code&gt;/etc/wireguard/wg0.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[Interface]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;PrivateKey&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;XXXXX # client.key&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;Address&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;192.168.7.2/32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;ListenPort&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;51822&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[Peer]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;PublicKey&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;XXXXX # server.pub&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;Endpoint&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;fqdn:51821 # public fqdn (domain) or static ip addr of the server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;AllowedIPs&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;192.168.7.1/32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;PersistentKeepalive&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;25&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On the server in &lt;code&gt;/etc/wireguard/wg0.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[Interface]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;PrivateKey&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;XXXXX # server.key&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;Address&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;192.168.7.1/32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;ListenPort&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;51821&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[Peer]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;PublicKey&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;XXXXX # client.pub&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;AllowedIPs&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;192.168.7.2/32&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#50fa7b"&gt;PersistentKeepalive&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;25&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wireguard won&amp;rsquo;t send any messages per default if there is no traffic. If both peers provide an &lt;code&gt;Endpoint&lt;/code&gt; in the config (Server - Server Setup), this works well. But in the presented setup keepalives are required for the client to contact the server. &lt;code&gt;PersistentKeepalive = 25&lt;/code&gt; will send a ping every 25sec through the tunnel.&lt;/p&gt;
+&lt;h3 id="4-up-and-running" class="paragraph-header"&gt;4. Up and running &lt;a
+href="#4-up-and-running"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;wg-quick&lt;/code&gt; is a convenient wrapper around the &lt;code&gt;wireguard&lt;/code&gt; and &lt;code&gt;ip&lt;/code&gt; commands. It allows to configure wireguard tunnels in a declarative fashion. Config files are stored as &lt;code&gt;/etc/wireguard/IFNAME.conf&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Setup autostart on both hosts and check logs after startup:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl &lt;span style="color:#8be9fd;font-style:italic"&gt;enable&lt;/span&gt; --now wg-quick@wg0.service
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo journalctl -u wg-quick@wg0.service
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="5-test-connection" class="paragraph-header"&gt;5. Test connection &lt;a
+href="#5-test-connection"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ping 192.168.7.2 &lt;span style="color:#6272a4"&gt;# on the server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ping 192.168.7.1 &lt;span style="color:#6272a4"&gt;# on the client&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="6-restart-a-tunnel" class="paragraph-header"&gt;6. Restart a tunnel &lt;a
+href="#6-restart-a-tunnel"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;wg-quick down wg0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;wg-quick up wg0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="usage" class="paragraph-header"&gt;Usage &lt;a
+href="#usage"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# Server: bind a port to the wireguard tunnel address&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker run -it --rm -p 192.168.7.1:80:80 nginx:alpine
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# Client: query a connection&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl 192.168.7.1:80
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="limitations" class="paragraph-header"&gt;Limitations &lt;a
+href="#limitations"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;This wireguard setup is fairly simple. A tunneled client/server relation is realized.&lt;/p&gt;
+&lt;p&gt;However, there is no routing of container traffic through the tunnel in place. This would require additional network config on the server host.&lt;/p&gt;</description></item></channel></rss>

@@ -1,115 +1,115 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Websec on knrdlog</title><link>https://knrdl.github.io/tags/websec/</link><description>Recent content in Websec on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Tue, 20 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/websec/index.xml" rel="self" type="application/rss+xml"/><item><title>Password-protected resources on static-site webhosters</title><link>https://knrdl.github.io/posts/password-protected-static-sites/</link><pubDate>Tue, 20 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/password-protected-static-sites/</guid><description>&lt;h2 id="scenario" class="paragraph-header">Scenario &lt;a
-href="#scenario">&lt;/a>&lt;/h2>
-&lt;p>Some web hosters only serve static files and allow no config changes to the webserver. But maybe you want to provide files which are not intended for public view, for example sharing a file with a friend. Therefore, the best you can do is protecting files by giving them names which are hard to guess. Obviously these files should also not be linked somewhere publicly at all.&lt;/p>
-&lt;p>This concept can be expanded with a clientside-only authentication mechanism, as described next.&lt;/p>
-&lt;h2 id="login-process" class="paragraph-header">Login process &lt;a
-href="#login-process">&lt;/a>&lt;/h2>
-&lt;h3 id="1-the-user-opens-the-webpage" class="paragraph-header">1. The user opens the webpage &lt;a
-href="#1-the-user-opens-the-webpage">&lt;/a>&lt;/h3>
-&lt;p>A login dialog with password input is shown to the user. The user inputs a password.&lt;/p>
-&lt;div style="text-align: center; font-size: 20pt">
-&lt;a href="demo" target="_blank">&amp;gt;&amp;gt; click here for a demo &amp;lt;&amp;lt;&lt;/a>
-&lt;/div>
-&lt;h3 id="2-clientside-password-hashing" class="paragraph-header">2. Clientside password hashing &lt;a
-href="#2-clientside-password-hashing">&lt;/a>&lt;/h3>
-&lt;p>Now the password must be locally digested on the webpage. A hashing algorithm suitable for passwords must be applied. PBKDF2 as provided by the WebCryptoAPI is acceptable with an
-&lt;a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer">iteration count of 310,000&lt;/a> in HMAC-SHA-256 mode. The hash should be salted with
-&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Pbkdf2Params" target="_blank" rel="noopener noreferrer">at least 16 bytes of randomness&lt;/a>. The salt can be stored as plaintext alongside the login page. Generating a salt is as easy as &lt;code>dd if=/dev/urandom bs=1 count=16 | base64&lt;/code>.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">/** clientside hashing a password
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> * @param {string} password - as provided by user
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> * @param {string} salt - as base64 encoded
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> * @return {Promise&amp;lt;string&amp;gt;} - the hash value
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> */&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">async&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">function&lt;/span> hashPassword(password, salt) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">const&lt;/span> passwordKey &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">await&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">window&lt;/span>.crypto.subtle.importKey(
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f1fa8c">&amp;#34;raw&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">new&lt;/span> TextEncoder().encode(password),
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {name&lt;span style="color:#ff79c6">:&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;PBKDF2&amp;#34;&lt;/span>},
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">false&lt;/span>, &lt;span style="color:#6272a4">// key should not be extractable
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span> [&lt;span style="color:#f1fa8c">&amp;#34;deriveBits&amp;#34;&lt;/span>]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">const&lt;/span> hashBuffer &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">await&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">window&lt;/span>.crypto.subtle.deriveBits(
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {&lt;span style="color:#f1fa8c">&amp;#34;name&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">:&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;PBKDF2&amp;#34;&lt;/span>, salt&lt;span style="color:#ff79c6">:&lt;/span> base64ToArrayBuffer(salt), &lt;span style="color:#f1fa8c">&amp;#34;iterations&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">:&lt;/span> &lt;span style="color:#bd93f9">310_000&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#34;hash&amp;#34;&lt;/span>&lt;span style="color:#ff79c6">:&lt;/span> &lt;span style="color:#f1fa8c">&amp;#34;SHA-256&amp;#34;&lt;/span>},
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> passwordKey,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#bd93f9">256&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> )
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">const&lt;/span> hashArray &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">Array&lt;/span>.from(&lt;span style="color:#ff79c6">new&lt;/span> Uint8Array(hashBuffer))
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> hashArray.map(b =&amp;gt; b.toString(&lt;span style="color:#bd93f9">16&lt;/span>).padStart(&lt;span style="color:#bd93f9">2&lt;/span>, &lt;span style="color:#f1fa8c">&amp;#39;0&amp;#39;&lt;/span>)).join(&lt;span style="color:#f1fa8c">&amp;#39;&amp;#39;&lt;/span>).toUpperCase()
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">/** converts a base64 encoded string into an arraybuffer
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> * @param {string} base64text
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> * @return {ArrayBuffer}
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"> */&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">function&lt;/span> base64ToArrayBuffer(base64text) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">const&lt;/span> bytes &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">new&lt;/span> Uint8Array(base64text.length)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">for&lt;/span> (&lt;span style="color:#8be9fd;font-style:italic">let&lt;/span> i &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span>; i &lt;span style="color:#ff79c6">&amp;lt;&lt;/span> base64text.length; i&lt;span style="color:#ff79c6">++&lt;/span>)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> bytes[i] &lt;span style="color:#ff79c6">=&lt;/span> base64text.charCodeAt(i)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">return&lt;/span> bytes.buffer
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-redirect-to-the-secret-path" class="paragraph-header">3. Redirect to the secret path &lt;a
-href="#3-redirect-to-the-secret-path">&lt;/a>&lt;/h3>
-&lt;p>The created hash-value is taken as a path parameter for the url. As UX improvement, a preflight fetch request checks if the entered password is correct. If that&amp;rsquo;s the case, a redirect is performed. The user is now authenticated.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> password &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">document&lt;/span>.querySelector(&lt;span style="color:#f1fa8c">&amp;#39;input[type=password]&amp;#39;&lt;/span>).value
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> salt &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;ChangeTheSaltValueASAP==&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> hashValue &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#ff79c6">await&lt;/span> hashPassword(password, salt)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">const&lt;/span> url &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">window&lt;/span>.location.origin &lt;span style="color:#ff79c6">+&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">window&lt;/span>.location.pathname &lt;span style="color:#ff79c6">+&lt;/span> &lt;span style="color:#f1fa8c">&amp;#39;/&amp;#39;&lt;/span> &lt;span style="color:#ff79c6">+&lt;/span> hashValue
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>fetch(url).then(&lt;span style="color:#ff79c6">async&lt;/span> res =&amp;gt; {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">if&lt;/span> (res.ok)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#8be9fd;font-style:italic">window&lt;/span>.location.replace(url)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#ff79c6">else&lt;/span> &lt;span style="color:#ff79c6">throw&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">Error&lt;/span>(&lt;span style="color:#ff79c6">await&lt;/span> res.text())
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}).&lt;span style="color:#ff79c6">catch&lt;/span>(err =&amp;gt; {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> alert(&lt;span style="color:#f1fa8c">&amp;#39;Password wrong&amp;#39;&lt;/span>) &lt;span style="color:#6272a4">// todo: evaluate error msg
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4">&lt;/span>})
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
-&lt;p class="info">It&amp;rsquo;s possible to create user specific protected paths by concatenating the static salt with a provided additional userID. That way separate accounts with userID and password as credentials would be possible.&lt;/p>
-&lt;/blockquote>
-&lt;h2 id="pros" class="paragraph-header">Pros &lt;a
-href="#pros">&lt;/a>&lt;/h2>
-&lt;ul>
-&lt;li>As the calculation-heavy hashing is performed exclusively clientside, there is no extra load serverside. For better scalability this approach can even be combined with a CDN.&lt;/li>
-&lt;li>A Static Site Generator (SSG), like Hugo, can be used to automatically generate protected resource paths from predefined passwords. The SSG only needs to perform hashing on creation of a new protected resource.&lt;/li>
-&lt;li>The hashing works as key stretching operation to generate urls which are long enough to be unsearchable.
-A brute-force attacker who can perform a billion requests per second would need &lt;math>
-&lt;msup>
-&lt;mi>2&lt;/mi>
-&lt;mrow>
-&lt;mn>256&lt;/mn>
-&lt;/mrow>
-&lt;/msup>
-&lt;mo>/&lt;/mo>
-&lt;msup>
-&lt;mi>10&lt;/mi>
-&lt;mrow>
-&lt;mn>9&lt;/mn>
-&lt;/mrow>
-&lt;/msup>
-&lt;mo>≈&lt;/mo>
-&lt;msup>
-&lt;mi>10&lt;/mi>
-&lt;mrow>
-&lt;mn>60&lt;/mn>
-&lt;/mrow>
-&lt;/msup> &lt;mi> years&lt;/mi>
-&lt;/math>. That way a bruteforce attack for the passwords still is the most efficient one.&lt;/li>
-&lt;li>The user can bookmark protected resource paths, so there is no further login required (ux improvement).&lt;/li>
-&lt;/ul>
-&lt;h2 id="cons" class="paragraph-header">Cons &lt;a
-href="#cons">&lt;/a>&lt;/h2>
-&lt;ul>
-&lt;li>The approach doesn&amp;rsquo;t scale well for many user. As a workaround there might be group-contents defined and each &amp;ldquo;user protected path&amp;rdquo; just contains a redirect to the &amp;ldquo;group protected path&amp;rdquo;. Otherwise, there will be a lot of duplication.&lt;/li>
-&lt;li>A dynamic creation of user accounts is not possible. But as it&amp;rsquo;s all about static hosting, this is out of scope.&lt;/li>
-&lt;li>Users can give unintentional access to third parties by just copypasting the url. Maybe it&amp;rsquo;s possible to cloak the shown url with a combination of the
-&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API" target="_blank" rel="noopener noreferrer">History API&lt;/a>&amp;rsquo;s &lt;code>replaceState&lt;/code> and the
-&lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" rel="noopener noreferrer">base tag&lt;/a>? Or just provide the protected content as &lt;abbr title="Single Page Application">SPA&lt;/abbr> with a rewritten display url.&lt;/li>
-&lt;li>The secret key must be transported as part of the url to the server. That way sensitive information will be written into the access logfiles of webserver and proxies. This violates security goals and is definitely not best practice!&lt;/li>
-&lt;li>Accidentally enabling public
-&lt;a href="https://nginx.org/en/docs/http/ngx_http_autoindex_module.html" target="_blank" rel="noopener noreferrer">directory listings&lt;/a> will also break any security goals apart.&lt;/li>
-&lt;li>There is a tradeoff between hashing duration and security. The WebCryptoAPI allows hashing to be performant but only implements PBKDF2. A js/wasm library might provide a better algorithm but perhaps unsatisfying performance. It&amp;rsquo;s a pity that the WebCryptoAPI doesn&amp;rsquo;t support a more elaborated password hashing algorithm, e.g. bcrypt, scrypt, argon2id.&lt;/li>
-&lt;li>There is no ratelimiting applicable: A brute force attacker is only limited by the network transmission time and calculation cost for a password hash, which can both be heavily parallelized. As a result the password must be strong enough, e.g. not trivially constructable from password-list permutations.&lt;/li>
-&lt;/ul>
-&lt;h2 id="conclusion" class="paragraph-header">Conclusion &lt;a
-href="#conclusion">&lt;/a>&lt;/h2>
-&lt;p>Is it possible? Yes, absolutely! And should we implement this? Please don&amp;rsquo;t, if it&amp;rsquo;s avoidable in any way. The explained approach is only useful in a very specific scenario (see above). In almost all cases there would be a more standard-applying way to realize that, for example using good old HTTP Basic Auth. Or initiate a session after login instead, so there is no further exchange of highly privileged key material (user credentials) required.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Websec on knrdlog</title><link>https://knrdl.github.io/tags/websec/</link><description>Recent content in Websec on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Tue, 20 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/websec/index.xml" rel="self" type="application/rss+xml"/><item><title>Password-protected resources on static-site webhosters</title><link>https://knrdl.github.io/posts/password-protected-static-sites/</link><pubDate>Tue, 20 Sep 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/password-protected-static-sites/</guid><description>&lt;h2 id="scenario" class="paragraph-header"&gt;Scenario &lt;a
+href="#scenario"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Some web hosters only serve static files and allow no config changes to the webserver. But maybe you want to provide files which are not intended for public view, for example sharing a file with a friend. Therefore, the best you can do is protecting files by giving them names which are hard to guess. Obviously these files should also not be linked somewhere publicly at all.&lt;/p&gt;
+&lt;p&gt;This concept can be expanded with a clientside-only authentication mechanism, as described next.&lt;/p&gt;
+&lt;h2 id="login-process" class="paragraph-header"&gt;Login process &lt;a
+href="#login-process"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id="1-the-user-opens-the-webpage" class="paragraph-header"&gt;1. The user opens the webpage &lt;a
+href="#1-the-user-opens-the-webpage"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;A login dialog with password input is shown to the user. The user inputs a password.&lt;/p&gt;
+&lt;div style="text-align: center; font-size: 20pt"&gt;
+&lt;a href="demo" target="_blank"&gt;&amp;gt;&amp;gt; click here for a demo &amp;lt;&amp;lt;&lt;/a&gt;
+&lt;/div&gt;
+&lt;h3 id="2-clientside-password-hashing" class="paragraph-header"&gt;2. Clientside password hashing &lt;a
+href="#2-clientside-password-hashing"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Now the password must be locally digested on the webpage. A hashing algorithm suitable for passwords must be applied. PBKDF2 as provided by the WebCryptoAPI is acceptable with an
+&lt;a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer"&gt;iteration count of 310,000&lt;/a&gt; in HMAC-SHA-256 mode. The hash should be salted with
+&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/Pbkdf2Params" target="_blank" rel="noopener noreferrer"&gt;at least 16 bytes of randomness&lt;/a&gt;. The salt can be stored as plaintext alongside the login page. Generating a salt is as easy as &lt;code&gt;dd if=/dev/urandom bs=1 count=16 | base64&lt;/code&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;/** clientside hashing a password
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; * @param {string} password - as provided by user
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; * @param {string} salt - as base64 encoded
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; * @return {Promise&amp;lt;string&amp;gt;} - the hash value
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;async&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;function&lt;/span&gt; hashPassword(password, salt) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; passwordKey &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;window&lt;/span&gt;.crypto.subtle.importKey(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;raw&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;new&lt;/span&gt; TextEncoder().encode(password),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {name&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;PBKDF2&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;false&lt;/span&gt;, &lt;span style="color:#6272a4"&gt;// key should not be extractable
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [&lt;span style="color:#f1fa8c"&gt;&amp;#34;deriveBits&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; hashBuffer &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;window&lt;/span&gt;.crypto.subtle.deriveBits(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#f1fa8c"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;PBKDF2&amp;#34;&lt;/span&gt;, salt&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; base64ToArrayBuffer(salt), &lt;span style="color:#f1fa8c"&gt;&amp;#34;iterations&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;310_000&lt;/span&gt;, &lt;span style="color:#f1fa8c"&gt;&amp;#34;hash&amp;#34;&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;:&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#34;SHA-256&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; passwordKey,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#bd93f9"&gt;256&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; hashArray &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;Array&lt;/span&gt;.from(&lt;span style="color:#ff79c6"&gt;new&lt;/span&gt; Uint8Array(hashBuffer))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;return&lt;/span&gt; hashArray.map(b =&amp;gt; b.toString(&lt;span style="color:#bd93f9"&gt;16&lt;/span&gt;).padStart(&lt;span style="color:#bd93f9"&gt;2&lt;/span&gt;, &lt;span style="color:#f1fa8c"&gt;&amp;#39;0&amp;#39;&lt;/span&gt;)).join(&lt;span style="color:#f1fa8c"&gt;&amp;#39;&amp;#39;&lt;/span&gt;).toUpperCase()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;/** converts a base64 encoded string into an arraybuffer
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; * @param {string} base64text
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; * @return {ArrayBuffer}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;function&lt;/span&gt; base64ToArrayBuffer(base64text) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; bytes &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;new&lt;/span&gt; Uint8Array(base64text.length)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;for&lt;/span&gt; (&lt;span style="color:#8be9fd;font-style:italic"&gt;let&lt;/span&gt; i &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;0&lt;/span&gt;; i &lt;span style="color:#ff79c6"&gt;&amp;lt;&lt;/span&gt; base64text.length; i&lt;span style="color:#ff79c6"&gt;++&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; bytes[i] &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; base64text.charCodeAt(i)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;return&lt;/span&gt; bytes.buffer
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="3-redirect-to-the-secret-path" class="paragraph-header"&gt;3. Redirect to the secret path &lt;a
+href="#3-redirect-to-the-secret-path"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The created hash-value is taken as a path parameter for the url. As UX improvement, a preflight fetch request checks if the entered password is correct. If that&amp;rsquo;s the case, a redirect is performed. The user is now authenticated.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; password &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;document&lt;/span&gt;.querySelector(&lt;span style="color:#f1fa8c"&gt;&amp;#39;input[type=password]&amp;#39;&lt;/span&gt;).value
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; salt &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;ChangeTheSaltValueASAP==&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; hashValue &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; hashPassword(password, salt)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;const&lt;/span&gt; url &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;window&lt;/span&gt;.location.origin &lt;span style="color:#ff79c6"&gt;+&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;window&lt;/span&gt;.location.pathname &lt;span style="color:#ff79c6"&gt;+&lt;/span&gt; &lt;span style="color:#f1fa8c"&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;+&lt;/span&gt; hashValue
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;fetch(url).then(&lt;span style="color:#ff79c6"&gt;async&lt;/span&gt; res =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;if&lt;/span&gt; (res.ok)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;window&lt;/span&gt;.location.replace(url)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ff79c6"&gt;else&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;throw&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;Error&lt;/span&gt;(&lt;span style="color:#ff79c6"&gt;await&lt;/span&gt; res.text())
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}).&lt;span style="color:#ff79c6"&gt;catch&lt;/span&gt;(err =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; alert(&lt;span style="color:#f1fa8c"&gt;&amp;#39;Password wrong&amp;#39;&lt;/span&gt;) &lt;span style="color:#6272a4"&gt;// todo: evaluate error msg
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p class="info"&gt;It&amp;rsquo;s possible to create user specific protected paths by concatenating the static salt with a provided additional userID. That way separate accounts with userID and password as credentials would be possible.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="pros" class="paragraph-header"&gt;Pros &lt;a
+href="#pros"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;As the calculation-heavy hashing is performed exclusively clientside, there is no extra load serverside. For better scalability this approach can even be combined with a CDN.&lt;/li&gt;
+&lt;li&gt;A Static Site Generator (SSG), like Hugo, can be used to automatically generate protected resource paths from predefined passwords. The SSG only needs to perform hashing on creation of a new protected resource.&lt;/li&gt;
+&lt;li&gt;The hashing works as key stretching operation to generate urls which are long enough to be unsearchable.
+A brute-force attacker who can perform a billion requests per second would need &lt;math&gt;
+&lt;msup&gt;
+&lt;mi&gt;2&lt;/mi&gt;
+&lt;mrow&gt;
+&lt;mn&gt;256&lt;/mn&gt;
+&lt;/mrow&gt;
+&lt;/msup&gt;
+&lt;mo&gt;/&lt;/mo&gt;
+&lt;msup&gt;
+&lt;mi&gt;10&lt;/mi&gt;
+&lt;mrow&gt;
+&lt;mn&gt;9&lt;/mn&gt;
+&lt;/mrow&gt;
+&lt;/msup&gt;
+&lt;mo&gt;≈&lt;/mo&gt;
+&lt;msup&gt;
+&lt;mi&gt;10&lt;/mi&gt;
+&lt;mrow&gt;
+&lt;mn&gt;60&lt;/mn&gt;
+&lt;/mrow&gt;
+&lt;/msup&gt; &lt;mi&gt; years&lt;/mi&gt;
+&lt;/math&gt;. That way a bruteforce attack for the passwords still is the most efficient one.&lt;/li&gt;
+&lt;li&gt;The user can bookmark protected resource paths, so there is no further login required (ux improvement).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="cons" class="paragraph-header"&gt;Cons &lt;a
+href="#cons"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;The approach doesn&amp;rsquo;t scale well for many user. As a workaround there might be group-contents defined and each &amp;ldquo;user protected path&amp;rdquo; just contains a redirect to the &amp;ldquo;group protected path&amp;rdquo;. Otherwise, there will be a lot of duplication.&lt;/li&gt;
+&lt;li&gt;A dynamic creation of user accounts is not possible. But as it&amp;rsquo;s all about static hosting, this is out of scope.&lt;/li&gt;
+&lt;li&gt;Users can give unintentional access to third parties by just copypasting the url. Maybe it&amp;rsquo;s possible to cloak the shown url with a combination of the
+&lt;a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API" target="_blank" rel="noopener noreferrer"&gt;History API&lt;/a&gt;&amp;rsquo;s &lt;code&gt;replaceState&lt;/code&gt; and the
+&lt;a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" target="_blank" rel="noopener noreferrer"&gt;base tag&lt;/a&gt;? Or just provide the protected content as &lt;abbr title="Single Page Application"&gt;SPA&lt;/abbr&gt; with a rewritten display url.&lt;/li&gt;
+&lt;li&gt;The secret key must be transported as part of the url to the server. That way sensitive information will be written into the access logfiles of webserver and proxies. This violates security goals and is definitely not best practice!&lt;/li&gt;
+&lt;li&gt;Accidentally enabling public
+&lt;a href="https://nginx.org/en/docs/http/ngx_http_autoindex_module.html" target="_blank" rel="noopener noreferrer"&gt;directory listings&lt;/a&gt; will also break any security goals apart.&lt;/li&gt;
+&lt;li&gt;There is a tradeoff between hashing duration and security. The WebCryptoAPI allows hashing to be performant but only implements PBKDF2. A js/wasm library might provide a better algorithm but perhaps unsatisfying performance. It&amp;rsquo;s a pity that the WebCryptoAPI doesn&amp;rsquo;t support a more elaborated password hashing algorithm, e.g. bcrypt, scrypt, argon2id.&lt;/li&gt;
+&lt;li&gt;There is no ratelimiting applicable: A brute force attacker is only limited by the network transmission time and calculation cost for a password hash, which can both be heavily parallelized. As a result the password must be strong enough, e.g. not trivially constructable from password-list permutations.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="conclusion" class="paragraph-header"&gt;Conclusion &lt;a
+href="#conclusion"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Is it possible? Yes, absolutely! And should we implement this? Please don&amp;rsquo;t, if it&amp;rsquo;s avoidable in any way. The explained approach is only useful in a very specific scenario (see above). In almost all cases there would be a more standard-applying way to realize that, for example using good old HTTP Basic Auth. Or initiate a session after login instead, so there is no further exchange of highly privileged key material (user credentials) required.&lt;/p&gt;</description></item></channel></rss>

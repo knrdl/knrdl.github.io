@@ -1,37 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Luks on knrdlog</title><link>https://knrdl.github.io/tags/luks/</link><description>Recent content in Luks on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Sat, 01 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/luks/index.xml" rel="self" type="application/rss+xml"/><item><title>LUKS: Encrypted data volumes</title><link>https://knrdl.github.io/posts/luks-data-volumes/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/luks-data-volumes/</guid><description>&lt;p>To realize encrypted data volumes, there are various tools for different use cases:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Veracrypt&lt;/strong> works cross-platform, predefined volume sizes&lt;/li>
-&lt;li>&lt;strong>Gocryptfs&lt;/strong> encrypts transparent, dynamic storage usage&lt;/li>
-&lt;li>&lt;strong>Restic&lt;/strong> encrypts backups, network capable, can do versioning&lt;/li>
-&lt;li>&lt;strong>LUKS&lt;/strong> provides full disk encryption for linux systems&lt;/li>
-&lt;/ul>
-&lt;p>But LUKS can also be used for regular data volumes which behave a lot like Veracrypt volumes.&lt;/p>
-&lt;h3 id="1-create-a-volume" class="paragraph-header">1. Create a volume &lt;a
-href="#1-create-a-volume">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/ &lt;span style="color:#6272a4"># here the encrypted volume files will be stored&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo apt-get install cryptsetup pv
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>dd &lt;span style="color:#ff79c6">if&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>/dev/zero &lt;span style="color:#8be9fd;font-style:italic">bs&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>1M &lt;span style="color:#8be9fd;font-style:italic">count&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#bd93f9">10240&lt;/span> | pv | dd &lt;span style="color:#8be9fd;font-style:italic">of&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>~/volumes/vol1.luks &lt;span style="color:#6272a4"># will create a 1MiB * 10240 = 10GiB file, called &amp;#34;vol1.luks&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cryptsetup -y -v luksFormat ~/volumes/vol1.luks &lt;span style="color:#6272a4"># here you have to enter the passphrase to protect the new volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1 &lt;span style="color:#6272a4"># provide the volume as a device located at /dev/mapper/vol1&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup -v status vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkfs.ext4 /dev/mapper/vol1 &lt;span style="color:#6272a4"># create filesystem inside the volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>mkdir -p ~/volumes/vol1/ &lt;span style="color:#6272a4"># the volume will also be mounted in the &amp;#34;volumes&amp;#34; directory&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown &lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span>:&lt;span style="color:#8be9fd;font-style:italic">$USER&lt;/span> -R ~/volumes/vol1/ &lt;span style="color:#6272a4"># give current user ownership to work with the volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>df -H &lt;span style="color:#6272a4"># shows disk usage inside the volume&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>pv&lt;/code> adds the progress bar for &lt;code>dd&lt;/code> and can be omitted.&lt;/p>
-&lt;p>The blocksize provided to &lt;code>dd&lt;/code> will be overwritten when creating a filesystem inside the container. So it has no impact on the performance later on.&lt;/p>
-&lt;p>The command &amp;ldquo;luksFormat&amp;rdquo; will figure out good encryption parameters per default. But this requires a decent up-to-date version.&lt;/p>
-&lt;h3 id="2-open-the-volume" class="paragraph-header">2. Open the volume &lt;a
-href="#2-open-the-volume">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount /dev/mapper/vol1 ~/volumes/vol1/
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="3-close-the-volume" class="paragraph-header">3. Close the volume &lt;a
-href="#3-close-the-volume">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo umount /dev/mapper/vol1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cryptsetup luksClose vol1
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Luks on knrdlog</title><link>https://knrdl.github.io/tags/luks/</link><description>Recent content in Luks on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Sat, 01 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/luks/index.xml" rel="self" type="application/rss+xml"/><item><title>LUKS: Encrypted data volumes</title><link>https://knrdl.github.io/posts/luks-data-volumes/</link><pubDate>Sat, 01 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/luks-data-volumes/</guid><description>&lt;p&gt;To realize encrypted data volumes, there are various tools for different use cases:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Veracrypt&lt;/strong&gt; works cross-platform, predefined volume sizes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Gocryptfs&lt;/strong&gt; encrypts transparent, dynamic storage usage&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Restic&lt;/strong&gt; encrypts backups, network capable, can do versioning&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LUKS&lt;/strong&gt; provides full disk encryption for linux systems&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But LUKS can also be used for regular data volumes which behave a lot like Veracrypt volumes.&lt;/p&gt;
+&lt;h3 id="1-create-a-volume" class="paragraph-header"&gt;1. Create a volume &lt;a
+href="#1-create-a-volume"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p ~/volumes/ &lt;span style="color:#6272a4"&gt;# here the encrypted volume files will be stored&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install cryptsetup pv
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dd &lt;span style="color:#ff79c6"&gt;if&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;/dev/zero &lt;span style="color:#8be9fd;font-style:italic"&gt;bs&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;1M &lt;span style="color:#8be9fd;font-style:italic"&gt;count&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#bd93f9"&gt;10240&lt;/span&gt; | pv | dd &lt;span style="color:#8be9fd;font-style:italic"&gt;of&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;~/volumes/vol1.luks &lt;span style="color:#6272a4"&gt;# will create a 1MiB * 10240 = 10GiB file, called &amp;#34;vol1.luks&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cryptsetup -y -v luksFormat ~/volumes/vol1.luks &lt;span style="color:#6272a4"&gt;# here you have to enter the passphrase to protect the new volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1 &lt;span style="color:#6272a4"&gt;# provide the volume as a device located at /dev/mapper/vol1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup -v status vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkfs.ext4 /dev/mapper/vol1 &lt;span style="color:#6272a4"&gt;# create filesystem inside the volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p ~/volumes/vol1/ &lt;span style="color:#6272a4"&gt;# the volume will also be mounted in the &amp;#34;volumes&amp;#34; directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chown &lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt;:&lt;span style="color:#8be9fd;font-style:italic"&gt;$USER&lt;/span&gt; -R ~/volumes/vol1/ &lt;span style="color:#6272a4"&gt;# give current user ownership to work with the volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;df -H &lt;span style="color:#6272a4"&gt;# shows disk usage inside the volume&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo umount /dev/mapper/vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksClose vol1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;pv&lt;/code&gt; adds the progress bar for &lt;code&gt;dd&lt;/code&gt; and can be omitted.&lt;/p&gt;
+&lt;p&gt;The blocksize provided to &lt;code&gt;dd&lt;/code&gt; will be overwritten when creating a filesystem inside the container. So it has no impact on the performance later on.&lt;/p&gt;
+&lt;p&gt;The command &amp;ldquo;luksFormat&amp;rdquo; will figure out good encryption parameters per default. But this requires a decent up-to-date version.&lt;/p&gt;
+&lt;h3 id="2-open-the-volume" class="paragraph-header"&gt;2. Open the volume &lt;a
+href="#2-open-the-volume"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksOpen ~/volumes/vol1.luks vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mount /dev/mapper/vol1 ~/volumes/vol1/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="3-close-the-volume" class="paragraph-header"&gt;3. Close the volume &lt;a
+href="#3-close-the-volume"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo umount /dev/mapper/vol1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cryptsetup luksClose vol1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item></channel></rss>

@@ -1,54 +1,54 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Raspberrypi on knrdlog</title><link>https://knrdl.github.io/tags/raspberrypi/</link><description>Recent content in Raspberrypi on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Mon, 03 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/raspberrypi/index.xml" rel="self" type="application/rss+xml"/><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header">Problem &lt;a
-href="#problem">&lt;/a>&lt;/h2>
-&lt;p>SD (or MicroSD) Cards are cheap flash storage. Their lifetime is limited by the performable write operations. If their end of life is reached, they don&amp;rsquo;t work at all or read data unreliably.&lt;/p>
-&lt;p>A Raspberry Pi produces more IO operations than a typical digital camera (which SD Cards are conceptualized for). The load is mostly produced by writing:&lt;/p>
-&lt;ul>
-&lt;li>Temporary files in &lt;code>/tmp/&lt;/code>&lt;/li>
-&lt;li>Variable files in &lt;code>/var/&lt;/code>&lt;/li>
-&lt;li>The swap file in &lt;code>/var/swap&lt;/code>&lt;/li>
-&lt;li>Files in other application and user specific directories&lt;/li>
-&lt;/ul>
-&lt;p>It also depends on the usage of the Pi: e.g. compiling a big pile of software on the Pi is never a good idea in terms of SD Card lifetime.&lt;/p>
-&lt;p>It&amp;rsquo;s possible to run a Pi only with a SD Card for a long time. One of my Pi&amp;rsquo;s now runs successfully for more than 5 years that way. However, you can&amp;rsquo;t tell it beforehand.&lt;/p>
-&lt;h2 id="solution" class="paragraph-header">Solution &lt;a
-href="#solution">&lt;/a>&lt;/h2>
-&lt;p>So the solution is to reduce the IO operations performed against the SD Card. A simple attempt is to disable swapping: &lt;code>sudo systemctl disable --now dphys-swapfile&lt;/code>. A better alternative is moving write intense directories to an external drive. There are two options:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>Option A&lt;/strong>: The Raspberry boots directly from a USB drive (e.g. USB thumb drive, SSD or HDD). No SD Card required.&lt;/li>
-&lt;li>&lt;strong>Option B&lt;/strong>: The Raspberry boots from the SD Card and mounts an external USB drive where the heavy disk IO is performed later on.&lt;/li>
-&lt;/ul>
-&lt;h3 id="option-a---fresh-installation" class="paragraph-header">Option A - Fresh installation &lt;a
-href="#option-a---fresh-installation">&lt;/a>&lt;/h3>
-&lt;p>This option is pretty easy to realize, just flash the OS image (e.g. Raspberry Pi OS, formerly known as Raspbian) to the USB drive. However, it might not work with all kinds of USB drives. Also, a cheap USB thumb drive might have the same problems as a SD Card. Therefore, a durable SSD should be used instead. An old HDD is also a valid alternative. But your Pi might crash if spinning up the HDD consumes more power than can be supplied.&lt;/p>
-&lt;h3 id="option-b---external-disk" class="paragraph-header">Option B - External disk &lt;a
-href="#option-b---external-disk">&lt;/a>&lt;/h3>
-&lt;p>This is useful if your Pi is already set up and running. The separation will split the filestorage into static files (stored on the SD Card) and dynamic files (stored on the USB drive).&lt;/p>
-&lt;p>You need to copy the dynamic files to the external drive. But first you should stop all running applications to prevent inconsistency when copying files.&lt;/p>
-&lt;p>Disable the swap:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo swapoff -a &lt;span style="color:#6272a4"># disable the swap&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cat /proc/swaps &lt;span style="color:#6272a4"># check that no swap is active&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Mount the external usb drive. In the example it has the Label &amp;ldquo;usb0&amp;rdquo;:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ls /dev/disk/by-label/usb0 &lt;span style="color:#6272a4"># check the device file exists&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkdir -p /media/usb0 &lt;span style="color:#6272a4"># create the mountpoint&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mount -o defaults /dev/disk/by-label/usb0 /media/usb0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Copy all directories with dynamic data (at least &lt;code>/tmp&lt;/code> and &lt;code>/var&lt;/code>):&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo cp -ar /tmp/ /media/usb0/tmp
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo cp -ar /var/ /media/usb0/var
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
-&lt;p class="info">It&amp;rsquo;s optional to copy &lt;code>/tmp&lt;/code> as it only contains ephemeral data. But the directory must exist and have the correct permissions set!&lt;/p>
-&lt;/blockquote>
-&lt;p>Add to &lt;code>/etc/fstab&lt;/code> the new mount records:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>/dev/disk/by-label/usb0 /media/usb0 ext4 defaults 0 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/media/usb0/var /var none bind 0 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/media/usb0/tmp /tmp none bind 0 0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>The external drive will be mounted to &lt;code>/media/usb0&lt;/code>. The directories &lt;code>/tmp&lt;/code> and &lt;code>/var&lt;/code> (dynamic data) will be pointed to the corresponding directories on the external device.&lt;/p>
-&lt;blockquote>
-&lt;p class="warning">The external drive is mounted with option &lt;code>defaults&lt;/code>. If the disk is not connected or cannot be read, the raspi will not boot! As a countermeasure the options &lt;code>defaults,nofail&lt;/code> could be used. But then the data will be written to the SD card in case of a disk failure. Inconsistent data would be the result.&lt;/p>
-&lt;/blockquote>
-&lt;p>Now reboot the Pi: &lt;code>sudo reboot&lt;/code>.&lt;/p>
-&lt;p>Check that everything is working:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>touch /tmp/fs.test
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"># should output the filepath&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the swap is not reactivated yet, run &lt;code>sudo swapon /var/swap&lt;/code>.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Raspberrypi on knrdlog</title><link>https://knrdl.github.io/tags/raspberrypi/</link><description>Recent content in Raspberrypi on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Mon, 03 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/raspberrypi/index.xml" rel="self" type="application/rss+xml"/><item><title>How to stop your Raspberry Pi from eating SD Cards</title><link>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</link><pubDate>Mon, 03 Oct 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/raspberrypi-eating-sd-cards/</guid><description>&lt;h2 id="problem" class="paragraph-header"&gt;Problem &lt;a
+href="#problem"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;SD (or MicroSD) Cards are cheap flash storage. Their lifetime is limited by the performable write operations. If their end of life is reached, they don&amp;rsquo;t work at all or read data unreliably.&lt;/p&gt;
+&lt;p&gt;A Raspberry Pi produces more IO operations than a typical digital camera (which SD Cards are conceptualized for). The load is mostly produced by writing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Temporary files in &lt;code&gt;/tmp/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Variable files in &lt;code&gt;/var/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The swap file in &lt;code&gt;/var/swap&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Files in other application and user specific directories&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It also depends on the usage of the Pi: e.g. compiling a big pile of software on the Pi is never a good idea in terms of SD Card lifetime.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s possible to run a Pi only with a SD Card for a long time. One of my Pi&amp;rsquo;s now runs successfully for more than 5 years that way. However, you can&amp;rsquo;t tell it beforehand.&lt;/p&gt;
+&lt;h2 id="solution" class="paragraph-header"&gt;Solution &lt;a
+href="#solution"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So the solution is to reduce the IO operations performed against the SD Card. A simple attempt is to disable swapping: &lt;code&gt;sudo systemctl disable --now dphys-swapfile&lt;/code&gt;. A better alternative is moving write intense directories to an external drive. There are two options:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Option A&lt;/strong&gt;: The Raspberry boots directly from a USB drive (e.g. USB thumb drive, SSD or HDD). No SD Card required.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Option B&lt;/strong&gt;: The Raspberry boots from the SD Card and mounts an external USB drive where the heavy disk IO is performed later on.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="option-a---fresh-installation" class="paragraph-header"&gt;Option A - Fresh installation &lt;a
+href="#option-a---fresh-installation"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;This option is pretty easy to realize, just flash the OS image (e.g. Raspberry Pi OS, formerly known as Raspbian) to the USB drive. However, it might not work with all kinds of USB drives. Also, a cheap USB thumb drive might have the same problems as a SD Card. Therefore, a durable SSD should be used instead. An old HDD is also a valid alternative. But your Pi might crash if spinning up the HDD consumes more power than can be supplied.&lt;/p&gt;
+&lt;h3 id="option-b---external-disk" class="paragraph-header"&gt;Option B - External disk &lt;a
+href="#option-b---external-disk"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;This is useful if your Pi is already set up and running. The separation will split the filestorage into static files (stored on the SD Card) and dynamic files (stored on the USB drive).&lt;/p&gt;
+&lt;p&gt;You need to copy the dynamic files to the external drive. But first you should stop all running applications to prevent inconsistency when copying files.&lt;/p&gt;
+&lt;p&gt;Disable the swap:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo swapoff -a &lt;span style="color:#6272a4"&gt;# disable the swap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cat /proc/swaps &lt;span style="color:#6272a4"&gt;# check that no swap is active&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Mount the external usb drive. In the example it has the Label &amp;ldquo;usb0&amp;rdquo;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls /dev/disk/by-label/usb0 &lt;span style="color:#6272a4"&gt;# check the device file exists&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkdir -p /media/usb0 &lt;span style="color:#6272a4"&gt;# create the mountpoint&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mount -o defaults /dev/disk/by-label/usb0 /media/usb0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Copy all directories with dynamic data (at least &lt;code&gt;/tmp&lt;/code&gt; and &lt;code&gt;/var&lt;/code&gt;):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cp -ar /tmp/ /media/usb0/tmp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo cp -ar /var/ /media/usb0/var
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p class="info"&gt;It&amp;rsquo;s optional to copy &lt;code&gt;/tmp&lt;/code&gt; as it only contains ephemeral data. But the directory must exist and have the correct permissions set!&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Add to &lt;code&gt;/etc/fstab&lt;/code&gt; the new mount records:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/dev/disk/by-label/usb0 /media/usb0 ext4 defaults 0 0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/media/usb0/var /var none bind 0 0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/media/usb0/tmp /tmp none bind 0 0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The external drive will be mounted to &lt;code&gt;/media/usb0&lt;/code&gt;. The directories &lt;code&gt;/tmp&lt;/code&gt; and &lt;code&gt;/var&lt;/code&gt; (dynamic data) will be pointed to the corresponding directories on the external device.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p class="warning"&gt;The external drive is mounted with option &lt;code&gt;defaults&lt;/code&gt;. If the disk is not connected or cannot be read, the raspi will not boot! As a countermeasure the options &lt;code&gt;defaults,nofail&lt;/code&gt; could be used. But then the data will be written to the SD card in case of a disk failure. Inconsistent data would be the result.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Now reboot the Pi: &lt;code&gt;sudo reboot&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Check that everything is working:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;touch /tmp/fs.test
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls /media/usb0/fs/tmp/fs.test &lt;span style="color:#6272a4"&gt;# should output the filepath&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If the swap is not reactivated yet, run &lt;code&gt;sudo swapon /var/swap&lt;/code&gt;.&lt;/p&gt;</description></item></channel></rss>

@@ -1,164 +1,164 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sftp on knrdlog</title><link>https://knrdl.github.io/tags/sftp/</link><description>Recent content in Sftp on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'>CC0 1.0&lt;/a> |
-&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'>Hugo&lt;/a> theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'>vamc19&lt;/a> |
-Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'>Github&lt;/a> (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'>Privacy Policy&lt;/a>)</copyright><lastBuildDate>Wed, 13 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/sftp/index.xml" rel="self" type="application/rss+xml"/><item><title>SSH Tunneling</title><link>https://knrdl.github.io/posts/ssh-tunneling/</link><pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ssh-tunneling/</guid><description>&lt;p>SSH allows tcp port forwarding between ssh client and ssh server as part of the encrypted ssh connection.&lt;/p>
-&lt;h2 id="server--client-local" class="paragraph-header">Server → Client (local) &lt;a
-href="#server--client-local">&lt;/a>&lt;/h2>
-&lt;p>A socket on the server (source) gets forwarded to the client (target).&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -L target_ip:target_port:source_ip:source_port
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="use-case-1-admin-software" class="paragraph-header">Use case 1: Admin software &lt;a
-href="#use-case-1-admin-software">&lt;/a>&lt;/h3>
-&lt;p>Server socket with port 9000 will be available on client machine at port 5000.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -L 127.0.0.1:5000:127.0.0.1:9000
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Useful if admin software is only accessible on the server (localhost binding) and not exposed to the network.&lt;/p>
-&lt;h3 id="use-case-2-quick-demo" class="paragraph-header">Use Case 2: Quick demo &lt;a
-href="#use-case-2-quick-demo">&lt;/a>&lt;/h3>
-&lt;p>Server socket with port 9000 will be accessible at client network on port 8080 of the client machine.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -L 8080:127.0.0.1:9000
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ssh user@host -L 0.0.0.0:8080:127.0.0.1:9000
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Useful for a quick demo of a service running in a different network (e.g. cloud) to multiple participants in the same
-network (e.g. company).&lt;/p>
-&lt;h3 id="use-case-3-jump-host" class="paragraph-header">Use case 3: Jump Host &lt;a
-href="#use-case-3-jump-host">&lt;/a>&lt;/h3>
-&lt;p>Server can reach host with ip addr 192.168.1.15. Service on 192.168.1.15:8080 will be available on client machine at
-port 8081.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -L 127.0.0.1:8081:192.168.1.15:8080
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Hop to hop forwarding of hosts accessible in the server network(s).&lt;/p>
-&lt;h2 id="client--server-remote" class="paragraph-header">Client → Server (remote) &lt;a
-href="#client--server-remote">&lt;/a>&lt;/h2>
-&lt;p>A socket on the client (source) gets forwarded to the server (target).&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -R target_port:source_ip:source_port
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="use-case-1-microservice-development" class="paragraph-header">Use case 1: Microservice development &lt;a
-href="#use-case-1-microservice-development">&lt;/a>&lt;/h3>
-&lt;p>Service on port 8000 of the client machine will be available on server at port 8081. Unless &lt;code>GatewayPorts&lt;/code> is set
-to &lt;code>yes&lt;/code> in sshd config (default &lt;code>no&lt;/code>) the serverside bind will always be localhost (127.0.0.1).&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -R 8081:127.0.0.1:8000
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Useful to integrate a microservice on developer machine into a foreign environment (e.g. test cluster). Also works with
-other source addresses than &lt;code>127.0.0.1&lt;/code>.&lt;/p>
-&lt;h3 id="use-case-2-tls-terminating-web-proxy-as-a-service" class="paragraph-header">Use case 2: TLS terminating web proxy as a service &lt;a
-href="#use-case-2-tls-terminating-web-proxy-as-a-service">&lt;/a>&lt;/h3>
-&lt;p>Client starts a http server on local machine on port 8000. That service will be available as
-&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer">https://server.tld&lt;/a>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>ssh user@host -R 8001:127.0.0.1:8000
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Processing order:&lt;/p>
-&lt;ol>
-&lt;li>Webbrowser (User Agent) requests
-&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer">https://server.tld&lt;/a>&lt;/li>
-&lt;li>Reaches a reverse proxy on port 443
-&lt;ul>
-&lt;li>does tls termination&lt;/li>
-&lt;li>and proxying, nginx: &lt;code>proxy_pass 127.0.0.1:8001;&lt;/code>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>SSH Tunnel&lt;/li>
-&lt;li>local machine port 8000 http server&lt;/li>
-&lt;/ol>
-&lt;h2 id="ssh-config" class="paragraph-header">SSH Config &lt;a
-href="#ssh-config">&lt;/a>&lt;/h2>
-&lt;p>port forwarding can also be specified on the client in &lt;code>~/.ssh/config&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;">&lt;code class="language-text" data-lang="text">&lt;span style="display:flex;">&lt;span>Host server-01
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> HostName 192.168.1.2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Port 22
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> User clusteradm
-&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#3d3f4a">&lt;span> LocalForward localhost:9001 localhost:9000
-&lt;/span>&lt;/span>&lt;span style="display:flex; background-color:#3d3f4a">&lt;span> RemoteForward 8001 localhost:8000
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> KeepAlive yes
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IdentitiesOnly yes
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> IdentityFile ~/.ssh/server_01_clusteradm
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Config format is &lt;code>(Local|Remote)Forward target source&lt;/code>&lt;/p>
-&lt;p>connect via &lt;code>$ ssh server-01&lt;/code>&lt;/p>
-&lt;h2 id="persistent-connections" class="paragraph-header">Persistent connections &lt;a
-href="#persistent-connections">&lt;/a>&lt;/h2>
-&lt;p>Just use the &lt;code>autossh&lt;/code> command in place of &lt;code>ssh&lt;/code>. AutoSSH uses heartbeats to check if the connection is still open and
-open another one otherwise automatically and fully transparent.&lt;/p>
-&lt;h2 id="dedicated-tunneling-server" class="paragraph-header">Dedicated tunneling server &lt;a
-href="#dedicated-tunneling-server">&lt;/a>&lt;/h2>
-&lt;p>It&amp;rsquo;s possible to run a standalone ssh server which just allows port forwarding and no remote command execution. Setup:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>mkdir -p /jail
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>adduser --gecos &lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span> --no-create-home --shell /bin/false --disabled-password --uid &lt;span style="color:#bd93f9">1000&lt;/span> sshtunnel
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Excerpt from &lt;code>/etc/ssh/sshd_config&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># AllowUsers list all users which should be able to login&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>AllowUsers sshtunnel
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Match User sshtunnel
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PermitTTY no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Banner none
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> X11Forwarding no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AllowAgentForwarding no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#6272a4"># AllowTcpForwarding: yes (= local+remote), local, remote, no&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AllowTcpForwarding &lt;span style="color:#8be9fd;font-style:italic">local&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> GatewayPorts no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PermitTunnel no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ChrootDirectory /jail
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ForceCommand /bin/false
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PermitOpen 127.0.0.1:8730
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start sshd in foreground: &lt;code>$ sshd -D -e&lt;/code>&lt;/p>
-&lt;p>Connect client: &lt;code>$ ssh -N -L 127.0.0.1:8730:127.0.0.1:8730 sshtunnel@localhost&lt;/code>&lt;/p>
-&lt;p>Flag &lt;code>-N&lt;/code> prevents the spawning of a shell (which would result in a connection abortion otherwise).&lt;/p>
-&lt;h2 id="rsync-tunneling-also-sftp" class="paragraph-header">Rsync tunneling (also sftp) &lt;a
-href="#rsync-tunneling-also-sftp">&lt;/a>&lt;/h2>
-&lt;p>&lt;code>rsync&lt;/code> can copy (sync) files between hosts. Therefore, it can use ssh as a transfer protocol. But that implies running
-the rsync command on the server:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>rsync -av -e ssh user@host:/backup/ /datadir/
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>That won&amp;rsquo;t work with a tunneling only ssh server. Luckily rsync can also be operated with a standalone server, so the
-rsync protocol can be tunneled via ssh.&lt;/p>
-&lt;h3 id="server-setup" class="paragraph-header">Server Setup &lt;a
-href="#server-setup">&lt;/a>&lt;/h3>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>adduser --gecos &lt;span style="color:#f1fa8c">&amp;#34;&amp;#34;&lt;/span> --no-create-home --shell /bin/false --disabled-password --uid &lt;span style="color:#bd93f9">1001&lt;/span> rsyncbackup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo mkdir -p /jail/backup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown -R root:root /jail &lt;span style="color:#6272a4"># user cannot have write permission to chroot dir&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chown -R rsyncbackup:rsyncbackup /jail/backup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo chmod -R &lt;span style="color:#bd93f9">755&lt;/span> /jail/backup
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Excerpt from &lt;code>/etc/ssh/sshd_config&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># allow sftp connections&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Subsystem sftp internal-sftp
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#6272a4"># AllowUsers list all users which should be able to login&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>AllowUsers rsyncbackup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Match User rsyncbackup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PermitTTY no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Banner none
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> X11Forwarding no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AllowAgentForwarding no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#6272a4"># AllowTcpForwarding: yes (= local+remote), local, remote, no&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> AllowTcpForwarding &lt;span style="color:#8be9fd;font-style:italic">local&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> GatewayPorts no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PermitTunnel no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ChrootDirectory /jail
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ForceCommand internal-sftp
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> PermitOpen 127.0.0.1:8730
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>In addition to rsync this config also allows file browsing via sftp in the &lt;code>/jail&lt;/code> dir.&lt;/p>
-&lt;p>Rsync server config in &lt;code>/etc/rsyncd.conf&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>use &lt;span style="color:#8be9fd;font-style:italic">chroot&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">true&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hosts &lt;span style="color:#8be9fd;font-style:italic">allow&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> 127.0.0.1/32
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">port&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#bd93f9">8730&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">timeout&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#bd93f9">300&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>max &lt;span style="color:#8be9fd;font-style:italic">connections&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> &lt;span style="color:#bd93f9">2&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>reverse &lt;span style="color:#8be9fd;font-style:italic">lookup&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>log &lt;span style="color:#8be9fd;font-style:italic">file&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> /dev/stdout
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>log &lt;span style="color:#8be9fd;font-style:italic">format&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> %h %o %f %l %b
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pid &lt;span style="color:#8be9fd;font-style:italic">file&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> /var/run/rsyncd.pid
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ff79c6">[&lt;/span>backup_sink&lt;span style="color:#ff79c6">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">comment&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> Backup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">path&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> /jail
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">read&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">only&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> no
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">list&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> yes
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">uid&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> rsyncbackup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">gid&lt;/span> &lt;span style="color:#ff79c6">=&lt;/span> rsyncbackup
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Start rsync server: &lt;code>$ rsync --daemon --config /etc/rsyncd.conf&lt;/code>&lt;/p>
-&lt;h3 id="client-setup" class="paragraph-header">Client Setup &lt;a
-href="#client-setup">&lt;/a>&lt;/h3>
-&lt;p>Record in &lt;code>.ssh/config&lt;/code>:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span> Host backup-conn
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> HostName 192.168.1.32
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Port &lt;span style="color:#bd93f9">2201&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> User rsyncbackup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> KeepAlive yes
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> LocalForward 127.0.0.1:8730 127.0.0.1:8730
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Run a rsync job:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ssh -N backup-conn &amp;amp; &lt;span style="color:#6272a4"># no tty possible, either use pubkey-auth or use sshpass to submit the password&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">pid&lt;/span>&lt;span style="color:#ff79c6">=&lt;/span>&lt;span style="color:#8be9fd;font-style:italic">$!&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sleep &lt;span style="color:#bd93f9">3&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">time&lt;/span> rsync bigfile rsync://localhost:8730/backup_sink/backup
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#8be9fd;font-style:italic">kill&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">$pid&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Check that &lt;code>/jail/backup/bigfile&lt;/code> has been created on the server.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sftp on knrdlog</title><link>https://knrdl.github.io/tags/sftp/</link><description>Recent content in Sftp on knrdlog</description><language>en-us</language><copyright>Licensed under &lt;a href='https://creativecommons.org/publicdomain/zero/1.0/' target='_blank' rel='noopener norefferer'&gt;CC0 1.0&lt;/a&gt; |
+&lt;a href="https://gohugo.io" target='_blank' rel='noopener norefferer'&gt;Hugo&lt;/a&gt; theme inspired by &lt;a href="https://github.com/vamc19" target='_blank' rel='noopener norefferer'&gt;vamc19&lt;/a&gt; |
+Hosted by &lt;a href="https://pages.github.com" target='_blank' rel='noopener norefferer'&gt;Github&lt;/a&gt; (&lt;a href="https://github.com/site/privacy" target='_blank' rel='noopener norefferer'&gt;Privacy Policy&lt;/a&gt;)</copyright><lastBuildDate>Wed, 13 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://knrdl.github.io/tags/sftp/index.xml" rel="self" type="application/rss+xml"/><item><title>SSH Tunneling</title><link>https://knrdl.github.io/posts/ssh-tunneling/</link><pubDate>Wed, 13 Apr 2022 00:00:00 +0000</pubDate><guid>https://knrdl.github.io/posts/ssh-tunneling/</guid><description>&lt;p&gt;SSH allows tcp port forwarding between ssh client and ssh server as part of the encrypted ssh connection.&lt;/p&gt;
+&lt;h2 id="server--client-local" class="paragraph-header"&gt;Server → Client (local) &lt;a
+href="#server--client-local"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;A socket on the server (source) gets forwarded to the client (target).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -L target_ip:target_port:source_ip:source_port
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="use-case-1-admin-software" class="paragraph-header"&gt;Use case 1: Admin software &lt;a
+href="#use-case-1-admin-software"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Server socket with port 9000 will be available on client machine at port 5000.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -L 127.0.0.1:5000:127.0.0.1:9000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Useful if admin software is only accessible on the server (localhost binding) and not exposed to the network.&lt;/p&gt;
+&lt;h3 id="use-case-2-quick-demo" class="paragraph-header"&gt;Use Case 2: Quick demo &lt;a
+href="#use-case-2-quick-demo"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Server socket with port 9000 will be accessible at client network on port 8080 of the client machine.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -L 8080:127.0.0.1:9000
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -L 0.0.0.0:8080:127.0.0.1:9000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Useful for a quick demo of a service running in a different network (e.g. cloud) to multiple participants in the same
+network (e.g. company).&lt;/p&gt;
+&lt;h3 id="use-case-3-jump-host" class="paragraph-header"&gt;Use case 3: Jump Host &lt;a
+href="#use-case-3-jump-host"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Server can reach host with ip addr 192.168.1.15. Service on 192.168.1.15:8080 will be available on client machine at
+port 8081.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -L 127.0.0.1:8081:192.168.1.15:8080
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hop to hop forwarding of hosts accessible in the server network(s).&lt;/p&gt;
+&lt;h2 id="client--server-remote" class="paragraph-header"&gt;Client → Server (remote) &lt;a
+href="#client--server-remote"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;A socket on the client (source) gets forwarded to the server (target).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -R target_port:source_ip:source_port
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="use-case-1-microservice-development" class="paragraph-header"&gt;Use case 1: Microservice development &lt;a
+href="#use-case-1-microservice-development"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Service on port 8000 of the client machine will be available on server at port 8081. Unless &lt;code&gt;GatewayPorts&lt;/code&gt; is set
+to &lt;code&gt;yes&lt;/code&gt; in sshd config (default &lt;code&gt;no&lt;/code&gt;) the serverside bind will always be localhost (127.0.0.1).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -R 8081:127.0.0.1:8000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Useful to integrate a microservice on developer machine into a foreign environment (e.g. test cluster). Also works with
+other source addresses than &lt;code&gt;127.0.0.1&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id="use-case-2-tls-terminating-web-proxy-as-a-service" class="paragraph-header"&gt;Use case 2: TLS terminating web proxy as a service &lt;a
+href="#use-case-2-tls-terminating-web-proxy-as-a-service"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Client starts a http server on local machine on port 8000. That service will be available as
+&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer"&gt;https://server.tld&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh user@host -R 8001:127.0.0.1:8000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Processing order:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Webbrowser (User Agent) requests
+&lt;a href="https://server.tld" target="_blank" rel="noopener noreferrer"&gt;https://server.tld&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Reaches a reverse proxy on port 443
+&lt;ul&gt;
+&lt;li&gt;does tls termination&lt;/li&gt;
+&lt;li&gt;and proxying, nginx: &lt;code&gt;proxy_pass 127.0.0.1:8001;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;SSH Tunnel&lt;/li&gt;
+&lt;li&gt;local machine port 8000 http server&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="ssh-config" class="paragraph-header"&gt;SSH Config &lt;a
+href="#ssh-config"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;port forwarding can also be specified on the client in &lt;code&gt;~/.ssh/config&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Host server-01
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; HostName 192.168.1.2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Port 22
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; User clusteradm
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex; background-color:#3d3f4a"&gt;&lt;span&gt; LocalForward localhost:9001 localhost:9000
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex; background-color:#3d3f4a"&gt;&lt;span&gt; RemoteForward 8001 localhost:8000
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; KeepAlive yes
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; IdentitiesOnly yes
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; IdentityFile ~/.ssh/server_01_clusteradm
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Config format is &lt;code&gt;(Local|Remote)Forward target source&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;connect via &lt;code&gt;$ ssh server-01&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="persistent-connections" class="paragraph-header"&gt;Persistent connections &lt;a
+href="#persistent-connections"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Just use the &lt;code&gt;autossh&lt;/code&gt; command in place of &lt;code&gt;ssh&lt;/code&gt;. AutoSSH uses heartbeats to check if the connection is still open and
+open another one otherwise automatically and fully transparent.&lt;/p&gt;
+&lt;h2 id="dedicated-tunneling-server" class="paragraph-header"&gt;Dedicated tunneling server &lt;a
+href="#dedicated-tunneling-server"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;It&amp;rsquo;s possible to run a standalone ssh server which just allows port forwarding and no remote command execution. Setup:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p /jail
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;adduser --gecos &lt;span style="color:#f1fa8c"&gt;&amp;#34;&amp;#34;&lt;/span&gt; --no-create-home --shell /bin/false --disabled-password --uid &lt;span style="color:#bd93f9"&gt;1000&lt;/span&gt; sshtunnel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Excerpt from &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# AllowUsers list all users which should be able to login&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;AllowUsers sshtunnel
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Match User sshtunnel
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; PermitTTY no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Banner none
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; X11Forwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; AllowAgentForwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#6272a4"&gt;# AllowTcpForwarding: yes (= local+remote), local, remote, no&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; AllowTcpForwarding &lt;span style="color:#8be9fd;font-style:italic"&gt;local&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; GatewayPorts no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; PermitTunnel no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ChrootDirectory /jail
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ForceCommand /bin/false
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; PermitOpen 127.0.0.1:8730
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Start sshd in foreground: &lt;code&gt;$ sshd -D -e&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Connect client: &lt;code&gt;$ ssh -N -L 127.0.0.1:8730:127.0.0.1:8730 sshtunnel@localhost&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Flag &lt;code&gt;-N&lt;/code&gt; prevents the spawning of a shell (which would result in a connection abortion otherwise).&lt;/p&gt;
+&lt;h2 id="rsync-tunneling-also-sftp" class="paragraph-header"&gt;Rsync tunneling (also sftp) &lt;a
+href="#rsync-tunneling-also-sftp"&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;rsync&lt;/code&gt; can copy (sync) files between hosts. Therefore, it can use ssh as a transfer protocol. But that implies running
+the rsync command on the server:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rsync -av -e ssh user@host:/backup/ /datadir/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That won&amp;rsquo;t work with a tunneling only ssh server. Luckily rsync can also be operated with a standalone server, so the
+rsync protocol can be tunneled via ssh.&lt;/p&gt;
+&lt;h3 id="server-setup" class="paragraph-header"&gt;Server Setup &lt;a
+href="#server-setup"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;adduser --gecos &lt;span style="color:#f1fa8c"&gt;&amp;#34;&amp;#34;&lt;/span&gt; --no-create-home --shell /bin/false --disabled-password --uid &lt;span style="color:#bd93f9"&gt;1001&lt;/span&gt; rsyncbackup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo mkdir -p /jail/backup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chown -R root:root /jail &lt;span style="color:#6272a4"&gt;# user cannot have write permission to chroot dir&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chown -R rsyncbackup:rsyncbackup /jail/backup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chmod -R &lt;span style="color:#bd93f9"&gt;755&lt;/span&gt; /jail/backup
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Excerpt from &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# allow sftp connections&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Subsystem sftp internal-sftp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#6272a4"&gt;# AllowUsers list all users which should be able to login&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;AllowUsers rsyncbackup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Match User rsyncbackup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; PermitTTY no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Banner none
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; X11Forwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; AllowAgentForwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#6272a4"&gt;# AllowTcpForwarding: yes (= local+remote), local, remote, no&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; AllowTcpForwarding &lt;span style="color:#8be9fd;font-style:italic"&gt;local&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; GatewayPorts no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; PermitTunnel no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ChrootDirectory /jail
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ForceCommand internal-sftp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; PermitOpen 127.0.0.1:8730
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In addition to rsync this config also allows file browsing via sftp in the &lt;code&gt;/jail&lt;/code&gt; dir.&lt;/p&gt;
+&lt;p&gt;Rsync server config in &lt;code&gt;/etc/rsyncd.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;use &lt;span style="color:#8be9fd;font-style:italic"&gt;chroot&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hosts &lt;span style="color:#8be9fd;font-style:italic"&gt;allow&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; 127.0.0.1/32
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;port&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;8730&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;timeout&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;300&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;max &lt;span style="color:#8be9fd;font-style:italic"&gt;connections&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; &lt;span style="color:#bd93f9"&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;reverse &lt;span style="color:#8be9fd;font-style:italic"&gt;lookup&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;log &lt;span style="color:#8be9fd;font-style:italic"&gt;file&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; /dev/stdout
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;log &lt;span style="color:#8be9fd;font-style:italic"&gt;format&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; %h %o %f %l %b
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pid &lt;span style="color:#8be9fd;font-style:italic"&gt;file&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; /var/run/rsyncd.pid
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ff79c6"&gt;[&lt;/span&gt;backup_sink&lt;span style="color:#ff79c6"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;comment&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; Backup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;path&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; /jail
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;read&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;only&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; no
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;list&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; yes
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;uid&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; rsyncbackup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;gid&lt;/span&gt; &lt;span style="color:#ff79c6"&gt;=&lt;/span&gt; rsyncbackup
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Start rsync server: &lt;code&gt;$ rsync --daemon --config /etc/rsyncd.conf&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id="client-setup" class="paragraph-header"&gt;Client Setup &lt;a
+href="#client-setup"&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Record in &lt;code&gt;.ssh/config&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-shell" data-lang="shell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Host backup-conn
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; HostName 192.168.1.32
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Port &lt;span style="color:#bd93f9"&gt;2201&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; User rsyncbackup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; KeepAlive yes
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; LocalForward 127.0.0.1:8730 127.0.0.1:8730
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Run a rsync job:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ssh -N backup-conn &amp;amp; &lt;span style="color:#6272a4"&gt;# no tty possible, either use pubkey-auth or use sshpass to submit the password&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;pid&lt;/span&gt;&lt;span style="color:#ff79c6"&gt;=&lt;/span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;$!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sleep &lt;span style="color:#bd93f9"&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;time&lt;/span&gt; rsync bigfile rsync://localhost:8730/backup_sink/backup
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#8be9fd;font-style:italic"&gt;kill&lt;/span&gt; &lt;span style="color:#8be9fd;font-style:italic"&gt;$pid&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Check that &lt;code&gt;/jail/backup/bigfile&lt;/code&gt; has been created on the server.&lt;/p&gt;</description></item></channel></rss>
